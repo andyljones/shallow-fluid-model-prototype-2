@@ -5,10 +5,12 @@ namespace ClimateSim.Grids
 {
     public class Vertex
     {
-        public List<Face> Faces;
+        public int Index = -1;
 
-        public List<Edge> Edges;
+        public List<Face> Faces = new List<Face>();
 
-        public Vector3 Position;
+        public List<Edge> Edges = new List<Edge>();
+
+        public Vector3 Position = new Vector3(0, 0, 0);
     }
 }

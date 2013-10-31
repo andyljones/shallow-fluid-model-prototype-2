@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ClimateSim.Grids.IcosahedralGrid
 {   
+    //TODO: Add indices to each element so it's easier to test (and delink later on)
     /// <summary>
     /// Generates a unit-radius icosahedron as a list of faces, edges and vertices, all linked to eachother. 
     /// </summary>
@@ -30,7 +31,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
         //Generates the positions of the 20 vertices
         private Vertex[] GenerateVertexPositions()
         {
-            var vertices = new Vertex[20];
+            var vertices = new Vertex[12];
 
             vertices[0] = new Vertex {Position = GenerateVertexPosition(0, 0)};
 
@@ -41,6 +42,11 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
 
             vertices[11] = new Vertex {Position = GenerateVertexPosition(2, 0)};
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].Index = i;
+            }
 
             return vertices;
         }
@@ -54,7 +60,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var y = Mathf.Sin(i*Mathf.PI/3)*Mathf.Cos(j * 2*Mathf.PI/10);
             var z = Mathf.Cos(i*Mathf.PI/3);
 
-            return new Vector3();
+            return new Vector3(x, y, z);
         }
 
         // Generates the edges in terms of the vertices.
@@ -102,6 +108,11 @@ namespace ClimateSim.Grids.IcosahedralGrid
             edges[28] = new Edge { Vertices = new List<Vertex> { Vertices[9], Vertices[11] } };
             edges[29] = new Edge { Vertices = new List<Vertex> { Vertices[10], Vertices[11] } };
 
+            for (int i = 0; i < edges.Length; i++)
+            {
+                edges[i].Index = i;
+            }
+
             return edges;
         }
 
@@ -130,11 +141,16 @@ namespace ClimateSim.Grids.IcosahedralGrid
             faces[14] = new Face { Edges = new List<Edge> { Edges[24], Edges[19], Edges[10] } };
 
             // Lower faces
-            faces[10] = new Face { Edges = new List<Edge> { Edges[20], Edges[25], Edges[26] } };
-            faces[11] = new Face { Edges = new List<Edge> { Edges[21], Edges[26], Edges[27] } };
-            faces[12] = new Face { Edges = new List<Edge> { Edges[22], Edges[27], Edges[28] } };
-            faces[13] = new Face { Edges = new List<Edge> { Edges[23], Edges[28], Edges[29] } };
-            faces[14] = new Face { Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
+            faces[15] = new Face { Edges = new List<Edge> { Edges[20], Edges[25], Edges[26] } };
+            faces[16] = new Face { Edges = new List<Edge> { Edges[21], Edges[26], Edges[27] } };
+            faces[17] = new Face { Edges = new List<Edge> { Edges[22], Edges[27], Edges[28] } };
+            faces[18] = new Face { Edges = new List<Edge> { Edges[23], Edges[28], Edges[29] } };
+            faces[19] = new Face { Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
+
+            for (int i = 0; i < faces.Length; i++)
+            {
+                faces[i].Index = i;
+            }
 
             return faces;
         }

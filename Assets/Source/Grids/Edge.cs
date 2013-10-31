@@ -4,8 +4,10 @@ namespace ClimateSim.Grids
 {
     public class Edge
     {
-        public List<Face> Faces;
+        public int Index = -1;
 
-        public List<Vertex> Vertices;
+        public List<Face> Faces = new List<Face>();
+
+        public List<Vertex> Vertices = new List<Vertex>();
     }
 }
