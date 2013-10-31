@@ -122,30 +122,30 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var faces = new Face[20];
 
             // Faces around north pole
-            faces[0] = new Face { Edges = new List<Edge> { Edges[0], Edges[1], Edges[5] }};
-            faces[1] = new Face { Edges = new List<Edge> { Edges[1], Edges[2], Edges[6] }};
-            faces[2] = new Face { Edges = new List<Edge> { Edges[2], Edges[3], Edges[7] } };
-            faces[3] = new Face { Edges = new List<Edge> { Edges[3], Edges[4], Edges[8] } };
-            faces[4] = new Face { Edges = new List<Edge> { Edges[4], Edges[0], Edges[9] } };
+            faces[0] = new Face { BlockIndex = 0, IndexInBlock = 0, Edges = new List<Edge> { Edges[0], Edges[1], Edges[5] }};
+            faces[1] = new Face { BlockIndex = 1, IndexInBlock = 0, Edges = new List<Edge> { Edges[1], Edges[2], Edges[6] } };
+            faces[2] = new Face { BlockIndex = 2, IndexInBlock = 0, Edges = new List<Edge> { Edges[2], Edges[3], Edges[7] } };
+            faces[3] = new Face { BlockIndex = 3, IndexInBlock = 0, Edges = new List<Edge> { Edges[3], Edges[4], Edges[8] } };
+            faces[4] = new Face { BlockIndex = 4, IndexInBlock = 0, Edges = new List<Edge> { Edges[4], Edges[0], Edges[9] } };
 
             // Middle faces
-            faces[5] = new Face { Edges = new List<Edge> { Edges[5], Edges[10], Edges[11] } };
-            faces[6] = new Face { Edges = new List<Edge> { Edges[20], Edges[11], Edges[12] } };
-            faces[7] = new Face { Edges = new List<Edge> { Edges[6], Edges[12], Edges[13] } };
-            faces[8] = new Face { Edges = new List<Edge> { Edges[21], Edges[13], Edges[14] } };
-            faces[9] = new Face { Edges = new List<Edge> { Edges[7], Edges[14], Edges[15] } };
-            faces[10] = new Face { Edges = new List<Edge> { Edges[22], Edges[15], Edges[16] } };
-            faces[11] = new Face { Edges = new List<Edge> { Edges[8], Edges[16], Edges[17] } };
-            faces[12] = new Face { Edges = new List<Edge> { Edges[23], Edges[17], Edges[18] } };
-            faces[13] = new Face { Edges = new List<Edge> { Edges[9], Edges[18], Edges[19] } };
-            faces[14] = new Face { Edges = new List<Edge> { Edges[24], Edges[19], Edges[10] } };
+            faces[5] = new Face { BlockIndex = 0, IndexInBlock = 1, Edges = new List<Edge> { Edges[5], Edges[10], Edges[11] } };
+            faces[6] = new Face { BlockIndex = 1, IndexInBlock = 2, Edges = new List<Edge> { Edges[20], Edges[11], Edges[12] } };
+            faces[7] = new Face { BlockIndex = 1, IndexInBlock = 1, Edges = new List<Edge> { Edges[6], Edges[12], Edges[13] } };
+            faces[8] = new Face { BlockIndex = 2, IndexInBlock = 2, Edges = new List<Edge> { Edges[21], Edges[13], Edges[14] } };
+            faces[9] = new Face { BlockIndex = 2, IndexInBlock = 1, Edges = new List<Edge> { Edges[7], Edges[14], Edges[15] } };
+            faces[10] = new Face { BlockIndex = 3, IndexInBlock = 2, Edges = new List<Edge> { Edges[22], Edges[15], Edges[16] } };
+            faces[11] = new Face { BlockIndex = 3, IndexInBlock = 1, Edges = new List<Edge> { Edges[8], Edges[16], Edges[17] } };
+            faces[12] = new Face { BlockIndex = 4, IndexInBlock = 2, Edges = new List<Edge> { Edges[23], Edges[17], Edges[18] } };
+            faces[13] = new Face { BlockIndex = 4, IndexInBlock = 1, Edges = new List<Edge> { Edges[9], Edges[18], Edges[19] } };
+            faces[14] = new Face { BlockIndex = 0, IndexInBlock = 2, Edges = new List<Edge> { Edges[24], Edges[19], Edges[10] } };
 
             // Lower faces
-            faces[15] = new Face { Edges = new List<Edge> { Edges[20], Edges[25], Edges[26] } };
-            faces[16] = new Face { Edges = new List<Edge> { Edges[21], Edges[26], Edges[27] } };
-            faces[17] = new Face { Edges = new List<Edge> { Edges[22], Edges[27], Edges[28] } };
-            faces[18] = new Face { Edges = new List<Edge> { Edges[23], Edges[28], Edges[29] } };
-            faces[19] = new Face { Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
+            faces[15] = new Face { BlockIndex = 1, IndexInBlock = 3, Edges = new List<Edge> { Edges[20], Edges[25], Edges[26] } };
+            faces[16] = new Face { BlockIndex = 2, IndexInBlock = 3, Edges = new List<Edge> { Edges[21], Edges[26], Edges[27] } };
+            faces[17] = new Face { BlockIndex = 3, IndexInBlock = 3, Edges = new List<Edge> { Edges[22], Edges[27], Edges[28] } };
+            faces[18] = new Face { BlockIndex = 4, IndexInBlock = 3, Edges = new List<Edge> { Edges[23], Edges[28], Edges[29] } };
+            faces[19] = new Face { BlockIndex = 0, IndexInBlock = 3, Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
 
             for (int i = 0; i < faces.Length; i++)
             {
