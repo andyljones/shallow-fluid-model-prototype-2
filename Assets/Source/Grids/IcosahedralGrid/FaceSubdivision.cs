@@ -6,27 +6,38 @@ namespace ClimateSim.Grids.IcosahedralGrid
 {
     public class FaceSubdivision
     {
-        public List<Face> Faces { get; private set; }
+        public List<IcosahedralFace> Faces { get; private set; }
         public List<Edge> Edges { get; private set; }
         public List<Vertex> Vertices { get; private set; }
 
-        public FaceSubdivision(Face face)
+        public FaceSubdivision(IcosahedralFace face)
         {
-            Vertices = GenerateVertices(face);
+            if (NorthPointing(face))
+            {
+                SubdivideNorthPointingFace(face);
+            }
+            else
+            {
+                SubdivideSouthPointingFace(face);
+            }
         }
 
-        private List<Vertex> GenerateVertices(Face face)
+        private void SubdivideSouthPointingFace(IcosahedralFace face)
         {
-            var vertex1 = SubdivideEdge(face.Edges[0]);
-            var vertex2 = SubdivideEdge(face.Edges[1]);
-            var vertex3 = SubdivideEdge(face.Edges[2]);
+            throw new NotImplementedException();
         }
 
-        private Vertex SubdivideEdge(Edge edge)
+        private void SubdivideNorthPointingFace(IcosahedralFace face)
         {
-            var midVertexPosition = (edge.Vertices[0].Position + edge.Vertices[1].Position)/2;
+            throw new NotImplementedException();
+        }
 
-            return new Vertex {Position = midVertexPosition.normalized};
+        public bool NorthPointing(IcosahedralFace face)
+        {
+            var zValues = face.Vertices.Select(vertex => vertex.Position.z).ToList();
+            var midZ = (zValues.Max() + zValues.Min())/2;
+
+            return zValues.Average() < midZ;
         }
     }
 }

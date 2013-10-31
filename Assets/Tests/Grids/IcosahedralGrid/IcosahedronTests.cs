@@ -96,11 +96,35 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
 
 
         [TestMethod]
-        public void Every_Face_Should_Have_A_Unique_Index()
+        public void Every_Face_Should_Have_A_Block_Index()
         {
-            var indices = _icosahedron.Faces.Select(face => face.Index).ToList();
-            CollectionAssert.DoesNotContain(indices, -1); // Default value is -1.
-            CollectionAssert.AllItemsAreUnique(indices);
+            var actualBlockIndices = _icosahedron.Faces.Select(face => face.BlockIndex).ToList();
+            var expectedIndices = new[] { 0, 0, 0, 0, 
+                                          1, 1, 1, 1, 
+                                          2, 2, 2, 2,
+                                          3, 3, 3, 3,
+                                          4, 4, 4, 4};
+
+            CollectionAssert.AreEquivalent(expectedIndices, actualBlockIndices);
+        }
+
+        [TestMethod]
+        public void Every_Face_Should_Have_A_Unique_Indexing_Pair()
+        {
+            var blockIndices = _icosahedron.Faces.Select(face => face.BlockIndex).ToList();
+
+            foreach (var blockIndex in blockIndices)
+            {
+                var localCopyOfBlockIndex = blockIndex;
+
+                var indicesWithinBlock = from face in _icosahedron.Faces
+                                         where face.BlockIndex == localCopyOfBlockIndex
+                                         select face.IndexInBlock;
+
+                var expectedIndices = new[] {0, 1, 2, 3};
+
+                CollectionAssert.AreEquivalent(expectedIndices, indicesWithinBlock.ToArray());
+            }
         }
 
         [TestMethod]
@@ -124,10 +148,19 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         [TestMethod]
         public void Southern_Vertex_At_180E_Should_Have_The_Correct_Faces()
         {
-            var vertex = _icosahedron.Vertices[8];
-            var expectedFaceIndices = new List<int> { 8, 9, 10, 16, 17 };
-            var actualFaceIndices = vertex.Faces.Select(face => face.Index).ToList();
-            CollectionAssert.AreEquivalent(expectedFaceIndices, actualFaceIndices);
+            var vertices = _icosahedron.Vertices[8];
+            var expectedBlockIndices = new List<int> { 2, 2, 2, 3, 3 };
+            var actualBlockIndices = vertices.Faces.Select(face => face.BlockIndex).ToList();
+            CollectionAssert.AreEquivalent(expectedBlockIndices, actualBlockIndices);
+
+            var expectedIndicesWithinBlock2 = new List<int> {1, 2, 3};
+            var actualIndicesWithinBlock2 = vertices.Faces.Where(face => face.BlockIndex == 2).Select(face => face.IndexInBlock).ToList();
+            CollectionAssert.AreEquivalent(expectedIndicesWithinBlock2, actualIndicesWithinBlock2);
+
+            var expectedIndicesWithinBlock3 = new List<int> { 2, 3 };
+            var actualIndicesWithinBlock3 = vertices.Faces.Where(face => face.BlockIndex == 3).Select(face => face.IndexInBlock).ToList();
+            CollectionAssert.AreEquivalent(expectedIndicesWithinBlock3, actualIndicesWithinBlock3);
+
         }
 
         [TestMethod]
@@ -143,9 +176,13 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         public void Fourth_Edge_Around_On_Upper_Latitude_Should_Have_The_Correct_Faces()
         {
             var edge = _icosahedron.Edges[8];
-            var expectedFaceIndices = new List<int> { 3, 11 };
-            var actualFaceIndices = edge.Faces.Select(face => face.Index).ToList();
-            CollectionAssert.AreEquivalent(expectedFaceIndices, actualFaceIndices);
+            var expectedBlockIndices = new List<int> { 3, 3 };
+            var actualBlockIndices = edge.Faces.Select(face => face.BlockIndex).ToList();
+            CollectionAssert.AreEquivalent(expectedBlockIndices, actualBlockIndices);
+
+            var expectedIndicesWithinBlock3 = new List<int> { 0, 1 };
+            var actualIndicesWithinBlock3 = edge.Faces.Where(face => face.BlockIndex == 3).Select(face => face.IndexInBlock).ToList();
+            CollectionAssert.AreEquivalent(expectedIndicesWithinBlock3, actualIndicesWithinBlock3);
         }
 
         [TestMethod]

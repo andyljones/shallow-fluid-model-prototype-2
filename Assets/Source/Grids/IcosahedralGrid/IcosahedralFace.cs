@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace ClimateSim.Grids
 {
     //TODO: Add strip index
-    public class Face
+    public class IcosahedralFace
     {
-        public int Block = -1;
+        public int BlockIndex = -1;
 
         public int IndexInBlock = -1;
 
