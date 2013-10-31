@@ -1,4 +1,5 @@
-﻿using ClimateSim.Grids;
+﻿using System.Collections.Generic;
+using ClimateSim.Grids;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UnityEngine;
 
@@ -7,14 +8,14 @@ namespace ClimateSim.Tests.Grids
     [TestClass]
     public class CompareClockwiseAroundTests
     {
-        private CompareClockwiseAround _comparer;
+        private CompareVectorsClockwiseAround _comparer;
 
         [TestInitialize]
         // Keep in mind we're in a left-hand coordinate system here. Positive Y axis is pointing towards you, positive
         // X axis is heading off to your right, positive Z axis is heading upwards.
         public void Create_Comparer_Around_Y_Axis()
         {
-            _comparer = new CompareClockwiseAround(new Vector3(0, 1, 0));
+            _comparer = new CompareVectorsClockwiseAround(new Vector3(0, 1, 0));
         }
 
         [TestMethod]

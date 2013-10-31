@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace ClimateSim.Grids
@@ -8,20 +10,25 @@ namespace ClimateSim.Grids
     /// Comparer for ordering vectors according to which is further clockwise around a point, judged from global 
     /// north (0, 0, 1). Uses a left-hand coordinate system.
     /// </summary>
-    public class CompareClockwiseAround : IComparer<Vector3>
+    public class CompareVectorsClockwiseAround : IComparer<Vector3>
     {
-        private readonly Vector3 _localX;
-        private readonly Vector3 _localY;
-        private readonly Vector3 _localZ;
+        private Vector3 _localX;
+        private Vector3 _localY;
+        private Vector3 _localZ;
 
         private readonly Vector3 _center;
 
-        public CompareClockwiseAround(Vector3 center)
+        public CompareVectorsClockwiseAround(Vector3 center)
         {
             _center = center;
 
-            _localZ = center.normalized;
-            _localX = Vector3.Cross(center, new Vector3(0, 0, 1));
+            SetLocalCoordinateSystem();
+        }
+
+        public void SetLocalCoordinateSystem()
+        {
+            _localZ = _center.normalized;
+            _localX = Vector3.Cross(_center, new Vector3(0, 0, 1));
             _localY = Vector3.Cross(_localX, _localZ);
         }
 
