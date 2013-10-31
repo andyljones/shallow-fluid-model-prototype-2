@@ -2,6 +2,7 @@
 
 namespace ClimateSim.Grids
 {
+    //TODO: Add strip index
     public class Face
     {
         public int Index = -1;
