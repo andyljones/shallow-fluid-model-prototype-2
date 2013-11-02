@@ -67,17 +67,17 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         }
 
         //TODO: How do we deal with the fact that intraface edges are longer than boundary edges?
-        //[TestMethod]
-        //public void Every_Edge_Should_Be_Of_Roughly_The_Same_Length()
-        //{
-        //    var expectedLength = 0.546533048f; //No neat closed form unfortunately.
-        //    var actualLengthsOfEachEdge = _gridGenerator.Edges
-        //                                  .Select(edge => (edge.Vertices[0].Position - edge.Vertices[1].Position).magnitude).ToList();
+        [TestMethod]
+        public void Every_Edge_Should_Be_Of_Roughly_The_Same_Length()
+        {
+            var expectedLength = 0.546533048f; //No neat closed form unfortunately.
+            var actualLengthsOfEachEdge = _gridGenerator.Edges
+                                          .Select(edge => (edge.Vertices[0].Position - edge.Vertices[1].Position).magnitude).ToList();
 
-        //    var errors = actualLengthsOfEachEdge.Select(actualLength => Mathf.Abs(actualLength - expectedLength));
+            var errors = actualLengthsOfEachEdge.Select(actualLength => Mathf.Abs(actualLength - expectedLength));
 
-        //    Assert.IsTrue(errors.All(error => error < 0.01f));
-        //}
+            Assert.IsTrue(errors.All(error => error < 0.01f));
+        }
 
         [TestMethod]
         public void There_Should_Be_12_Vertices_With_Five_Edges()

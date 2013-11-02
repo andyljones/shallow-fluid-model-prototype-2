@@ -29,6 +29,11 @@ namespace ClimateSim.Grids.IcosahedralGrid
                 SubdivideFaces();
                 LinkEdgesAndVerticesToFaces();
                 _currentAngularResolution /= 2;
+
+                foreach (var vertex in Vertices)
+                {
+                    vertex.Position.Normalize();
+                }
             }
         }
 
@@ -77,6 +82,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
 
             Edges = newEdges;
+            System.Console.WriteLine(Faces.Count(NorthPointing));
         }
 
         private List<Edge> SubdivideEdge(Edge edge)
@@ -84,20 +90,35 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var endpoint0 = edge.Vertices[0];
             var endpoint1 = edge.Vertices[1];
 
-            var midpoint = new Vertex(12+edge.Index) {Position = (endpoint0.Position + endpoint1.Position).normalized};
+            var face0 = edge.Faces[0];
+            var face1 = edge.Faces[1];
+
+            endpoint0.Edges.Remove(edge);
+            endpoint1.Edges.Remove(edge);
+            face0.Edges.Remove(edge);
+            face1.Edges.Remove(edge);
+
+            //var omega = Mathf.Cos(Vector3.Dot(endpoint0.Position, endpoint1.Position));
+            var midpointPosition = (endpoint0.Position + endpoint1.Position)/2;
+            var midpoint = new Vertex(12+edge.Index) {Position = midpointPosition};
 
             var newEdge0 = new Edge(2*edge.Index+0) { Vertices = new List<Vertex> { endpoint0, midpoint } };
             var newEdge1 = new Edge(2*edge.Index+1) { Vertices = new List<Vertex> { endpoint1, midpoint } };
 
-            endpoint0.Edges.Remove(edge);
-            endpoint0.Edges.Add(newEdge0);
-
-            endpoint1.Edges.Remove(edge);
-            endpoint1.Edges.Add(newEdge1);
-
             midpoint.Edges.Add(newEdge0);
             midpoint.Edges.Add(newEdge1);
+
             Vertices.Add(midpoint);
+            edge.Faces[0].Vertices.Add(midpoint);
+            edge.Faces[1].Vertices.Add(midpoint);
+
+            endpoint0.Edges.Add(newEdge0);
+            face0.Edges.Add(newEdge0);
+            face1.Edges.Add(newEdge0);
+
+            endpoint1.Edges.Add(newEdge1);
+            face0.Edges.Add(newEdge1);
+            face1.Edges.Add(newEdge1);
 
             return new List<Edge> {newEdge0, newEdge1};
         }
@@ -117,8 +138,8 @@ namespace ClimateSim.Grids.IcosahedralGrid
         private IEnumerable<IcosahedralFace> SubdivideFace(IcosahedralFace face)
         {
             //TODO: These are breaking down too. Vertices of face have wild numbers of edges
-            face.Vertices = FindBoundaryVertices(face);
-            face.Edges = FindBoundaryEdges(face);
+            //face.Vertices = FindBoundaryVertices(face);
+            //face.Edges = FindBoundaryEdges(face);
             List<IcosahedralFace> newFaces;
 
             if (NorthPointing(face))
@@ -137,18 +158,28 @@ namespace ClimateSim.Grids.IcosahedralGrid
         private List<IcosahedralFace> SubfacesOfNorthPointingFace(IcosahedralFace face)
         {
             var center = CenterOfFace(face);
-            var east = Vector3.Cross(center, _globalNorth).normalized;
-            var north = Vector3.Cross(east, center).normalized;
-            var baseline = (100*north - east).normalized;
 
-            var clockwiseFromNorth = new CompareVectorsClockwise(center, baseline);
+            //var largestZValue = face.Vertices.Max(vertex => vertex.Position.z);
+            //var northmostVertex = face.Vertices.Single(vertex => vertex.Position.z == largestZValue);
+            //var baseline = (northmostVertex.Position - center).normalized;
+
+            var northmostVertex = face.Vertices.OrderByDescending(vertex => vertex.Position.z).First();
+
+            var clockwiseFromNorth = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
+            var clockwiseSortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromNorth).ToList();
+            var indexOfNorthmost = clockwiseSortedVertices.IndexOf(northmostVertex);
+            var sortedVertices = new Vertex[clockwiseSortedVertices.Count];
+            for (int i = 0; i < sortedVertices.Length; i++)
+            {
+                sortedVertices[i] = clockwiseSortedVertices[MathMod(indexOfNorthmost + i, clockwiseSortedVertices.Count)];
+            }
 
             //     0
             //    / \    <-- Northern subface
             //   5---1
             //  / \ / \  <-- Western, central, then eastern subface
             // 4---3---2
-            var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromNorth).ToList();
+
 
             //BUG: Intuition is the problem's with the sorting. E: Yup, issues here.
             // Problem that the edge alignment issue from the first iteration throws things off true north?
@@ -183,18 +214,23 @@ namespace ClimateSim.Grids.IcosahedralGrid
         private List<IcosahedralFace> SubfacesOfSouthPointingFace(IcosahedralFace face)
         {
             var center = CenterOfFace(face);
-            var west = Vector3.Cross(_globalNorth, center).normalized;
-            var south = Vector3.Cross(west, center).normalized;
-            var baseline = (10*south - west).normalized;
+            var southmostVertex = face.Vertices.OrderBy(vertex => vertex.Position.z).First();
 
-            var clockwiseFromSouth = new CompareVectorsClockwise(center, baseline);
+
+            var clockwiseFromNorth = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
+            var clockwiseSortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromNorth).ToList();
+            var indexOfSouthmost = clockwiseSortedVertices.IndexOf(southmostVertex);
+            var sortedVertices = new Vertex[clockwiseSortedVertices.Count];
+            for (int i = 0; i < sortedVertices.Length; i++)
+            {
+                sortedVertices[i] = clockwiseSortedVertices[MathMod(indexOfSouthmost + i, clockwiseSortedVertices.Count)];
+            }
 
             //2---3---4
             // \ / \ /     <-- Western subface, central subface, eastern subface
             //  1---5
             //   \ /       <-- Southern subface
             //    0
-            var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromSouth).ToList();
 
             int blockIndex = face.BlockIndex;
             int indexInBlock = face.IndexInBlock;
@@ -259,12 +295,14 @@ namespace ClimateSim.Grids.IcosahedralGrid
             return connectingEdges;
         }
 
+        //BUG: Does not work for shit. Need to fix edge length problem first.
         private bool NorthPointing(IcosahedralFace face)
         {
-            var zValues = face.Vertices.Select(vertex => vertex.Position.z).ToList();
-            var midZ = (zValues.Max() + zValues.Min()) / 2;
+            var zValues = face.Vertices.Select(vertex => vertex.Position.z);
+            var midpoint = (zValues.Max() + zValues.Min())/2;
+            var average = zValues.Average();
 
-            return zValues.Average() < midZ;
+            return average < midpoint;
         }
 
         private List<Vertex> FindBoundaryVertices(IcosahedralFace face)
@@ -292,6 +330,11 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var averageVertexPosition = vertexPositions.Aggregate((u, v) => u + v) / vertexPositions.Count();
 
             return averageVertexPosition;
+        }
+
+        private int MathMod(int x, int m)
+        {
+            return ((x % m) + m) % m;
         }
     }
 }
