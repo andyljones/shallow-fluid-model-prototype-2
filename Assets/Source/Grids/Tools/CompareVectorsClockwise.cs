@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEngine;
 
 namespace ClimateSim.Grids
 {
     /// <summary>
-    /// Comparer for ordering vectors according to which is further clockwise around a point, judged from global 
-    /// north (0, 0, 1). Uses a left-hand coordinate system.
+    /// Comparer for ordering vectors according to which is further clockwise around a given center, judged from a 
+    /// given baseline. Uses a left-hand coordinate system.
     /// </summary>
     public class CompareVectorsClockwise : IComparer<Vector3>
     {

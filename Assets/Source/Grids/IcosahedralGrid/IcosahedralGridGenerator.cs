@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ClimateSim.Grids;
 using UnityEngine;
 
 namespace ClimateSim.Grids.IcosahedralGrid
@@ -10,25 +11,22 @@ namespace ClimateSim.Grids.IcosahedralGrid
         public List<Edge> Edges { get; private set; }
         public List<Vertex> Vertices { get; private set; }
 
-        private float _targetAngularResolution;
-        private float _currentAngularResolution;
-
-        private readonly Vector3 _globalNorth = new Vector3(0, 0, 1);
-
-
         public IcosahedralGridGenerator(IIcosahedralGridOptions options)
         {
-            _targetAngularResolution = options.Resolution / options.Radius;
+            var targetAngularResolution = options.Resolution / options.Radius;
 
             CreateIcosahedron();
+            var currentAngularResolution = 1 / Mathf.Sin(2 * Mathf.PI / 5);
 
-            while (_currentAngularResolution > _targetAngularResolution)
+            while (currentAngularResolution > targetAngularResolution)
             {
-                SubdivideEdges();
-                //BUG: Edge counts on each vertex are fine here.
+                var edgeSubdivision = new EdgeSubdivision(Edges, Vertices);
+                Edges = edgeSubdivision.Edges;
+                Vertices = edgeSubdivision.Vertices;
+
                 SubdivideFaces();
                 LinkEdgesAndVerticesToFaces();
-                _currentAngularResolution /= 2;
+                currentAngularResolution /= 2;
             }
         }
 
@@ -60,62 +58,10 @@ namespace ClimateSim.Grids.IcosahedralGrid
         private void CreateIcosahedron()
         {
             var icosahedron = new Icosahedron();
-            _currentAngularResolution = 1/Mathf.Sin(2*Mathf.PI/5);
 
             Faces = icosahedron.Faces;
             Edges = icosahedron.Edges;
             Vertices = icosahedron.Vertices;
-        }
-
-        private void SubdivideEdges()
-        {
-            var newEdges = new List<Edge>();
-
-            foreach (var edge in Edges)
-            {
-                newEdges.AddRange(SubdivideEdge(edge));
-            }
-
-            Edges = newEdges;
-            System.Console.WriteLine(Faces.Count(NorthPointing));
-        }
-
-        private List<Edge> SubdivideEdge(Edge edge)
-        {
-            var endpoint0 = edge.Vertices[0];
-            var endpoint1 = edge.Vertices[1];
-
-            var face0 = edge.Faces[0];
-            var face1 = edge.Faces[1];
-
-            endpoint0.Edges.Remove(edge);
-            endpoint1.Edges.Remove(edge);
-            face0.Edges.Remove(edge);
-            face1.Edges.Remove(edge);
-
-            //var omega = Mathf.Cos(Vector3.Dot(endpoint0.Position, endpoint1.Position));
-            var midpointPosition = (endpoint0.Position + endpoint1.Position)/2;
-            var midpoint = new Vertex {Position = midpointPosition};
-
-            var newEdge0 = new Edge { Vertices = new List<Vertex> { endpoint0, midpoint } };
-            var newEdge1 = new Edge { Vertices = new List<Vertex> { endpoint1, midpoint } };
-
-            midpoint.Edges.Add(newEdge0);
-            midpoint.Edges.Add(newEdge1);
-
-            Vertices.Add(midpoint);
-            edge.Faces[0].Vertices.Add(midpoint);
-            edge.Faces[1].Vertices.Add(midpoint);
-
-            endpoint0.Edges.Add(newEdge0);
-            face0.Edges.Add(newEdge0);
-            face1.Edges.Add(newEdge0);
-
-            endpoint1.Edges.Add(newEdge1);
-            face0.Edges.Add(newEdge1);
-            face1.Edges.Add(newEdge1);
-
-            return new List<Edge> {newEdge0, newEdge1};
         }
 
         private void SubdivideFaces()
