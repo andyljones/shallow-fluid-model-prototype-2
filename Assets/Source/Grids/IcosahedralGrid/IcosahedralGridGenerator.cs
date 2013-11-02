@@ -25,6 +25,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             while (_currentAngularResolution > _targetAngularResolution)
             {
                 SubdivideEdges();
+                //BUG: Edge counts on each vertex are fine here.
                 SubdivideFaces();
                 LinkEdgesAndVerticesToFaces();
                 _currentAngularResolution /= 2;
@@ -115,9 +116,9 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
         private IEnumerable<IcosahedralFace> SubdivideFace(IcosahedralFace face)
         {
+            //TODO: These are breaking down too. Vertices of face have wild numbers of edges
             face.Vertices = FindBoundaryVertices(face);
             face.Edges = FindBoundaryEdges(face);
-
             List<IcosahedralFace> newFaces;
 
             if (NorthPointing(face))
@@ -149,12 +150,14 @@ namespace ClimateSim.Grids.IcosahedralGrid
             // 4---3---2
             var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromNorth).ToList();
 
-            //TODO: Intuition is the problem's with the sorting. E: Yup, issues here.
+            //BUG: Intuition is the problem's with the sorting. E: Yup, issues here.
             // Problem that the edge alignment issue from the first iteration throws things off true north?
-            var maxZ = face.Vertices.Max(vertex => vertex.Position.z);
-            var northPoint = face.Vertices.Single(vertex => vertex.Position.z == maxZ);
-            System.Console.WriteLine(northPoint == sortedVertices[0]);
+            //var maxZ = face.Vertices.Max(vertex => vertex.Position.z);
+            //var northPoint = face.Vertices.Single(vertex => vertex.Position.z == maxZ);
+            //System.Console.WriteLine(northPoint == sortedVertices[0]);
 
+            //TODO: Add new edges and vertices to face WHEN THEY'RE CREATED. Don't fuck around with this allNeighbouringVertex stuff
+            //TODO: Rather than trying to find local north, sort vertices by Z value and use the position of the largest as the baseline.
 
             int blockIndex = face.BlockIndex;
             int indexInBlock = face.IndexInBlock;
