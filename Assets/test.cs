@@ -9,7 +9,7 @@ public class test : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        var options = new Options() { Radius = 10, Resolution = 5 };
+        var options = new Options { Radius = 10, Resolution = 0.5f };
 
         var grid = new IcosahedralGridGenerator(options);
 
@@ -23,7 +23,8 @@ public class test : MonoBehaviour {
         for (int i = 0; i < grid.Vertices.Count; i++)
         {
             grid.Vertices[i].Index = i;
-            vectors[i] = grid.Vertices[i].Position*10;
+            grid.Vertices[i].Position = grid.Vertices[i].Position.normalized * options.Radius;
+            vectors[i] = grid.Vertices[i].Position;
         }
 
         int[] triangles = new int[3 * grid.Faces.Count];
@@ -40,6 +41,17 @@ public class test : MonoBehaviour {
             triangles[3 * i + 1] = vertices[1].Index;
             triangles[3 * i + 2] = vertices[2].Index;
         }
+
+        foreach (var edge in grid.Edges)
+	    {
+            var lrObj = new GameObject("lr");
+            var lr = lrObj.AddComponent<LineRenderer>();
+            lr.SetVertexCount(2);
+            lr.SetWidth(0.02f, 0.02f);
+            lr.material = (Material)Resources.Load("Boundaries");
+            lr.SetPosition(0, edge.Vertices[0].Position * 1.001f);
+            lr.SetPosition(1, edge.Vertices[1].Position * 1.001f);
+	    }
 
         mesh.vertices = vectors;
         mesh.triangles = triangles;

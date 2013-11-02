@@ -66,11 +66,11 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
             CollectionAssert.AreEqual(expectedVerticesOnEachEdge, actualVerticesOnEachEdge);
         }
 
-        //TODO: How do we deal with the fact that intraface edges are longer than boundary edges?
+        //This holds before the vertex positions are normalized, but not after.
         [TestMethod]
         public void Every_Edge_Should_Be_Of_Roughly_The_Same_Length()
         {
-            var expectedLength = 0.546533048f; //No neat closed form unfortunately.
+            var expectedLength = 0.5257311f; //No neat closed form unfortunately.
             var actualLengthsOfEachEdge = _gridGenerator.Edges
                                           .Select(edge => (edge.Vertices[0].Position - edge.Vertices[1].Position).magnitude).ToList();
 
@@ -110,7 +110,7 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         [TestMethod]
         public void There_Should_Be_Five_Vertices_Half_Way_Between_The_Pole_And_The_Old_North_Latitude()
         {
-            var expectedZValue = 0.8506508f;
+            var expectedZValue = 0.7236068f;
             var numberOfNearbyVertices = _gridGenerator.Vertices
                                          .Count(vertex => Mathf.Abs(vertex.Position.z - expectedZValue) < 0.01f);
 

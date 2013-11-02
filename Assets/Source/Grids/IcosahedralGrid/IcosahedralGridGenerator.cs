@@ -29,11 +29,6 @@ namespace ClimateSim.Grids.IcosahedralGrid
                 SubdivideFaces();
                 LinkEdgesAndVerticesToFaces();
                 _currentAngularResolution /= 2;
-
-                foreach (var vertex in Vertices)
-                {
-                    vertex.Position.Normalize();
-                }
             }
         }
 
