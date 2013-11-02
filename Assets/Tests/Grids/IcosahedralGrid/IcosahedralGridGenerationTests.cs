@@ -97,10 +97,10 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         }
 
         [TestMethod]
-        public void There_Should_Be_30_Vertices_With_Two_Edges()
+        public void There_Should_Be_30_Vertices_With_Six_Edges()
         {
             var expectedNumberOfVertices = 30;
-            var actualNumberOfVertices = _gridGenerator.Vertices.Count(vertex => vertex.Edges.Count == 2);
+            var actualNumberOfVertices = _gridGenerator.Vertices.Count(vertex => vertex.Edges.Count == 6);
 
             Assert.AreEqual(expectedNumberOfVertices, actualNumberOfVertices);
         }
@@ -143,6 +143,58 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
             CollectionAssert.AreEquivalent(expectedIndices, actualIndices);
         }
 
+        [TestMethod]
+        public void Every_Face_Should_Have_Three_Vertices()
+        {
+            var expectedVertexCount = 3;
+            var actualVertexCounts = _gridGenerator.Faces.Select(face => face.Vertices.Count);
 
+            Assert.IsTrue(actualVertexCounts.All(count => count == expectedVertexCount));
+        }
+
+        [TestMethod]
+        public void Every_Face_Should_Have_Three_Edges()
+        {
+            var expectedEdgeCount = 3;
+            var actualEdgeCounts = _gridGenerator.Faces.Select(face => face.Edges.Count).ToList();
+
+            Assert.IsTrue(actualEdgeCounts.All(count => count == expectedEdgeCount));
+        }
+
+        [TestMethod]
+        public void Should_Be_80_Faces()
+        {
+            var expectedNumberOfFaces = 80;
+            var actualNumberOfFaces = _gridGenerator.Faces.Count;
+
+            Assert.AreEqual(expectedNumberOfFaces, actualNumberOfFaces);
+        }
+
+        [TestMethod]
+        public void Every_Edge_Should_Have_Two_Faces()
+        {
+            var expectedFaceCount = 2;
+            var actualFaceCounts = _gridGenerator.Edges.Select(edge => edge.Faces.Count);
+
+            Assert.IsTrue(actualFaceCounts.All(count => count == expectedFaceCount));
+        }
+
+        [TestMethod]
+        public void Twelve_Vertices_Should_Have_Five_Faces_Each()
+        {
+            var expectedNumberOfVertices = 12;
+            var actualNumberOfVertices = _gridGenerator.Vertices.Count(vertex => vertex.Faces.Count == 5);
+
+            Assert.AreEqual(expectedNumberOfVertices, actualNumberOfVertices);
+        }
+
+        [TestMethod]
+        public void Thirty_Vertices_Should_Have_Six_Faces_Each()
+        {
+            var expectedNumberOfVertices = 30;
+            var actualNumberOfVertices = _gridGenerator.Vertices.Count(vertex => vertex.Faces.Count == 6);
+
+            Assert.AreEqual(expectedNumberOfVertices, actualNumberOfVertices);
+        }
     }
 }

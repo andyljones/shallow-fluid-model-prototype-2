@@ -13,6 +13,8 @@ namespace ClimateSim.Grids.IcosahedralGrid
         private float _targetAngularResolution;
         private float _currentAngularResolution;
 
+        private readonly Vector3 _globalNorth = new Vector3(0, 0, 1);
+
 
         public IcosahedralGridGenerator(IIcosahedralGridOptions options)
         {
@@ -24,7 +26,33 @@ namespace ClimateSim.Grids.IcosahedralGrid
             {
                 SubdivideEdges();
                 SubdivideFaces();
+                LinkEdgesAndVerticesToFaces();
                 _currentAngularResolution /= 2;
+            }
+        }
+
+        private void LinkEdgesAndVerticesToFaces()
+        {
+            foreach (var face in Faces)
+            {
+                AddFaceToEdges(face);
+                AddFaceToVertices(face);
+            }
+        }
+
+        private void AddFaceToEdges(IcosahedralFace face)
+        {
+            foreach (var edge in face.Edges)
+            {
+                edge.Faces.Add(face);
+            }
+        }
+
+        private void AddFaceToVertices(IcosahedralFace face)
+        {
+            foreach (var vertex in face.Vertices)
+            {
+                vertex.Faces.Add(face);
             }
         }
 
@@ -50,7 +78,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             Edges = newEdges;
         }
 
-        private IEnumerable<Edge> SubdivideEdge(Edge edge)
+        private List<Edge> SubdivideEdge(Edge edge)
         {
             var endpoint0 = edge.Vertices[0];
             var endpoint1 = edge.Vertices[1];
@@ -81,11 +109,178 @@ namespace ClimateSim.Grids.IcosahedralGrid
             {
                 newFaces.AddRange(SubdivideFace(face));
             }
+
+            Faces = newFaces;
         }
 
         private IEnumerable<IcosahedralFace> SubdivideFace(IcosahedralFace face)
         {
+            face.Vertices = FindBoundaryVertices(face);
+            face.Edges = FindBoundaryEdges(face);
+
+            List<IcosahedralFace> newFaces;
+
+            if (NorthPointing(face))
+            {
+                newFaces = SubfacesOfNorthPointingFace(face);    
+            }
+            else
+            {
+                newFaces = SubfacesOfSouthPointingFace(face);
+            }
             
+
+            return newFaces;
+        }
+
+        private List<IcosahedralFace> SubfacesOfNorthPointingFace(IcosahedralFace face)
+        {
+            var center = CenterOfFace(face);
+            var east = Vector3.Cross(center, _globalNorth).normalized;
+            var north = Vector3.Cross(east, center).normalized;
+            var baseline = (10*north - east).normalized;
+
+            var clockwiseFromNorth = new CompareVectorsClockwise(center, baseline);
+
+            //     0
+            //    / \    <-- Northern subface
+            //   5---1
+            //  / \ / \  <-- Western, central, then eastern subface
+            // 4---3---2
+            var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromNorth).ToList();
+
+            int blockIndex = face.BlockIndex;
+            int indexInBlock = face.IndexInBlock;
+
+            var northernSubface = CreateSubface(sortedVertices[5], sortedVertices[0], sortedVertices[1], 2*blockIndex, 2*indexInBlock);
+            var easternSubface = CreateSubface(sortedVertices[1], sortedVertices[2], sortedVertices[3], 2*blockIndex+1, 2*indexInBlock);
+            var westernSubface = CreateSubface(sortedVertices[3], sortedVertices[4], sortedVertices[5], 2*blockIndex, 2*indexInBlock+2);
+            var centralSubface = CreateCentralSubface(sortedVertices[1], sortedVertices[3], sortedVertices[5], 2*blockIndex, 2*indexInBlock+1);
+
+            RemoveFaceFromVertices(face, face.Vertices);
+
+            return new List<IcosahedralFace> {northernSubface, easternSubface, westernSubface, centralSubface};
+        }
+
+        private void RemoveFaceFromVertices(IcosahedralFace face, List<Vertex> vertices)
+        {
+            foreach (var vertex in vertices)
+            {
+                vertex.Faces = vertex.Faces.Except(new List<IcosahedralFace> {face}).ToList();
+            }
+        }
+
+        private List<IcosahedralFace> SubfacesOfSouthPointingFace(IcosahedralFace face)
+        {
+            var center = CenterOfFace(face);
+            var west = Vector3.Cross(_globalNorth, center).normalized;
+            var south = Vector3.Cross(west, center).normalized;
+            var baseline = (10*south - west).normalized;
+
+            var clockwiseFromSouth = new CompareVectorsClockwise(center, baseline);
+
+            //2---3---4
+            // \ / \ /     <-- Western subface, central subface, eastern subface
+            //  1---5
+            //   \ /       <-- Southern subface
+            //    0
+            var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromSouth).ToList();
+
+            int blockIndex = face.BlockIndex;
+            int indexInBlock = face.IndexInBlock;
+
+            var southernSubface = CreateSubface(sortedVertices[5], sortedVertices[0], sortedVertices[1], 2 * blockIndex + 1, 2 * indexInBlock + 1);
+            var westernSubface = CreateSubface(sortedVertices[1], sortedVertices[2], sortedVertices[3], 2 * blockIndex, 2 * indexInBlock + 1);
+            var easternSubface = CreateSubface(sortedVertices[3], sortedVertices[4], sortedVertices[5], 2 * blockIndex + 1, 2 * indexInBlock - 1);
+
+            var centralSubface = CreateCentralSubface(sortedVertices[1], sortedVertices[3], sortedVertices[5], 2 * blockIndex + 1, 2 * indexInBlock);
+
+            RemoveFaceFromVertices(face, face.Vertices);
+
+            return new List<IcosahedralFace> { southernSubface, westernSubface, easternSubface, centralSubface };
+        }
+
+        private IcosahedralFace CreateCentralSubface(Vertex u, Vertex v, Vertex w, int blockIndex, int indexInBlock)
+        {
+            var vertices = new List<Vertex> { u, v, w };
+
+            var edges = FindEdgesBetween(vertices);
+
+            var newFace = new IcosahedralFace
+            {
+                BlockIndex = blockIndex,
+                IndexInBlock = indexInBlock,
+                Vertices = vertices,
+                Edges = edges
+            };
+
+            return newFace;
+        }
+
+        private IcosahedralFace CreateSubface(Vertex u, Vertex v, Vertex w, int blockIndex, int indexInBlock)
+        {
+            var vertices = new List<Vertex> {u, v, w};
+
+            var edges = FindEdgesBetween(vertices);
+            var newEdge = new Edge(-1) { Vertices = new List<Vertex> { u, w } };
+            u.Edges.Add(newEdge);
+            w.Edges.Add(newEdge);
+            
+            edges.Add(newEdge);
+
+            var newFace = new IcosahedralFace
+            {
+                BlockIndex = blockIndex,
+                IndexInBlock = indexInBlock,
+                Vertices = vertices,
+                Edges = edges
+            };
+
+            return newFace;
+        }
+
+        private List<Edge> FindEdgesBetween(List<Vertex> vertices)
+        {
+            var allNeighbouringEdges = vertices.SelectMany(vertex => vertex.Edges).ToList();
+            var distinctNeighbouringEdges = allNeighbouringEdges.Distinct();
+            var connectingEdges = distinctNeighbouringEdges.Where(e => allNeighbouringEdges.Count(f => (e == f)) > 1).ToList();
+
+            return connectingEdges;
+        }
+
+        private bool NorthPointing(IcosahedralFace face)
+        {
+            var zValues = face.Vertices.Select(vertex => vertex.Position.z).ToList();
+            var midZ = (zValues.Max() + zValues.Min()) / 2;
+
+            return zValues.Average() < midZ;
+        }
+
+        private List<Vertex> FindBoundaryVertices(IcosahedralFace face)
+        {
+            var allNeighbouringEdges = face.Vertices.SelectMany(vertex => vertex.Edges);
+            var allNeighbouringVertices = allNeighbouringEdges.SelectMany(edge => edge.Vertices);
+            var distinctNeighbouringVertices = allNeighbouringVertices.Distinct();
+            var boundaryVertices = distinctNeighbouringVertices.Where(u => allNeighbouringVertices.Count(v => (u == v)) > 1).ToList();
+
+            return boundaryVertices;
+        }
+
+        private List<Edge> FindBoundaryEdges(IcosahedralFace face)
+        {
+            var allNeighbouringEdges = face.Vertices.SelectMany(vertex => vertex.Edges).ToList();
+            var distinctNeighbouringEdges = allNeighbouringEdges.Distinct();
+            var boundaryVertices = distinctNeighbouringEdges.Where(e => allNeighbouringEdges.Count(f => (e == f)) > 1).ToList();
+
+            return boundaryVertices;
+        }
+
+        private Vector3 CenterOfFace(IcosahedralFace face)
+        {
+            var vertexPositions = face.Vertices.Select(vertex => vertex.Position).ToList();
+            var averageVertexPosition = vertexPositions.Aggregate((u, v) => u + v) / vertexPositions.Count();
+
+            return averageVertexPosition;
         }
     }
 }

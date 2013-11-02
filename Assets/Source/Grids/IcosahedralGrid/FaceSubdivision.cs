@@ -22,7 +22,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
             else
             {
-                //SubdivideSouthPointingFace(face);
+                SubdivideSouthPointingFace(face);
             }
         }
 
