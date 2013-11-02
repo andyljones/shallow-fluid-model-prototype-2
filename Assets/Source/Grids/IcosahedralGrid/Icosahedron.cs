@@ -22,11 +22,13 @@ namespace ClimateSim.Grids.IcosahedralGrid
             CreateEdgesFromVertices();
             CreateFacesFromEdges();
 
-            AddFacesToVertices();
+            AddEachVertexToItsNeighbouringFaces();
 
-            AddVerticesToEdges();
-            AddEdgesAndVerticesToFaces();
+            AddEachEdgeToItsEndpointVertices();
+            AddEachFaceToItsVerticesAndEdges();
         }
+
+        #region CreateVertices methods.
 
         private void CreateVertices()
         {
@@ -53,6 +55,8 @@ namespace ClimateSim.Grids.IcosahedralGrid
             Vertices[11] = new Vertex {Position = new Vector3(0, 0, -1)};
         }
 
+        // There are ten distinct meridian used in an icosahedron. These two methods calculate their coordinates,
+        // where the positive Y axis is taken to be the prime meridian.
         private float xCoordOf(int i)
         {
             return 2/Mathf.Sqrt(5)*Mathf.Sin(Mathf.PI/5*i);
@@ -62,8 +66,9 @@ namespace ClimateSim.Grids.IcosahedralGrid
         {
             return 2/Mathf.Sqrt(5)*Mathf.Cos(Mathf.PI/5*i);
         }
+        #endregion
 
-        // Generates the edges in terms of the vertices. This is ugly as sin but frankly doing it procedurally would be a lot uglier.
+        // Generates the edges in terms of the vertices. Doing it by hand is ugly as sin but doing it procedurally would be a lot worse.
         private void CreateEdgesFromVertices()
         {
             Edges = Enumerable.Repeat(default(Edge), 30).ToList();
@@ -141,17 +146,16 @@ namespace ClimateSim.Grids.IcosahedralGrid
             Faces[19] = new IcosahedralFace { BlockIndex = 0, IndexInBlock = 3, Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
         }
 
-        // Add to each vertex the edges that are incident to it.
-        private void AddVerticesToEdges()
+        private void AddEachEdgeToItsEndpointVertices()
         {
             foreach (var edge in Edges)
             {
-                AddEdgeToVertices(edge, edge.Vertices);
+                edge.Vertices[0].Edges.Add(edge);
+                edge.Vertices[1].Edges.Add(edge);
             }
         }
 
-        // Add to each face the vertices adjacent to it.
-        private void AddFacesToVertices()
+        private void AddEachVertexToItsNeighbouringFaces()
         {
             foreach (var face in Faces)
             {
@@ -159,40 +163,34 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
         }
 
-        // Add to each vertex and edge the faces it's adjacent to.
-        private void AddEdgesAndVerticesToFaces()
+        #region AddEachFaceToItsVerticesAndEdges region
+        private void AddEachFaceToItsVerticesAndEdges()
         {
             foreach (var face in Faces)
             {
-                AddFaceToEdges(face, face.Edges);
-                AddFaceToVertices(face, face.Vertices);
+                AddFaceToItsEdges(face);
+                AddFaceToItsVertices(face);
             }
         }
 
-        private void AddFaceToEdges(IcosahedralFace face, List<Edge> edges)
+        private void AddFaceToItsEdges(IcosahedralFace face)
         {
-            foreach (var edge in edges)
+            foreach (var edge in face.Edges)
             {
                 edge.Faces.Add(face);
             }
         }
 
-        private void AddFaceToVertices(IcosahedralFace face, List<Vertex> vertices)
+        private void AddFaceToItsVertices(IcosahedralFace face)
         {
-            foreach (var vertex in vertices)
+            foreach (var vertex in face.Vertices)
             {
                 vertex.Faces.Add(face);
             }
         }
+        #endregion
 
-        private void AddEdgeToVertices(Edge edge, List<Vertex> vertices)
-        {
-            foreach (var vertex in vertices)
-            {
-                vertex.Edges.Add(edge);
-            }
-        }
-
+        // Implements the (x mod m) operation. The standard (x % m) operator implements (x remainder m).
         private int MathMod(int x, int m)
         {
             return ((x%m) + m)%m;
