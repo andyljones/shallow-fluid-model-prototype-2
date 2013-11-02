@@ -1,43 +1,91 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ClimateSim.Grids.IcosahedralGrid
 {
     public class IcosahedralGridGenerator
     {
-        public IcosahedralFace[] Faces { get; private set; }
-        public Edge[] Edges { get; private set; }
-        public Vertex[] Vertices { get; private set; }
+        public List<IcosahedralFace> Faces { get; private set; }
+        public List<Edge> Edges { get; private set; }
+        public List<Vertex> Vertices { get; private set; }
 
-        //public IcosahedralGridGenerator(IIcosahedralGridOptions options)
-        //{
-        //    var targetAngularResolution = options.Resolution/options.Radius;
+        private float _targetAngularResolution;
+        private float _currentAngularResolution;
 
-        //    var currentAngularResolution = 1/Mathf.Sin(2*Mathf.PI/5);
-        //    var currentIcosahedron = new Icosahedron();
 
-        //    while (currentAngularResolution > targetAngularResolution)
-        //    {
-        //        currentIcosahedron = Subdivide(currentIcosahedron);
-        //        currentAngularResolution = CalculateAngularResolution(currentIcosahedron);
-        //    }
-        //}
+        public IcosahedralGridGenerator(IIcosahedralGridOptions options)
+        {
+            _targetAngularResolution = options.Resolution / options.Radius;
 
-        //private Icosahedron Subdivide(Icosahedron currentIcosahedron)
-        //{
-        //    var faces = new List<IcosahedralFace>();
-        //    var edges = new List<Edge>();
-        //    var vertices = new List<Vector3>();
+            CreateIcosahedron();
 
-        //    foreach (var face in currentIcosahedron.Faces)
-        //    {
-        //        var subdividedFace = new FaceSubdivision(face);
-        //    }
-        //}
+            while (_currentAngularResolution > _targetAngularResolution)
+            {
+                SubdivideEdges();
+                SubdivideFaces();
+                _currentAngularResolution /= 2;
+            }
+        }
 
-        //private float CalculateAngularResolution(Icosahedron currentIcosahedron)
-        //{
-        //    throw new System.NotImplementedException();
-        //}
+        private void CreateIcosahedron()
+        {
+            var icosahedron = new Icosahedron();
+            _currentAngularResolution = 1/Mathf.Sin(2*Mathf.PI/5);
+
+            Faces = icosahedron.Faces;
+            Edges = icosahedron.Edges;
+            Vertices = icosahedron.Vertices;
+        }
+
+        private void SubdivideEdges()
+        {
+            var newEdges = new List<Edge>();
+
+            foreach (var edge in Edges)
+            {
+                newEdges.AddRange(SubdivideEdge(edge));
+            }
+
+            Edges = newEdges;
+        }
+
+        private IEnumerable<Edge> SubdivideEdge(Edge edge)
+        {
+            var endpoint0 = edge.Vertices[0];
+            var endpoint1 = edge.Vertices[1];
+
+            var midpoint = new Vertex(12+edge.Index) {Position = (endpoint0.Position + endpoint1.Position).normalized};
+
+            var newEdge0 = new Edge(2*edge.Index+0) { Vertices = new List<Vertex> { endpoint0, midpoint } };
+            var newEdge1 = new Edge(2*edge.Index+1) { Vertices = new List<Vertex> { endpoint1, midpoint } };
+
+            endpoint0.Edges.Remove(edge);
+            endpoint0.Edges.Add(newEdge0);
+
+            endpoint1.Edges.Remove(edge);
+            endpoint1.Edges.Add(newEdge1);
+
+            midpoint.Edges.Add(newEdge0);
+            midpoint.Edges.Add(newEdge1);
+            Vertices.Add(midpoint);
+
+            return new List<Edge> {newEdge0, newEdge1};
+        }
+
+        private void SubdivideFaces()
+        {
+            var newFaces = new List<IcosahedralFace>();
+
+            foreach (var face in Faces)
+            {
+                newFaces.AddRange(SubdivideFace(face));
+            }
+        }
+
+        private IEnumerable<IcosahedralFace> SubdivideFace(IcosahedralFace face)
+        {
+            
+        }
     }
 }

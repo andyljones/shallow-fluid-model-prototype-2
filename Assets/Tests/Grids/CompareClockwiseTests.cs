@@ -6,16 +6,16 @@ using UnityEngine;
 namespace ClimateSim.Tests.Grids
 {
     [TestClass]
-    public class CompareClockwiseAroundTests
+    public class CompareClockwiseTests
     {
-        private CompareVectorsClockwiseAround _comparer;
+        private CompareVectorsClockwise _comparer;
 
         [TestInitialize]
         // Keep in mind we're in a left-hand coordinate system here. Positive Y axis is pointing towards you, positive
         // X axis is heading off to your right, positive Z axis is heading upwards.
-        public void Create_Comparer_Around_Y_Axis()
+        public void Create_Comparer_Around_Y_Axis_With_Z_Axis_Baseline()
         {
-            _comparer = new CompareVectorsClockwiseAround(new Vector3(0, 1, 0));
+            _comparer = new CompareVectorsClockwise(new Vector3(0, 1, 0), new Vector3(0, 0, 1));
         }
 
         [TestMethod]
@@ -51,10 +51,10 @@ namespace ClimateSim.Tests.Grids
         }
 
         [TestMethod]
-        public void If_One_Vector_Is_Equal_To_The_Center_Vector_Every_Vector_Should_Be_Greater_Than_It()
+        public void If_One_Vector_Is_Equal_To_The_Center_Vector_No_Vector_Should_Be_Clockwise_From_It()
         {
             int result = _comparer.Compare(new Vector3(0, 1, 0), new Vector3(1, 0, 0));
-            int expectedResult = -1;
+            int expectedResult = 1;
             Assert.AreEqual(expectedResult, result);
         }
 

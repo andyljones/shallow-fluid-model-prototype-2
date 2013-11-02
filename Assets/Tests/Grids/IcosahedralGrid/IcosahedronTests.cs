@@ -20,21 +20,21 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         [TestMethod]
         public void Should_Have_20_Initialized_Faces()
         {
-            Assert.AreEqual(20, _icosahedron.Faces.Length);
+            Assert.AreEqual(20, _icosahedron.Faces.Count);
             CollectionAssert.AllItemsAreNotNull(_icosahedron.Faces);
         }
 
         [TestMethod]
         public void Should_Have_30_Initialized_Edges()
         {
-            Assert.AreEqual(30, _icosahedron.Edges.Length);
+            Assert.AreEqual(30, _icosahedron.Edges.Count);
             CollectionAssert.AllItemsAreNotNull(_icosahedron.Edges);
         }
 
         [TestMethod]
         public void Should_Have_12_Initialized_Vertices()
         {
-            Assert.AreEqual(12, _icosahedron.Vertices.Length);
+            Assert.AreEqual(12, _icosahedron.Vertices.Count);
             CollectionAssert.AllItemsAreNotNull(_icosahedron.Vertices);
         }
 
@@ -192,6 +192,25 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
             var expectedVertexIndices = new List<int> { 4, 5 };
             var actualVertexIndices = edge.Vertices.Select(vertex => vertex.Index).ToList();
             CollectionAssert.AreEquivalent(expectedVertexIndices, actualVertexIndices);
+        }
+
+        [TestMethod]
+        public void Every_Vertex_Should_Be_Of_Unit_Distance_From_The_Origin()
+        {
+            var actualVertexDistances = _icosahedron.Vertices.Select(vertex => vertex.Position.magnitude);
+            var expectedVertexDistance = 1;
+
+            Assert.IsTrue(actualVertexDistances.All(distance => Mathf.Abs(distance - expectedVertexDistance) < 0.01f));
+        }
+
+        [TestMethod]
+        public void Every_Edge_Should_Have_Roughly_The_Same_Length()
+        {
+            var expectedEdgeLength = 1/Mathf.Sin(2*Mathf.PI/5);
+            var actualEdgeLengths =
+                _icosahedron.Edges.Select(edge => (edge.Vertices[0].Position - edge.Vertices[1].Position).magnitude).ToList();
+
+            Assert.IsTrue(actualEdgeLengths.All(length => Mathf.Abs(length - expectedEdgeLength) < 0.01f));
         }
     }
 }
