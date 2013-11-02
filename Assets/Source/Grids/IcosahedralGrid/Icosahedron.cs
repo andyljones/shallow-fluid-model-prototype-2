@@ -69,44 +69,44 @@ namespace ClimateSim.Grids.IcosahedralGrid
             Edges = Enumerable.Repeat(default(Edge), 30).ToList();
 
             //Edges from north pole
-            Edges[0] = new Edge(0) { Vertices = new List<Vertex> { Vertices[0], Vertices[1] } };
-            Edges[1] = new Edge(1) { Vertices = new List<Vertex> { Vertices[0], Vertices[2] } };
-            Edges[2] = new Edge(2) { Vertices = new List<Vertex> { Vertices[0], Vertices[3] } };
-            Edges[3] = new Edge(3) { Vertices = new List<Vertex> { Vertices[0], Vertices[4] } };
-            Edges[4] = new Edge(4) { Vertices = new List<Vertex> { Vertices[0], Vertices[5] } };
+            Edges[0] = new Edge { Vertices = new List<Vertex> { Vertices[0], Vertices[1] } };
+            Edges[1] = new Edge { Vertices = new List<Vertex> { Vertices[0], Vertices[2] } };
+            Edges[2] = new Edge { Vertices = new List<Vertex> { Vertices[0], Vertices[3] } };
+            Edges[3] = new Edge { Vertices = new List<Vertex> { Vertices[0], Vertices[4] } };
+            Edges[4] = new Edge { Vertices = new List<Vertex> { Vertices[0], Vertices[5] } };
 
             // Upper latitude
-            Edges[5] = new Edge(5) { Vertices = new List<Vertex> { Vertices[1], Vertices[2] } };
-            Edges[6] = new Edge(6) { Vertices = new List<Vertex> { Vertices[2], Vertices[3] } };
-            Edges[7] = new Edge(7) { Vertices = new List<Vertex> { Vertices[3], Vertices[4] } };
-            Edges[8] = new Edge(8) { Vertices = new List<Vertex> { Vertices[4], Vertices[5] } };
-            Edges[9] = new Edge(9) { Vertices = new List<Vertex> { Vertices[5], Vertices[1] } };
+            Edges[5] = new Edge { Vertices = new List<Vertex> { Vertices[1], Vertices[2] } };
+            Edges[6] = new Edge { Vertices = new List<Vertex> { Vertices[2], Vertices[3] } };
+            Edges[7] = new Edge { Vertices = new List<Vertex> { Vertices[3], Vertices[4] } };
+            Edges[8] = new Edge { Vertices = new List<Vertex> { Vertices[4], Vertices[5] } };
+            Edges[9] = new Edge { Vertices = new List<Vertex> { Vertices[5], Vertices[1] } };
 
             // Middle edges, going down-up-down-up from the prime meridian
-            Edges[10] = new Edge(10) { Vertices = new List<Vertex> { Vertices[1], Vertices[6] } };
-            Edges[11] = new Edge(11) { Vertices = new List<Vertex> { Vertices[6], Vertices[2] } };
-            Edges[12] = new Edge(12) { Vertices = new List<Vertex> { Vertices[2], Vertices[7] } };
-            Edges[13] = new Edge(13) { Vertices = new List<Vertex> { Vertices[7], Vertices[3] } };
-            Edges[14] = new Edge(14) { Vertices = new List<Vertex> { Vertices[3], Vertices[8] } };
-            Edges[15] = new Edge(15) { Vertices = new List<Vertex> { Vertices[8], Vertices[4] } };
-            Edges[16] = new Edge(16) { Vertices = new List<Vertex> { Vertices[4], Vertices[9] } };
-            Edges[17] = new Edge(17) { Vertices = new List<Vertex> { Vertices[9], Vertices[5] } };
-            Edges[18] = new Edge(18) { Vertices = new List<Vertex> { Vertices[5], Vertices[10] } };
-            Edges[19] = new Edge(19) { Vertices = new List<Vertex> { Vertices[10], Vertices[1] } };
+            Edges[10] = new Edge { Vertices = new List<Vertex> { Vertices[1], Vertices[6] } };
+            Edges[11] = new Edge { Vertices = new List<Vertex> { Vertices[6], Vertices[2] } };
+            Edges[12] = new Edge { Vertices = new List<Vertex> { Vertices[2], Vertices[7] } };
+            Edges[13] = new Edge { Vertices = new List<Vertex> { Vertices[7], Vertices[3] } };
+            Edges[14] = new Edge { Vertices = new List<Vertex> { Vertices[3], Vertices[8] } };
+            Edges[15] = new Edge { Vertices = new List<Vertex> { Vertices[8], Vertices[4] } };
+            Edges[16] = new Edge { Vertices = new List<Vertex> { Vertices[4], Vertices[9] } };
+            Edges[17] = new Edge { Vertices = new List<Vertex> { Vertices[9], Vertices[5] } };
+            Edges[18] = new Edge { Vertices = new List<Vertex> { Vertices[5], Vertices[10] } };
+            Edges[19] = new Edge { Vertices = new List<Vertex> { Vertices[10], Vertices[1] } };
 
             //Lower latitude
-            Edges[20] = new Edge(20) { Vertices = new List<Vertex> { Vertices[6], Vertices[7] } };
-            Edges[21] = new Edge(21) { Vertices = new List<Vertex> { Vertices[7], Vertices[8] } };
-            Edges[22] = new Edge(22) { Vertices = new List<Vertex> { Vertices[8], Vertices[9] } };
-            Edges[23] = new Edge(23) { Vertices = new List<Vertex> { Vertices[9], Vertices[10] } };
-            Edges[24] = new Edge(24) { Vertices = new List<Vertex> { Vertices[10], Vertices[6] } };
+            Edges[20] = new Edge { Vertices = new List<Vertex> { Vertices[6], Vertices[7] } };
+            Edges[21] = new Edge { Vertices = new List<Vertex> { Vertices[7], Vertices[8] } };
+            Edges[22] = new Edge { Vertices = new List<Vertex> { Vertices[8], Vertices[9] } };
+            Edges[23] = new Edge { Vertices = new List<Vertex> { Vertices[9], Vertices[10] } };
+            Edges[24] = new Edge { Vertices = new List<Vertex> { Vertices[10], Vertices[6] } };
 
             //Edges to south pole
-            Edges[25] = new Edge(25) { Vertices = new List<Vertex> { Vertices[6], Vertices[11] } };
-            Edges[26] = new Edge(26) { Vertices = new List<Vertex> { Vertices[7], Vertices[11] } };
-            Edges[27] = new Edge(27) { Vertices = new List<Vertex> { Vertices[8], Vertices[11] } };
-            Edges[28] = new Edge(28) { Vertices = new List<Vertex> { Vertices[9], Vertices[11] } };
-            Edges[29] = new Edge(29) { Vertices = new List<Vertex> { Vertices[10], Vertices[11] } };
+            Edges[25] = new Edge { Vertices = new List<Vertex> { Vertices[6], Vertices[11] } };
+            Edges[26] = new Edge { Vertices = new List<Vertex> { Vertices[7], Vertices[11] } };
+            Edges[27] = new Edge { Vertices = new List<Vertex> { Vertices[8], Vertices[11] } };
+            Edges[28] = new Edge { Vertices = new List<Vertex> { Vertices[9], Vertices[11] } };
+            Edges[29] = new Edge { Vertices = new List<Vertex> { Vertices[10], Vertices[11] } };
         }
 
         // Generates the faces in terms of the edges. 

@@ -79,14 +79,6 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         }
 
         [TestMethod]
-        public void Every_Edge_Should_Have_A_Unique_Index()
-        {
-            var indices = _icosahedron.Edges.Select(edge => edge.Index).ToList();
-            CollectionAssert.DoesNotContain(indices, -1); // Default value is -1.
-            CollectionAssert.AllItemsAreUnique(indices);
-        }
-
-        [TestMethod]
         public void Every_Face_Should_Have_A_Block_Index()
         {
             var actualBlockIndices = _icosahedron.Faces.Select(face => face.BlockIndex).ToList();
@@ -131,9 +123,9 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         public void Midlatitude_Face_On_The_Prime_Meridian_Should_Have_The_Correct_Edges()
         {
             var face = _icosahedron.Faces[14];
-            var expectedEdgeIndices = new List<int> { 10, 19, 24 };
-            var actualEdgeIndices = face.Edges.Select(vertex => vertex.Index).ToList();
-            CollectionAssert.AreEquivalent(expectedEdgeIndices, actualEdgeIndices);
+            var expectedEdges = new List<Edge> { _icosahedron.Edges[10], _icosahedron.Edges[19], _icosahedron.Edges[24] };
+            var actualEdges = face.Edges;
+            CollectionAssert.AreEquivalent(expectedEdges, actualEdges);
         }
 
         [TestMethod]
@@ -158,9 +150,16 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         public void Southern_Vertex_At_180E_Should_Have_The_Correct_Edges()
         {
             var vertex = _icosahedron.Vertices[8];
-            var expectedEdgeIndices = new List<int> { 14, 15, 21, 22, 27 };
-            var actualEdgeIndices = vertex.Edges.Select(edge => edge.Index).ToList();
-            CollectionAssert.AreEquivalent(expectedEdgeIndices, actualEdgeIndices);
+            var expectedEdges = new List<Edge>
+            {
+                _icosahedron.Edges[14],
+                _icosahedron.Edges[15],
+                _icosahedron.Edges[21],
+                _icosahedron.Edges[22],
+                _icosahedron.Edges[27]
+            };
+            var actualEdges = vertex.Edges;
+            CollectionAssert.AreEquivalent(expectedEdges, actualEdges);
         }
 
         [TestMethod]

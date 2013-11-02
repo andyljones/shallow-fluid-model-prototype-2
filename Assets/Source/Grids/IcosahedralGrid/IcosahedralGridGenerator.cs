@@ -97,8 +97,8 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var midpointPosition = (endpoint0.Position + endpoint1.Position)/2;
             var midpoint = new Vertex {Position = midpointPosition};
 
-            var newEdge0 = new Edge(2*edge.Index+0) { Vertices = new List<Vertex> { endpoint0, midpoint } };
-            var newEdge1 = new Edge(2*edge.Index+1) { Vertices = new List<Vertex> { endpoint1, midpoint } };
+            var newEdge0 = new Edge { Vertices = new List<Vertex> { endpoint0, midpoint } };
+            var newEdge1 = new Edge { Vertices = new List<Vertex> { endpoint1, midpoint } };
 
             midpoint.Edges.Add(newEdge0);
             midpoint.Edges.Add(newEdge1);
@@ -263,7 +263,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var vertices = new List<Vertex> {u, v, w};
 
             var edges = FindEdgesBetween(vertices);
-            var newEdge = new Edge(-1) { Vertices = new List<Vertex> { u, w } };
+            var newEdge = new Edge { Vertices = new List<Vertex> { u, w } };
             u.Edges.Add(newEdge);
             w.Edges.Add(newEdge);
             
