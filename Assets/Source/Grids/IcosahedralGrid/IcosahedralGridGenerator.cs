@@ -95,7 +95,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
             //var omega = Mathf.Cos(Vector3.Dot(endpoint0.Position, endpoint1.Position));
             var midpointPosition = (endpoint0.Position + endpoint1.Position)/2;
-            var midpoint = new Vertex(12+edge.Index) {Position = midpointPosition};
+            var midpoint = new Vertex {Position = midpointPosition};
 
             var newEdge0 = new Edge(2*edge.Index+0) { Vertices = new List<Vertex> { endpoint0, midpoint } };
             var newEdge1 = new Edge(2*edge.Index+1) { Vertices = new List<Vertex> { endpoint1, midpoint } };

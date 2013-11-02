@@ -118,24 +118,6 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         }
 
         [TestMethod]
-        public void Vertex_Indices_Should_Form_Contiguous_Range()
-        {
-            var expectedIndices = Enumerable.Range(0, 42).ToList();
-            var actualIndices = _gridGenerator.Vertices.Select(vertex => vertex.Index).ToList();
-
-            CollectionAssert.AreEquivalent(expectedIndices, actualIndices);
-        }
-
-        //[TestMethod]
-        //public void Edge_Indices_Should_Form_Contiguous_Range()
-        //{
-        //    var expectedIndices = Enumerable.Range(0, 120).ToList();
-        //    var actualIndices = _gridGenerator.Edges.Select(edge => edge.Index).ToList();
-
-        //    CollectionAssert.AreEquivalent(expectedIndices, actualIndices);
-        //}
-
-        [TestMethod]
         public void Every_Face_Should_Have_Three_Vertices()
         {
             var expectedVertexCount = 3;

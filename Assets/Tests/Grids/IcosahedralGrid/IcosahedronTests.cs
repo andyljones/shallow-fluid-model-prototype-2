@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ClimateSim.Grids;
 using ClimateSim.Grids.IcosahedralGrid;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UnityEngine;
@@ -85,16 +86,6 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
             CollectionAssert.AllItemsAreUnique(indices);
         }
 
-
-        [TestMethod]
-        public void Every_Vertex_Should_Have_A_Unique_Index()
-        {
-            var indices = _icosahedron.Vertices.Select(face => face.Index).ToList();
-            CollectionAssert.DoesNotContain(indices, -1); // Default value is -1.
-            CollectionAssert.AllItemsAreUnique(indices);
-        }
-
-
         [TestMethod]
         public void Every_Face_Should_Have_A_Block_Index()
         {
@@ -131,9 +122,9 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         public void Midlatitude_Face_On_The_Prime_Meridian_Should_Have_The_Correct_Vertices()
         {
             var face = _icosahedron.Faces[14];
-            var expectedVertexIndices = new List<int> { 1, 6, 10 };
-            var actualVertexIndices = face.Vertices.Select(vertex => vertex.Index).ToList();
-            CollectionAssert.AreEquivalent(expectedVertexIndices, actualVertexIndices);
+            var expectedVertices = new List<Vertex> { _icosahedron.Vertices[1], _icosahedron.Vertices[6], _icosahedron.Vertices[10] };
+            var actualVertices = face.Vertices;
+            CollectionAssert.AreEquivalent(expectedVertices, actualVertices);
         }
 
         [TestMethod]
@@ -189,9 +180,9 @@ namespace ClimateSim.Tests.Grids.IcosahedralGrid
         public void Fourth_Edge_Around_On_Upper_Latitude_Should_Have_The_Correct_Vertices()
         {
             var edge = _icosahedron.Edges[8];
-            var expectedVertexIndices = new List<int> { 4, 5 };
-            var actualVertexIndices = edge.Vertices.Select(vertex => vertex.Index).ToList();
-            CollectionAssert.AreEquivalent(expectedVertexIndices, actualVertexIndices);
+            var expectedVertices = new List<Vertex> { _icosahedron.Vertices[4], _icosahedron.Vertices[5] };
+            var actualVertices = edge.Vertices;
+            CollectionAssert.AreEquivalent(expectedVertices, actualVertices);
         }
 
         [TestMethod]

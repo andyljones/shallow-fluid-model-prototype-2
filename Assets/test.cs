@@ -22,7 +22,6 @@ public class test : MonoBehaviour {
 
         for (int i = 0; i < grid.Vertices.Count; i++)
         {
-            grid.Vertices[i].Index = i;
             grid.Vertices[i].Position = grid.Vertices[i].Position.normalized * options.Radius;
             vectors[i] = grid.Vertices[i].Position;
         }
@@ -37,9 +36,9 @@ public class test : MonoBehaviour {
             var comparer = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
             vertices = vertices.OrderBy(vertex => vertex.Position, comparer).ToList();
 
-            triangles[3 * i] = vertices[0].Index;
-            triangles[3 * i + 1] = vertices[1].Index;
-            triangles[3 * i + 2] = vertices[2].Index;
+            triangles[3 * i] = grid.Vertices.IndexOf(vertices[0]);
+            triangles[3 * i + 1] = grid.Vertices.IndexOf(vertices[1]);
+            triangles[3 * i + 2] = grid.Vertices.IndexOf(vertices[2]);
         }
 
         foreach (var edge in grid.Edges)
