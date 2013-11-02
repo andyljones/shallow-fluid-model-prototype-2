@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms.VisualStyles;
 using ClimateSim.Grids;
 
 namespace ClimateSim.Grids.IcosahedralGrid
@@ -49,17 +48,6 @@ namespace ClimateSim.Grids.IcosahedralGrid
             CreateReferencesForNewEdge(newEdgeX, oldEdge);
             CreateReferencesForNewEdge(newEdgeY, oldEdge);
         }
-
-        // Removes the references to the edge from each adjacent vertex and face.
-        private void RemoveReferencesTo(Edge edge)
-        {
-            edge.Vertices[0].Edges.Remove(edge);
-            edge.Vertices[1].Edges.Remove(edge);
-
-            edge.Faces[0].Edges.Remove(edge);
-            edge.Faces[1].Edges.Remove(edge);
-        }
-
         // Creates the necessary references in the icosahedral data structure for the new vertex.
         private void CreateReferencesForNewVertex(Vertex midpoint, Edge oldEdge)
         {
@@ -79,6 +67,16 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
             oldEdge.Faces[0].Edges.Add(newEdge);
             oldEdge.Faces[1].Edges.Add(newEdge);
+        }
+
+        // Removes the references to the edge from each adjacent vertex and face.
+        private void RemoveReferencesTo(Edge edge)
+        {
+            edge.Vertices[0].Edges.Remove(edge);
+            edge.Vertices[1].Edges.Remove(edge);
+
+            edge.Faces[0].Edges.Remove(edge);
+            edge.Faces[1].Edges.Remove(edge);
         }
     }
 }

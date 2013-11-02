@@ -9,7 +9,7 @@ public class test : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        var options = new Options { Radius = 10, Resolution = 0.5f };
+        var options = new Options { Radius = 10, Resolution = 5f };
 
         var grid = new IcosahedralGridGenerator(options);
 
