@@ -138,7 +138,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             var center = CenterOfFace(face);
             var east = Vector3.Cross(center, _globalNorth).normalized;
             var north = Vector3.Cross(east, center).normalized;
-            var baseline = (10*north - east).normalized;
+            var baseline = (100*north - east).normalized;
 
             var clockwiseFromNorth = new CompareVectorsClockwise(center, baseline);
 
@@ -148,6 +148,13 @@ namespace ClimateSim.Grids.IcosahedralGrid
             //  / \ / \  <-- Western, central, then eastern subface
             // 4---3---2
             var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseFromNorth).ToList();
+
+            //TODO: Intuition is the problem's with the sorting. E: Yup, issues here.
+            // Problem that the edge alignment issue from the first iteration throws things off true north?
+            var maxZ = face.Vertices.Max(vertex => vertex.Position.z);
+            var northPoint = face.Vertices.Single(vertex => vertex.Position.z == maxZ);
+            System.Console.WriteLine(northPoint == sortedVertices[0]);
+
 
             int blockIndex = face.BlockIndex;
             int indexInBlock = face.IndexInBlock;
