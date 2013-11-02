@@ -227,6 +227,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             w.Edges.Add(newEdge);
             
             edges.Add(newEdge);
+            Edges.Add(newEdge);
 
             var newFace = new IcosahedralFace
             {

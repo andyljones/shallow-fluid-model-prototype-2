@@ -2,7 +2,6 @@
 using System.Linq;
 using ClimateSim.Grids;
 using ClimateSim.Grids.IcosahedralGrid;
-using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UnityEngine;
 
