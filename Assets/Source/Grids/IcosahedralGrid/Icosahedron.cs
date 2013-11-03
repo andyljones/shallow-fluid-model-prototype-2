@@ -23,6 +23,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             CreateEdgesFromVertices();
             CreateFacesFromEdges();
 
+            // Now we need to construct all the interlinking references:
             AddEachVertexToItsNeighbouringFaces();
 
             AddEachEdgeToItsEndpointVertices();

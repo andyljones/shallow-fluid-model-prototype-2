@@ -6,6 +6,10 @@ using ClimateSim.Grids;
 
 namespace ClimateSim.Grids.IcosahedralGrid
 {
+    /// <summary>
+    /// This is a service class for the IcosahedralGridGenerator. It takes a list of edges and divides each into two
+    /// new edges with a new vertex in the middle.
+    /// </summary>
     public class EdgeSubdivision
     {
         public List<Vertex> Vertices { get; private set; }

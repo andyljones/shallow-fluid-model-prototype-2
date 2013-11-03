@@ -25,7 +25,7 @@ namespace ClimateSim.Grids
             SetLocalCoordinateSystem();
         }
 
-        public void SetLocalCoordinateSystem()
+        private void SetLocalCoordinateSystem()
         {
             _localZ = _center.normalized;
             _localY = Vector3.Cross(_baseline.normalized, _center);
