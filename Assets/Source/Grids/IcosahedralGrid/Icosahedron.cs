@@ -15,7 +15,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
         public List<Edge> Edges;
 
-        public List<IcosahedralFace> Faces;
+        public List<Face> Faces;
 
         public Icosahedron()
         {
@@ -119,33 +119,33 @@ namespace ClimateSim.Grids.IcosahedralGrid
         // Generates the faces in terms of the edges. 
         private void CreateFacesFromEdges()
         {
-            Faces = Enumerable.Repeat(default(IcosahedralFace), 20).ToList(); ;
+            Faces = Enumerable.Repeat(default(Face), 20).ToList(); ;
 
             // Faces around north pole
-            Faces[0] = new IcosahedralFace { BlockIndex = 0, IndexInBlock = 0, Edges = new List<Edge> { Edges[0], Edges[1], Edges[5] }};
-            Faces[1] = new IcosahedralFace { BlockIndex = 1, IndexInBlock = 0, Edges = new List<Edge> { Edges[1], Edges[2], Edges[6] } };
-            Faces[2] = new IcosahedralFace { BlockIndex = 2, IndexInBlock = 0, Edges = new List<Edge> { Edges[2], Edges[3], Edges[7] } };
-            Faces[3] = new IcosahedralFace { BlockIndex = 3, IndexInBlock = 0, Edges = new List<Edge> { Edges[3], Edges[4], Edges[8] } };
-            Faces[4] = new IcosahedralFace { BlockIndex = 4, IndexInBlock = 0, Edges = new List<Edge> { Edges[4], Edges[0], Edges[9] } };
+            Faces[0] = new Face { Edges = new List<Edge> { Edges[0], Edges[1], Edges[5] }};
+            Faces[1] = new Face { Edges = new List<Edge> { Edges[1], Edges[2], Edges[6] } };
+            Faces[2] = new Face { Edges = new List<Edge> { Edges[2], Edges[3], Edges[7] } };
+            Faces[3] = new Face { Edges = new List<Edge> { Edges[3], Edges[4], Edges[8] } };
+            Faces[4] = new Face { Edges = new List<Edge> { Edges[4], Edges[0], Edges[9] } };
 
             // Middle faces
-            Faces[5] = new IcosahedralFace { BlockIndex = 0, IndexInBlock = 1, Edges = new List<Edge> { Edges[5], Edges[10], Edges[11] } };
-            Faces[6] = new IcosahedralFace { BlockIndex = 1, IndexInBlock = 2, Edges = new List<Edge> { Edges[20], Edges[11], Edges[12] } };
-            Faces[7] = new IcosahedralFace { BlockIndex = 1, IndexInBlock = 1, Edges = new List<Edge> { Edges[6], Edges[12], Edges[13] } };
-            Faces[8] = new IcosahedralFace { BlockIndex = 2, IndexInBlock = 2, Edges = new List<Edge> { Edges[21], Edges[13], Edges[14] } };
-            Faces[9] = new IcosahedralFace { BlockIndex = 2, IndexInBlock = 1, Edges = new List<Edge> { Edges[7], Edges[14], Edges[15] } };
-            Faces[10] = new IcosahedralFace { BlockIndex = 3, IndexInBlock = 2, Edges = new List<Edge> { Edges[22], Edges[15], Edges[16] } };
-            Faces[11] = new IcosahedralFace { BlockIndex = 3, IndexInBlock = 1, Edges = new List<Edge> { Edges[8], Edges[16], Edges[17] } };
-            Faces[12] = new IcosahedralFace { BlockIndex = 4, IndexInBlock = 2, Edges = new List<Edge> { Edges[23], Edges[17], Edges[18] } };
-            Faces[13] = new IcosahedralFace { BlockIndex = 4, IndexInBlock = 1, Edges = new List<Edge> { Edges[9], Edges[18], Edges[19] } };
-            Faces[14] = new IcosahedralFace { BlockIndex = 0, IndexInBlock = 2, Edges = new List<Edge> { Edges[24], Edges[19], Edges[10] } };
+            Faces[5] = new Face { Edges = new List<Edge> { Edges[5], Edges[10], Edges[11] } };
+            Faces[6] = new Face { Edges = new List<Edge> { Edges[20], Edges[11], Edges[12] } };
+            Faces[7] = new Face { Edges = new List<Edge> { Edges[6], Edges[12], Edges[13] } };
+            Faces[8] = new Face { Edges = new List<Edge> { Edges[21], Edges[13], Edges[14] } };
+            Faces[9] = new Face { Edges = new List<Edge> { Edges[7], Edges[14], Edges[15] } };
+            Faces[10] = new Face { Edges = new List<Edge> { Edges[22], Edges[15], Edges[16] } };
+            Faces[11] = new Face { Edges = new List<Edge> { Edges[8], Edges[16], Edges[17] } };
+            Faces[12] = new Face { Edges = new List<Edge> { Edges[23], Edges[17], Edges[18] } };
+            Faces[13] = new Face { Edges = new List<Edge> { Edges[9], Edges[18], Edges[19] } };
+            Faces[14] = new Face { Edges = new List<Edge> { Edges[24], Edges[19], Edges[10] } };
 
             // Lower faces
-            Faces[15] = new IcosahedralFace { BlockIndex = 1, IndexInBlock = 3, Edges = new List<Edge> { Edges[20], Edges[25], Edges[26] } };
-            Faces[16] = new IcosahedralFace { BlockIndex = 2, IndexInBlock = 3, Edges = new List<Edge> { Edges[21], Edges[26], Edges[27] } };
-            Faces[17] = new IcosahedralFace { BlockIndex = 3, IndexInBlock = 3, Edges = new List<Edge> { Edges[22], Edges[27], Edges[28] } };
-            Faces[18] = new IcosahedralFace { BlockIndex = 4, IndexInBlock = 3, Edges = new List<Edge> { Edges[23], Edges[28], Edges[29] } };
-            Faces[19] = new IcosahedralFace { BlockIndex = 0, IndexInBlock = 3, Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
+            Faces[15] = new Face { Edges = new List<Edge> { Edges[20], Edges[25], Edges[26] } };
+            Faces[16] = new Face { Edges = new List<Edge> { Edges[21], Edges[26], Edges[27] } };
+            Faces[17] = new Face { Edges = new List<Edge> { Edges[22], Edges[27], Edges[28] } };
+            Faces[18] = new Face { Edges = new List<Edge> { Edges[23], Edges[28], Edges[29] } };
+            Faces[19] = new Face { Edges = new List<Edge> { Edges[24], Edges[29], Edges[25] } };
         }
 
         private void AddEachEdgeToItsEndpointVertices()
@@ -175,7 +175,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
         }
 
-        private void AddFaceToItsEdges(IcosahedralFace face)
+        private void AddFaceToItsEdges(Face face)
         {
             foreach (var edge in face.Edges)
             {
@@ -183,7 +183,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
         }
 
-        private void AddFaceToItsVertices(IcosahedralFace face)
+        private void AddFaceToItsVertices(Face face)
         {
             foreach (var vertex in face.Vertices)
             {

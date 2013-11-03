@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace ClimateSim.Grids
 {
     public class Edge
     {
-        public List<IcosahedralFace> Faces = new List<IcosahedralFace>();
+        public List<Face> Faces = new List<Face>();
 
         public List<Vertex> Vertices = new List<Vertex>();
     }

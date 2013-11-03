@@ -62,7 +62,7 @@ public class test : MonoBehaviour {
 	
 	}
 
-    private Vector3 CenterOfFace(IcosahedralFace face)
+    private Vector3 CenterOfFace(Face face)
     {
         var vertexPositions = face.Vertices.Select(vertex => vertex.Position).ToList();
         var averageVertexPosition = vertexPositions.Aggregate((u, v) => u + v) / vertexPositions.Count();

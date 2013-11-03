@@ -5,7 +5,7 @@ namespace ClimateSim.Grids
 {
     public class Vertex
     {
-        public List<IcosahedralFace> Faces = new List<IcosahedralFace>();
+        public List<Face> Faces = new List<Face>();
 
         public List<Edge> Edges = new List<Edge>();
 

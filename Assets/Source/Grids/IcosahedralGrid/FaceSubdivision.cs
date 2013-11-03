@@ -15,18 +15,18 @@ namespace ClimateSim.Grids.IcosahedralGrid
     {
         public List<Vertex> Vertices { get; private set; }
         public List<Edge> Edges { get; private set; }
-        public List<IcosahedralFace> Faces { get; private set; }  
+        public List<Face> Faces { get; private set; }  
 
-        public FaceSubdivision(List<IcosahedralFace> oldFaces, List<Edge> edges, List<Vertex> vertices)
+        public FaceSubdivision(List<Face> oldFaces, List<Edge> edges, List<Vertex> vertices)
         {
-            Faces = new List<IcosahedralFace>();
+            Faces = new List<Face>();
             Edges = edges;
             Vertices = vertices;
 
             SubdivideFaces(oldFaces);
         }
 
-        private void SubdivideFaces(List<IcosahedralFace> oldFaces)
+        private void SubdivideFaces(List<Face> oldFaces)
         {
             foreach (var face in oldFaces)
             {
@@ -36,7 +36,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
         // This divides a face into four new faces. The tricky bit is that to get the indexing right, it has to 
         // distinguish between north-pointing and south-pointing faces.
-        private void SubdivideFace(IcosahedralFace face)
+        private void SubdivideFace(Face face)
         {
             var zSortedVertices = face.Vertices.OrderBy(vertex => vertex.Position.z);
             var baselineVertex = IsNorthPointing(face) ? zSortedVertices.Last() : zSortedVertices.First();
@@ -65,11 +65,11 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
             RemoveReferencesToFace(face);
 
-            Faces.AddRange(new List<IcosahedralFace> { subfaceA, subfaceB, subfaceC, subfaceD });
+            Faces.AddRange(new List<Face> { subfaceA, subfaceB, subfaceC, subfaceD });
         }
 
         // This sorts the vertices of a face clockwise from a given "baseline" vertex.
-        private Vertex[] SortBoundaryVertices(IcosahedralFace face, Vertex baseline)
+        private Vertex[] SortBoundaryVertices(Face face, Vertex baseline)
         {
             var center = CenterOfFace(face);
 
@@ -89,7 +89,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             return sortedVertices;
         }
 
-        private void RemoveReferencesToFace(IcosahedralFace oldFace)
+        private void RemoveReferencesToFace(Face oldFace)
         {
             foreach (var vertex in oldFace.Vertices)
             {
@@ -102,11 +102,11 @@ namespace ClimateSim.Grids.IcosahedralGrid
             }
         }
 
-        private IcosahedralFace CreateCentralSubface(Vertex u, Vertex v, Vertex w)
+        private Face CreateCentralSubface(Vertex u, Vertex v, Vertex w)
         {
             var vertices = new List<Vertex> { u, v, w };
 
-            var newFace = new IcosahedralFace
+            var newFace = new Face
             {
                 Vertices = vertices,
                 Edges =  FindEdgesBetween(vertices)
@@ -117,7 +117,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             return newFace;
         }
 
-        private IcosahedralFace CreateSubface(Vertex u, Vertex v, Vertex w)
+        private Face CreateSubface(Vertex u, Vertex v, Vertex w)
         {
             var vertices = new List<Vertex> { u, v, w };
 
@@ -126,7 +126,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
             edges.Add(newEdge);
 
-            var newFace = new IcosahedralFace
+            var newFace = new Face
             {
                 Vertices = vertices,
                 Edges = edges
@@ -148,7 +148,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             return newEdge;
         }
 
-        private void AddFaceToEdgesAndVertices(IcosahedralFace face)
+        private void AddFaceToEdgesAndVertices(Face face)
         {
             foreach (var edge in face.Edges)
             {
@@ -171,7 +171,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             return connectingEdges;
         }
 
-        private bool IsNorthPointing(IcosahedralFace face)
+        private bool IsNorthPointing(Face face)
         {
             var zCoords = face.Vertices.Select(vertex => vertex.Position.z);
             var middle = (zCoords.Max() + zCoords.Min()) / 2;
@@ -182,7 +182,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
             return mean < middle;
         }
 
-        private Vector3 CenterOfFace(IcosahedralFace face)
+        private Vector3 CenterOfFace(Face face)
         {
             var vertexPositions = face.Vertices.Select(vertex => vertex.Position).ToList();
             var averageVertexPosition = vertexPositions.Aggregate((u, v) => u + v) / vertexPositions.Count();
