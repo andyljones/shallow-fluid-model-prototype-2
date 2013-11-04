@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using ClimateSim.Grids;
 using UnityEngine;
 
 namespace ClimateSim.Grids.IcosahedralGrid
 {
+    //TODO: Make this a data-only class and extract the generation code to elsewhere.
     /// <summary>
     /// This class generates an icosphere by subdividing the faces of an icosahedron until the desired angular 
     /// resolution is reached. 
     /// </summary>
-    public class IcosahedralGridGenerator : IGridGenerator
+    public class IcosahedralGrid : IGrid
     {
         public List<Face> Faces { get; private set; }
         public List<Edge> Edges { get; private set; }
@@ -17,7 +16,7 @@ namespace ClimateSim.Grids.IcosahedralGrid
 
         // The process is this: create a basic 20-face icosahedron, and break all its edges in two, introducing new
         // vertices at each break. Then make a pass over each face, subdividing it into four new lil' triangles. 
-        public IcosahedralGridGenerator(IIcosahedralGridOptions options)
+        public IcosahedralGrid(IIcosahedralGridOptions options)
         {
             var targetAngularResolution = options.Resolution / options.Radius;
 

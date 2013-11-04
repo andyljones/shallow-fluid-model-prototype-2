@@ -11,7 +11,7 @@ public class test : MonoBehaviour {
 	void Start () {
         var options = new Options { Radius = 10, Resolution = 5f };
 
-        var grid = new IcosahedralGridGenerator(options);
+        var grid = new IcosahedralGrid(options);
 
         var obj = new GameObject("test");
         var mesh = obj.AddComponent<MeshFilter>().mesh;
