@@ -7,6 +7,7 @@ using Tests.GridTests;
 
 namespace Tests
 {
+    // TODO: Update tests to reflect new FoamCopier
     [TestClass]
     public class DeepCopyTests
     {
@@ -18,7 +19,7 @@ namespace Tests
         {
             _oldFaces = new FakeGrid().Faces;
 
-            _newFaces = _oldFaces.DeepCopy();
+            _newFaces = new FoamCopier(_oldFaces).FaceDictionary.Values.ToList();
         }
 
         [TestMethod]

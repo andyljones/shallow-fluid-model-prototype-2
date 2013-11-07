@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>FakeItEasy.Net35</id>
+    <version>1.7.4257.42</version>
+    <title>Fake it Easy! (for .NET 3.5)</title>
+    <authors>Patrik Hägne</authors>
+    <owners>Patrik Hägne</owners>
+    <licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
+    <projectUrl>http://code.google.com/p/fakeiteasy/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>It's faking amazing! The easy mocking framework for .Net that works great in C# and VB.Net alike. No need to know the difference between a stub, a mock or a spy, everythings a fake! The easy to use, refactoring friendly api makes faking a breeze. (The source for the .NET 3.5 package is hosted at https://bitbucket.org/adamralph/fakeiteasy.net35)</description>
+    <tags>TDD unittesting mocking faking stubbing spy spies doubles</tags>
+    <references>
+      <reference file="FakeItEasy.dll" />
+    </references>
+  </metadata>
+</package>

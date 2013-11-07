@@ -70,7 +70,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
         [TestMethod]
         public void Each_Cell_Should_Have_Nine_Edges()
         {
-            var expectedEdgeCount = 6;
+            var expectedEdgeCount = 9;
             var actualEdgeCount = _atmosphere.Cells.Select(cell => cell.Edges.Count);
 
             Assert.IsTrue(actualEdgeCount.All(count => count == expectedEdgeCount));

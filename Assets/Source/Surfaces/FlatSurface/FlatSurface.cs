@@ -14,7 +14,10 @@ namespace Surfaces.FlatSurface
 
         public FlatSurface(IGrid grid, IFlatSurfaceOptions options)
         {
-            Faces = grid.Faces.DeepCopy();
+            // Make a copy of the linked structure representing the list.
+            var gridCopier = new FoamCopier(grid.Faces);
+            Faces = gridCopier.FaceDictionary.Values.ToList();
+            
             SetVertexRadius(options.Radius);
         }
 

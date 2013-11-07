@@ -1,34 +1,43 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Foam
 {
-    public static class DeepCopyMethods
+    /// <summary>
+    /// Creates a copy of a Foam structure, with the copy represented as a set of dictionaries mapping the original objects to their copies.
+    /// </summary>
+    public class FoamCopier
     {
-        public static List<Face> DeepCopy(this List<Face> oldFaces)
-        {
-            var faceDictionary = DeepCopyDictionary(oldFaces);
+        public Dictionary<Vertex, Vertex> VertexDictionary;
+        public Dictionary<Edge, Edge> EdgeDictionary;
+        public Dictionary<Face, Face> FaceDictionary; 
 
-            return faceDictionary.Values.ToList();
+        /// <summary>
+        /// Create a copy of a Foam structure from a list of Faces.
+        /// </summary>
+        /// <param name="oldFaces"></param>
+        public FoamCopier(List<Face> oldFaces)
+        {
+            ConstructCopyDictionaries(oldFaces);
         }
 
         // This deep copy method returns a dictionary relating the old faces to their copies.
-        public static Dictionary<Face, Face> DeepCopyDictionary(this List<Face> oldFaces)
+        private void ConstructCopyDictionaries(List<Face> oldFaces)
         {
             var oldVertices = oldFaces.SelectMany(face => face.Vertices).Distinct();
             var oldEdges = oldFaces.SelectMany(face => face.Edges).Distinct();
 
             // We associate each old polyhedron element with a new one by using the old element as a key.
-            var vertexDictionary = oldVertices.ToDictionary(oldVertex => oldVertex, oldVertex => new Vertex { Position = oldVertex.Position });
-            var edgeDictionary = oldEdges.ToDictionary(oldEdge => oldEdge, oldEdge => new Edge());
-            var faceDictionary = oldFaces.ToDictionary(oldFace => oldFace, oldFace => new Face());
+            //TODO: Update it so it doesn't copy position? Keeps things consistent.
+            VertexDictionary = oldVertices.ToDictionary(oldVertex => oldVertex, oldVertex => new Vertex { Position = oldVertex.Position });
+            EdgeDictionary = oldEdges.ToDictionary(oldEdge => oldEdge, oldEdge => new Edge());
+            FaceDictionary = oldFaces.ToDictionary(oldFace => oldFace, oldFace => new Face());
 
-            Link(vertexDictionary, edgeDictionary);
-            Link(edgeDictionary, faceDictionary);
-            Link(faceDictionary, vertexDictionary);
-
-            return faceDictionary;
+            Link(VertexDictionary, EdgeDictionary);
+            Link(EdgeDictionary, FaceDictionary);
+            Link(FaceDictionary, VertexDictionary);
         }
 
         // Suppose T is a Vertex and U is a Edge. This function links all the new Vertices stored in tDictionary.Values to 
