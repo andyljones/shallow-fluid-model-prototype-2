@@ -1,4 +1,4 @@
-﻿namespace ClimateSim.Grids.IcosahedralGrid
+﻿namespace Grids.IcosahedralGrid
 {
     public interface IIcosahedralGridOptions
     {

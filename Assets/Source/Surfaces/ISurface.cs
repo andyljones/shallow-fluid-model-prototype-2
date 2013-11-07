@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Foam;
 
-namespace Grids
+namespace Surfaces
 {
-    public interface IGrid
+    public interface ISurface
     {
         List<Face> Faces { get; }
     }
+
 }

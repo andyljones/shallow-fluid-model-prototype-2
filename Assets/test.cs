@@ -1,47 +1,63 @@
 ﻿using System.Linq;
-using ClimateSim.Assets.Source.Grids;
-using ClimateSim.Grids;
-using ClimateSim.Grids.IcosahedralGrid;
+using Foam;
+using Grids;
+using Grids.IcosahedralGrid;
+using Initialization;
+using strange.extensions.injector.impl;
+using Surfaces;
+using Surfaces.FlatSurface;
 using UnityEngine;
-using System.Collections;
 
 public class test : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-        var options = new Options { Radius = 10, Resolution = 5f };
+    public static int testDebug()
+    {
+        return 8;
+    }
 
-        var grid = new IcosahedralGrid(options);
+
+	// Use this for initialization
+	void Start ()
+	{
+	    var options = new Options {Radius = 10f, Resolution = 5f};
+
+	    var binder = new InjectionBinder();
+	    binder.Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().ToValue(options);
+	    binder.Bind<IGrid>().To<IcosahedralGrid>();
+	    binder.Bind<ISurface>().To<FlatSurface>();
+
+	    ISurface surface = binder.GetInstance<ISurface>() as ISurface;
 
         var obj = new GameObject("test");
         var mesh = obj.AddComponent<MeshFilter>().mesh;
         var renderer = obj.AddComponent<MeshRenderer>();
 	    renderer.material = (Material) Resources.Load("OceanWater");
 
-        Vector3[] vectors = new Vector3[grid.Vertices.Count];
+	    var vertices = surface.Faces.SelectMany(face => face.Vertices).ToList();
 
-        for (int i = 0; i < grid.Vertices.Count; i++)
+        Vector3[] vectors = new Vector3[vertices.Count];
+
+        for (int i = 0; i < vertices.Count; i++)
         {
-            grid.Vertices[i].Position = grid.Vertices[i].Position.normalized * options.Radius;
-            vectors[i] = grid.Vertices[i].Position;
+            vectors[i] = vertices[i].Position;
         }
 
-        int[] triangles = new int[3 * grid.Faces.Count];
+        int[] triangles = new int[3 * surface.Faces.Count];
 
-        for (int i = 0; i < grid.Faces.Count; i++)
+        for (int i = 0; i < surface.Faces.Count; i++)
         {
-            var face = grid.Faces[i];
-            var vertices = face.Vertices;
+            var face = surface.Faces[i];
+            var faceVertices = face.Vertices;
             var center = CenterOfFace(face);
             var comparer = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
-            vertices = vertices.OrderBy(vertex => vertex.Position, comparer).ToList();
+            faceVertices = faceVertices.OrderBy(vertex => vertex.Position, comparer).ToList();
 
-            triangles[3 * i] = grid.Vertices.IndexOf(vertices[0]);
-            triangles[3 * i + 1] = grid.Vertices.IndexOf(vertices[1]);
-            triangles[3 * i + 2] = grid.Vertices.IndexOf(vertices[2]);
+            triangles[3 * i] = vertices.IndexOf(faceVertices[0]);
+            triangles[3 * i + 1] = vertices.IndexOf(faceVertices[1]);
+            triangles[3 * i + 2] = vertices.IndexOf(faceVertices[2]);
         }
 
-        foreach (var edge in grid.Edges)
+        foreach (var edge in surface.Faces.SelectMany(face => face.Edges))
 	    {
             var lrObj = new GameObject("lr");
             var lr = lrObj.AddComponent<LineRenderer>();

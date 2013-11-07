@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Foam;
 using UnityEngine;
 
-namespace ClimateSim.Grids.IcosahedralGrid
+namespace Grids.IcosahedralGrid
 {
     //TODO: Make this a data-only class and extract the generation code to elsewhere.
     /// <summary>

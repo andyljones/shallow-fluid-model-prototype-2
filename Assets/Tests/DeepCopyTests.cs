@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ClimateSim.Grids;
+using Foam;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UnityEngine;
+using Tests.Fakes;
+using Tests.GridTests;
 
-namespace ClimateSim.Tests
+namespace Tests
 {
     [TestClass]
     public class DeepCopyTests

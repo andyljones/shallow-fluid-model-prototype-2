@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ClimateSim.Grids.IcosahedralGrid;
-using ClimateSim.Surfaces.FlatSurface;
+﻿using Grids.IcosahedralGrid;
+using Surfaces.FlatSurface;
 
-namespace ClimateSim.Assets.Source.Grids
+namespace Initialization
 {
     public class Options : IIcosahedralGridOptions, IFlatSurfaceOptions
     {

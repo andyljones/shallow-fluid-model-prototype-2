@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Foam;
 using UnityEngine;
 
-namespace ClimateSim.Grids.IcosahedralGrid
+namespace Grids.IcosahedralGrid
 {
 
     /// <summary>

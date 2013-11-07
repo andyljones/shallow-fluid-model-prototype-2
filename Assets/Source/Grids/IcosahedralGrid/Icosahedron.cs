@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using ClimateSim.Grids;
+using Foam;
 using UnityEngine;
 
-namespace ClimateSim.Grids.IcosahedralGrid
+namespace Grids.IcosahedralGrid
 {   
     /// <summary>
     /// Generates a unit-radius icosahedron as a list of faces, edges and vertices, all linked to eachother. 

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ClimateSim.Grids;
+﻿using System.Collections.Generic;
+using Foam;
 
-namespace ClimateSim.Grids.IcosahedralGrid
+namespace Grids.IcosahedralGrid
 {
     /// <summary>
     /// This is a service class for the IcosahedralGridGenerator. It takes a list of edges and divides each into two
