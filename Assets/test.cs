@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Atmosphere;
+using Atmosphere.MonolayerAtmosphere;
 using Foam;
 using Grids;
 using Grids.IcosahedralGrid;
@@ -19,21 +21,23 @@ public class test : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
-	    var options = new Options {Radius = 10f, Resolution = 5f};
+	    var options = new Options {Radius = 10f, Resolution = 5f, Height = 2f};
 
 	    var binder = new InjectionBinder();
-	    binder.Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().ToValue(options);
+	    binder.Bind<IMonolayerAtmosphereOptions>().Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().ToValue(options);
 	    binder.Bind<IGrid>().To<IcosahedralGrid>();
 	    binder.Bind<ISurface>().To<FlatSurface>();
+	    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
 
-	    ISurface surface = binder.GetInstance<ISurface>() as ISurface;
+	    IAtmosphere atmosphere = binder.GetInstance<IAtmosphere>() as IAtmosphere;
 
         var obj = new GameObject("test");
         var mesh = obj.AddComponent<MeshFilter>().mesh;
         var renderer = obj.AddComponent<MeshRenderer>();
 	    renderer.material = (Material) Resources.Load("OceanWater");
 
-	    var vertices = surface.Faces.SelectMany(face => face.Vertices).ToList();
+	    var faces = atmosphere.Cells.SelectMany(cell => cell.Faces).Where(face => face.Edges.Count == 3).Distinct().ToList();
+	    var vertices = atmosphere.Cells.SelectMany(cell => cell.Vertices).Distinct().ToList();
 
         Vector3[] vectors = new Vector3[vertices.Count];
 
@@ -42,11 +46,11 @@ public class test : MonoBehaviour {
             vectors[i] = vertices[i].Position;
         }
 
-        int[] triangles = new int[3 * surface.Faces.Count];
+        int[] triangles = new int[3 * faces.Count];
 
-        for (int i = 0; i < surface.Faces.Count; i++)
+        for (int i = 0; i < faces.Count; i++)
         {
-            var face = surface.Faces[i];
+            var face = faces[i];
             var faceVertices = face.Vertices;
             var center = CenterOfFace(face);
             var comparer = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
@@ -57,12 +61,12 @@ public class test : MonoBehaviour {
             triangles[3 * i + 2] = vertices.IndexOf(faceVertices[2]);
         }
 
-        foreach (var edge in surface.Faces.SelectMany(face => face.Edges))
+        foreach (var edge in atmosphere.Cells.SelectMany(face => face.Edges))
 	    {
             var lrObj = new GameObject("lr");
             var lr = lrObj.AddComponent<LineRenderer>();
             lr.SetVertexCount(2);
-            lr.SetWidth(0.02f, 0.02f);
+            lr.SetWidth(0.05f, 0.05f);
             lr.material = (Material)Resources.Load("Boundaries");
             lr.SetPosition(0, edge.Vertices[0].Position * 1.001f);
             lr.SetPosition(1, edge.Vertices[1].Position * 1.001f);
