@@ -21,7 +21,7 @@ public class test : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
-	    var options = new Options {Radius = 10f, Resolution = 5f, Height = 2f};
+	    var options = new Options {Radius = 10f, Resolution = 1f, Height = 2f};
 
 	    var binder = new InjectionBinder();
 	    binder.Bind<IMonolayerAtmosphereOptions>().Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().ToValue(options);
@@ -61,7 +61,7 @@ public class test : MonoBehaviour {
             triangles[3 * i + 2] = vertices.IndexOf(faceVertices[2]);
         }
 
-        foreach (var edge in atmosphere.Cells.SelectMany(face => face.Edges))
+        foreach (var edge in faces.SelectMany(face => face.Edges))
 	    {
             var lrObj = new GameObject("lr");
             var lr = lrObj.AddComponent<LineRenderer>();

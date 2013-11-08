@@ -12,11 +12,13 @@ namespace Tests.Fakes
         public FakeSurface()
         {
             // Vertex positions in X-Z plane:
-            //    0
-            //   / \
-            //  1---2
-            //   \ /
-            //    3
+            //     0
+            //    /|
+            //   / |
+            //  1--2
+            //   \ |
+            //    \|
+            //     3
             var vertices = new List<Vertex>
             {
                 new Vertex {Position = new Vector3( 0, 0,  10)},
@@ -27,13 +29,13 @@ namespace Tests.Fakes
 
             // Edge positions in the X-Z plane:
             //
-            //    / \
-            //   1   2
-            //  /     \
-            // ----3----
-            //  \     /
-            //   4   5
-            //    \ /
+            //    / |
+            //   0  1
+            //  /   |
+            // ---2--
+            //  \   |
+            //   3  4
+            //    \ |
             //      
             var edges = new List<Edge>
             {
@@ -46,14 +48,14 @@ namespace Tests.Fakes
 
             // Face positions in the X-Z plane:
             //
-            //    / \
-            //   / 0 \
-            //  /     \
-            // ---------
-            //  \     /
-            //   \ 1 /
-            //    \ /
-            //      
+            //    / |
+            //   /  |
+            //  / 0 |
+            // ------
+            //  \ 1 |
+            //   \  |
+            //    \ |
+            //       
             Faces = new List<Face>
             {
                 new Face
