@@ -39,9 +39,9 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
         }
 
         [TestMethod]
-        public void Each_Cell_Should_Have_Two_Faces()
+        public void Each_Cell_Should_Have_Five_Faces()
         {
-            var expectedFaceCounts = 2;
+            var expectedFaceCounts = 5;
             var actualFaceCounts = _atmosphere.Cells.Select(cell => cell.Faces.Count);
 
             Assert.IsTrue(actualFaceCounts.All(count => count == expectedFaceCounts));
@@ -57,7 +57,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
         }
 
         [TestMethod]
-        public void Four_Vertices_Should_Have_Magnitude_10_And_Four_Should_Have_Magnitude_13()
+        public void Four_Distinct_Vertices_Should_Have_Magnitude_10_And_Four_Should_Have_Magnitude_13()
         {
             var vertices = _atmosphere.Cells.SelectMany(cell => cell.Vertices).Distinct();
             
@@ -68,12 +68,65 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
         }
 
         [TestMethod]
-        public void Each_Cell_Should_Have_Nine_Edges()
+        public void There_Should_Be_Fourteen_Distinct_Edges_Total()
+        {
+            var expectedEdgeCount = 14;
+            var actualEdgeCount = _atmosphere.Cells.SelectMany(cell => cell.Edges).Distinct().Count();
+
+            Assert.AreEqual(expectedEdgeCount, actualEdgeCount);
+        }
+
+        [TestMethod]
+        public void Each_Cell_Should_Have_Nine_Distinct_Edges()
         {
             var expectedEdgeCount = 9;
-            var actualEdgeCount = _atmosphere.Cells.Select(cell => cell.Edges.Count);
+            var actualEdgeCount = _atmosphere.Cells.Select(cell => cell.Edges.Count).Distinct();
 
             Assert.IsTrue(actualEdgeCount.All(count => count == expectedEdgeCount));
+        }
+
+        [TestMethod]
+        public void Ten_Distinct_Edges_Should_Link_Vertices_Of_The_Same_Magnitude()
+        {
+            var edges = _atmosphere.Cells.SelectMany(cell => cell.Edges).Distinct();
+            var edgesLinkingVerticesOfSameMagnitude =
+                edges.Where(edge => edge.Vertices.First().Position.magnitude == edge.Vertices.Last().Position.magnitude);
+
+            var expectedNumberOfEdges = 10;
+            var actualNumberOfEdges = edgesLinkingVerticesOfSameMagnitude.Count();
+
+            Assert.AreEqual(expectedNumberOfEdges, actualNumberOfEdges);
+        }
+
+        [TestMethod]
+        public void Five_Distinct_Edges_Should_Link_Vertices_Of_Different_Magnitude()
+        {
+            var edges = _atmosphere.Cells.SelectMany(cell => cell.Edges).Distinct();
+            var edgesLinkingVerticesOfDifferentMagnitude =
+                edges.Where(edge => edge.Vertices.First().Position.magnitude != edge.Vertices.Last().Position.magnitude);
+
+            var expectedNumberOfEdges = 4;
+            var actualNumberOfEdges = edgesLinkingVerticesOfDifferentMagnitude.Count();
+
+            Assert.AreEqual(expectedNumberOfEdges, actualNumberOfEdges);
+        }
+
+        [TestMethod]
+        public void There_Should_Be_Nine_Faces_Total()
+        {
+            var expectedNumberOfFaces = 9;
+            var actualNumberOfFaces = _atmosphere.Cells.SelectMany(Cell => Cell.Faces).Distinct().Count();
+
+            Assert.AreEqual(expectedNumberOfFaces, actualNumberOfFaces);
+        }
+
+        [TestMethod]
+        public void There_Should_Be_Eight_Vertices_Total()
+        {
+            var expectedNumberOfVertices = 8;
+            var actualNumberOfVertices = _atmosphere.Cells.SelectMany(Cell => Cell.Vertices).Distinct().Count();
+
+            Assert.AreEqual(expectedNumberOfVertices, actualNumberOfVertices);
         }
     }
 }

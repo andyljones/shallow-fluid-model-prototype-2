@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Foam;
 using Surfaces;
 
 namespace Atmosphere.MonolayerAtmosphere
 {
+    //TODO: Refactor.
     public class MonolayerAtmosphere : IAtmosphere
     {
         public List<Cell> Cells { get; private set; }
@@ -30,62 +30,133 @@ namespace Atmosphere.MonolayerAtmosphere
 
         private void CreateUpperAtmosphere(float height)
         {
+            SetHeightOfTopVertices(height);
+
+            foreach (var vertexPair in _lowerToUpperVertexDictionary)
+            {
+                CreateEdge(vertexPair);
+            }
+
+            foreach (var edgePair in _lowerToUpperEdgeDictionary)
+            {
+                CreateFace(edgePair);
+            }
+
             Cells = new List<Cell>();
 
             foreach (var facePair in _lowerToUpperFaceDictionary)
             {
-                var newEdges = CreateVerticalEdges(facePair); //TODO: write tests for this
-                var newCell = CreateCell(facePair, newEdges);
-                Cells.Add(newCell);
+                CreateCell(facePair);
             }
-
-            SetHeightOfTopFaces(height);
         }
 
-        private List<Edge> CreateVerticalEdges(KeyValuePair<Face, Face> facePair)
+        private void CreateFace(KeyValuePair<Edge, Edge> edgePair)
         {
-            var edges = new List<Edge>();
+            var newFace = new Face();
 
-            var lowerFace = facePair.Key;
+            var lowerEdge = edgePair.Key;
+            var upperEdge = edgePair.Value;
 
-            foreach (var lowerVertex in lowerFace.Vertices)
+            var vertices = lowerEdge.Vertices.Concat(upperEdge.Vertices);
+
+            foreach (var vertex in vertices)
             {
-                var upperVertex = _lowerToUpperVertexDictionary[lowerVertex];
-                var newEdge = new Edge {Vertices = new List<Vertex> {lowerVertex, upperVertex}};
-                
-                lowerVertex.Edges.Add(newEdge);
-                upperVertex.Edges.Add(newEdge);
-
-                edges.Add(newEdge);
+                vertex.Faces.Add(newFace);
+                newFace.Vertices.Add(vertex);
             }
 
-            return edges;
+            var edgesNeighbouringLowerEdge = lowerEdge.Vertices.SelectMany(vertex => vertex.Edges);
+            var edgesNeighbouringUpperEdge = upperEdge.Vertices.SelectMany(vertex => vertex.Edges);
+            var edges = edgesNeighbouringLowerEdge.Intersect(edgesNeighbouringUpperEdge).ToList();
+
+            edges.Add(lowerEdge);
+            edges.Add(upperEdge);
+
+            foreach (var edge in edges)
+            {
+                edge.Faces.Add(newFace);
+                newFace.Edges.Add(edge);
+            }
         }
 
-        private Cell CreateCell(KeyValuePair<Face, Face> facePair, List<Edge> verticalEdges)
+        private void CreateEdge(KeyValuePair<Vertex, Vertex> vertexPair)
+        {
+            var lowerVertex = vertexPair.Key;
+            var upperVertex = vertexPair.Value;
+
+            var newEdge = new Edge {Vertices = new List<Vertex> {lowerVertex, upperVertex}};
+            lowerVertex.Edges.Add(newEdge);
+            upperVertex.Edges.Add(newEdge);
+        }
+
+        private void CreateCell(KeyValuePair<Face, Face> facePair)
         {
             var newCell = new Cell();
-
-            //TODO: Add cell to facess
+            
             var bottomFace = facePair.Key;
             var topFace = facePair.Value;
+            
+            AddVerticesToCell(bottomFace, topFace, newCell);
+            AddEdgesToCell(bottomFace, topFace, newCell);
+            AddFacesToCell(bottomFace, topFace, newCell);
 
-            var faces = new List<Face> {bottomFace, topFace};
-            bottomFace.Cells.Add(newCell);
-            topFace.Cells.Add(newCell);
+            Cells.Add(newCell);
+        }
 
+        private void AddFacesToCell(Face bottomFace, Face topFace, Cell newCell)
+        {
+            var faces = GetFacesBetween(bottomFace, topFace);
+            faces.Add(bottomFace);
+            faces.Add(topFace);
+            foreach (var face in faces)
+            {
+                face.Cells.Add(newCell);
+                newCell.Faces.Add(face);
+            }
+        }
+
+        private List<Face> GetFacesBetween(Face bottomFace, Face topFace)
+        {
+            var facesNeighbouringBottomFace = bottomFace.Edges.SelectMany(edge => edge.Faces);
+            var facesNeighbouringTopFace = topFace.Edges.SelectMany(edge => edge.Faces);
+
+            return facesNeighbouringBottomFace.Intersect(facesNeighbouringTopFace).ToList();
+        }
+
+        private void AddEdgesToCell(Face bottomFace, Face topFace, Cell newCell)
+        {
             var bottomEdges = bottomFace.Edges;
             var topEdges = topFace.Edges;
-            var edges = bottomEdges.Concat(topEdges).Concat(verticalEdges).ToList();
+            var verticalEdges = GetEdgesBetween(bottomFace, topFace);
+            var edges = bottomEdges.Concat(topEdges).Concat(verticalEdges);
+            foreach (var edge in edges)
+            {
+                edge.Cells.Add(newCell);
+                newCell.Edges.Add(edge);
+            }
+        }
 
+        private IEnumerable<Edge> GetEdgesBetween(Face bottomFace, Face topFace)
+        {
+            var edgesNeighbouringBottomFace = bottomFace.Vertices.SelectMany(vertex => vertex.Edges);
+            var edgesNeighbouringTopFace = topFace.Vertices.SelectMany(vertex => vertex.Edges);
+
+            return edgesNeighbouringBottomFace.Intersect(edgesNeighbouringTopFace);
+        }
+
+        private void AddVerticesToCell(Face bottomFace, Face topFace, Cell newCell)
+        {
             var bottomVertices = bottomFace.Vertices;
             var topVertices = topFace.Vertices;
             var vertices = bottomVertices.Concat(topVertices).ToList();
-
-            return new Cell {Faces = faces, Edges = edges, Vertices = vertices};
+            foreach (var vertex in vertices)
+            {
+                vertex.Cells.Add(newCell);
+                newCell.Vertices.Add(vertex);
+            }
         }
 
-        private void SetHeightOfTopFaces(float height)
+        private void SetHeightOfTopVertices(float height)
         {
             var vertices = _lowerToUpperVertexDictionary.Values.ToList();
 
