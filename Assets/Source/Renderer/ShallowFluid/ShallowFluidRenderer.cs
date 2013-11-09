@@ -19,9 +19,10 @@ namespace Renderer.ShallowFluid
         //TODO: Implement a Chinese Postman solution.
         private void RenderBoundaries(MeshHelper helper, IShallowFluidRendererOptions options)
         {
+            var boundaryHolder = new GameObject("Boundary Holder");
+
             var boundaryMaterial = (Material) Resources.Load(options.BoundaryMaterial, typeof (Material));
             var boundaryWidth = 0.02f;
-            var boundaryHolder = new GameObject("Boundary Holder");
 
             foreach (var boundary in helper.Boundaries)
             {

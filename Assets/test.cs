@@ -23,10 +23,10 @@ public class test : MonoBehaviour {
 	    var options = new Options
 	    {
 	        Radius = 10f,
-	        Resolution = 1.25f,
+	        Resolution = 2.5f,
 	        Height = 1f,
-	        LayerMaterials = new List<string> {"OceanWater", "Sky"},
-	        BoundaryMaterial = "Boundaries"
+	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
+	        BoundaryMaterial = "Materials/Boundaries"
 	    };
 
 	    var binder = new InjectionBinder();
