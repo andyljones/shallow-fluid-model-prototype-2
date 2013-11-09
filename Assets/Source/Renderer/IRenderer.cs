@@ -5,6 +5,7 @@ namespace Renderer
     public interface IRenderer
     {
         Vector3[] Vectors { get; }
-        int[] Triangles { get; }
+        int[] AtmosphereTriangles { get; }
+        int[] SurfaceTriangles { get; }
     }
 }

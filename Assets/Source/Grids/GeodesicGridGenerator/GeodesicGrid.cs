@@ -4,7 +4,7 @@ using Foam;
 using Grids.IcosahedralGridGenerator;
 using UnityEngine;
 
-//TODO: ADD TESTS.
+//TODO: ADD (more) TESTS, needs refactoring
 namespace Grids.GeodesicGridGenerator
 {
     public class GeodesicGrid : IGrid
