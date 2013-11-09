@@ -12,32 +12,43 @@ public class CameraControl : MonoBehaviour
     public float ySpeed = 5.0F;
     public float rSpeed = 20.0F;
 
-    private float x;
-    private float y;
+    private float azi;
+    private float pol;
     private float r;
+
+    private Vector3 _initialPosition;
+    private Quaternion _initialRotation;
 
     void Start()
     {
-        Vector3 angles = transform.eulerAngles;
-        y = angles.x;
-        x = angles.y;
-        r = transform.position.magnitude;   
+        _initialPosition = transform.position;
+        azi = Mathf.Atan2(_initialPosition.x, _initialPosition.y);
+        pol = Mathf.Acos(_initialPosition.z/_initialPosition.magnitude);
+        r = _initialPosition.magnitude;
+
+        _initialRotation = transform.rotation;
+
     }
 
     void LateUpdate()
     {
         if (Input.GetButton("Fire1"))
         {
-            x = (x + Input.GetAxis("Mouse X") * xSpeed) % 360;
-            y = (y - Input.GetAxis("Mouse Y") * ySpeed) % 360;
+            azi = (azi + Input.GetAxis("Mouse X") * xSpeed) % 360;
+            pol = (pol + Input.GetAxis("Mouse Y") * ySpeed) % 360;
         }
 
         r += Input.GetAxis("Mouse ScrollWheel") * rSpeed;
 
-        Quaternion rotation = Quaternion.Euler(y, x, 0);
-        Vector3 position = rotation * new Vector3(0.0F, 0.0F, -r);
+        var x = r * Mathf.Sin(azi)*Mathf.Sin(pol);
+        var y = r*Mathf.Cos(azi)*Mathf.Sin(pol);
+        var z = r*Mathf.Cos(pol);
 
-        transform.rotation = rotation;
-        transform.position = position;
+        Vector3 cameraPosition = new Vector3(x, y, z);
+        Vector3 localEast = Vector3.Cross(cameraPosition, new Vector3(0, 0, 1));
+        Vector3 localNorth = Vector3.Cross(localEast, cameraPosition);
+
+        transform.rotation = Quaternion.LookRotation(-cameraPosition, localNorth);
+        transform.position = cameraPosition;
     }
 }
