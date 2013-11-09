@@ -3,7 +3,7 @@ using System.Linq;
 using Foam;
 using UnityEngine;
 
-namespace Grids.IcosahedralGrid
+namespace Grids.IcosahedralGridGenerator
 {   
     /// <summary>
     /// Generates a unit-radius icosahedron as a list of faces, edges and vertices, all linked to eachother. 

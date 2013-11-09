@@ -1,5 +1,5 @@
 ﻿using Atmosphere.MonolayerAtmosphere;
-using Grids.IcosahedralGrid;
+using Grids.IcosahedralGridGenerator;
 using Surfaces.FlatSurface;
 
 namespace Initialization

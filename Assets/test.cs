@@ -3,7 +3,8 @@ using Atmosphere;
 using Atmosphere.MonolayerAtmosphere;
 using Foam;
 using Grids;
-using Grids.IcosahedralGrid;
+using Grids.GeodesicGridGenerator;
+using Grids.IcosahedralGridGenerator;
 using Initialization;
 using strange.extensions.injector.impl;
 using Surfaces;
@@ -11,11 +12,6 @@ using Surfaces.FlatSurface;
 using UnityEngine;
 
 public class test : MonoBehaviour {
-
-    public static int testDebug()
-    {
-        return 8;
-    }
 
 
 	// Use this for initialization
@@ -25,7 +21,7 @@ public class test : MonoBehaviour {
 
 	    var binder = new InjectionBinder();
 	    binder.Bind<IMonolayerAtmosphereOptions>().Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().ToValue(options);
-	    binder.Bind<IGrid>().To<IcosahedralGrid>();
+	    binder.Bind<IGrid>().To<GeodesicGrid>();
 	    binder.Bind<ISurface>().To<FlatSurface>();
 	    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
 
@@ -36,7 +32,7 @@ public class test : MonoBehaviour {
         var renderer = obj.AddComponent<MeshRenderer>();
 	    renderer.material = (Material) Resources.Load("OceanWater");
 
-	    var faces = atmosphere.Cells.SelectMany(cell => cell.Faces).Where(face => face.Edges.Count == 3).Distinct().ToList();
+	    var faces = atmosphere.Cells.SelectMany(cell => cell.Faces).Where(face => face.Edges.Count != 4).Distinct().ToList();
 	    var vertices = atmosphere.Cells.SelectMany(cell => cell.Vertices).Distinct().ToList();
 
         Vector3[] vectors = new Vector3[vertices.Count];
@@ -48,18 +44,18 @@ public class test : MonoBehaviour {
 
         int[] triangles = new int[3 * faces.Count];
 
-        for (int i = 0; i < faces.Count; i++)
-        {
-            var face = faces[i];
-            var faceVertices = face.Vertices;
-            var center = CenterOfFace(face);
-            var comparer = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
-            faceVertices = faceVertices.OrderBy(vertex => vertex.Position, comparer).ToList();
+        //for (int i = 0; i < faces.Count; i++)
+        //{
+        //    var face = faces[i];
+        //    var faceVertices = face.Vertices;
+        //    var center = CenterOfFace(face);
+        //    var comparer = new CompareVectorsClockwise(center, new Vector3(0, 0, 1));
+        //    faceVertices = faceVertices.OrderBy(vertex => vertex.Position, comparer).ToList();
 
-            triangles[3 * i] = vertices.IndexOf(faceVertices[0]);
-            triangles[3 * i + 1] = vertices.IndexOf(faceVertices[1]);
-            triangles[3 * i + 2] = vertices.IndexOf(faceVertices[2]);
-        }
+        //    triangles[3 * i] = vertices.IndexOf(faceVertices[0]);
+        //    triangles[3 * i + 1] = vertices.IndexOf(faceVertices[1]);
+        //    triangles[3 * i + 2] = vertices.IndexOf(faceVertices[2]);
+        //}
 
         foreach (var edge in faces.SelectMany(face => face.Edges))
 	    {

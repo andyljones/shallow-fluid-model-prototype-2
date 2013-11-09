@@ -2,7 +2,7 @@
 using Foam;
 using UnityEngine;
 
-namespace Grids.IcosahedralGrid
+namespace Grids.IcosahedralGridGenerator
 {
     //TODO: Make this a data-only class and extract the generation code to elsewhere.
     /// <summary>

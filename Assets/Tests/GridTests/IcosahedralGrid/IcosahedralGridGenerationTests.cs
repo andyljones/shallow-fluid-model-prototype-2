@@ -8,13 +8,13 @@ namespace Tests.GridTests.IcosahedralGrid
     [TestClass]
     public class IcosahedralGridGeneratorTests
     {
-        private Grids.IcosahedralGrid.IcosahedralGrid _grid;
+        private Grids.IcosahedralGridGenerator.IcosahedralGrid _grid;
 
         [TestInitialize]
         public void Create_Icosahedral_Grid_With_Angular_Resolution_Of_1f()
         {
             var options = new Options() {Radius = 1f, Resolution = 1f};
-            _grid = new Grids.IcosahedralGrid.IcosahedralGrid(options);
+            _grid = new Grids.IcosahedralGridGenerator.IcosahedralGrid(options);
         }
 
         [TestMethod]
@@ -22,7 +22,7 @@ namespace Tests.GridTests.IcosahedralGrid
         {
             var icosahedronOptions = new Options() { Radius = 1f, Resolution = 2f };
 
-            _grid = new Grids.IcosahedralGrid.IcosahedralGrid(icosahedronOptions);
+            _grid = new Grids.IcosahedralGridGenerator.IcosahedralGrid(icosahedronOptions);
 
             var expectedNumberOfFaces = 20;
             var actualNumberOfFaces = _grid.Faces.Count;

@@ -1,4 +1,4 @@
-﻿namespace Grids.IcosahedralGrid
+﻿namespace Grids.IcosahedralGridGenerator
 {
     public interface IIcosahedralGridOptions
     {

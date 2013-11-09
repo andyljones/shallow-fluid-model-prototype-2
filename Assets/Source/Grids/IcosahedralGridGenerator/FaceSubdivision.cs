@@ -3,7 +3,7 @@ using System.Linq;
 using Foam;
 using UnityEngine;
 
-namespace Grids.IcosahedralGrid
+namespace Grids.IcosahedralGridGenerator
 {
 
     /// <summary>

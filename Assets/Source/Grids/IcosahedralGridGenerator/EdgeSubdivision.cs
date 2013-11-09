@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Foam;
 
-namespace Grids.IcosahedralGrid
+namespace Grids.IcosahedralGridGenerator
 {
     /// <summary>
     /// This is a service class for the IcosahedralGridGenerator. It takes a list of edges and divides each into two
