@@ -4,6 +4,7 @@ using Foam;
 using Grids.IcosahedralGridGenerator;
 using UnityEngine;
 
+//TODO: ADD TESTS.
 namespace Grids.GeodesicGridGenerator
 {
     public class GeodesicGrid : IGrid
@@ -23,11 +24,6 @@ namespace Grids.GeodesicGridGenerator
             var icosahedralVertexToGeodesicFaceMap = CreateGeodesicFaces(icosahedralVertices, icosahedralEdgeToGeodesicEdgeMap);
 
             Faces = icosahedralVertexToGeodesicFaceMap.Values.ToList();
-
-            //foreach (var face in Faces)
-            //{
-            //    Debug.Log(face.Edges.Count);
-            //}
         }
 
         private Dictionary<Vertex, Face> CreateGeodesicFaces(List<Vertex> icosahedralVertices, Dictionary<Edge, Edge> icosahedralEdgeToGeodesicEdgeMap)

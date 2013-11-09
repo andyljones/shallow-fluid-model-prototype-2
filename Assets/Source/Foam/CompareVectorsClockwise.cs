@@ -17,6 +17,7 @@ namespace Foam
         private readonly Vector3 _center;
         private readonly Vector3 _baseline;
 
+        //TODO: Add errors if the center or baseline are degenerate.
         public CompareVectorsClockwise(Vector3 center, Vector3 baseline)
         {
             _center = center;

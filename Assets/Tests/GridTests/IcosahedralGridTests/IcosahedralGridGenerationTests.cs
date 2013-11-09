@@ -3,6 +3,7 @@ using Initialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UnityEngine;
 
+//TODO: Refactor, this is horrible.
 namespace Tests.GridTests.IcosahedralGrid
 {
     [TestClass]
