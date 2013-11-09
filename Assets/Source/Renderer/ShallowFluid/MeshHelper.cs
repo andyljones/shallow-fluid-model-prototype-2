@@ -9,15 +9,37 @@ namespace Renderer.ShallowFluid
     public class MeshHelper
     {
         public Vector3[] Vectors { get; private set; }
-        public int[] AtmosphereTriangles { get; private set; }
-        public int[] SurfaceTriangles { get; private set; }
+        public List<int[]> LayerTriangles;
+        public List<int[]> Boundaries; 
 
         private Dictionary<Vertex, int> _vertexIndices = new Dictionary<Vertex, int>();
         private Dictionary<Face, int> _faceIndices = new Dictionary<Face, int>();
 
-        public MeshHelper()
+        public MeshHelper(List<Cell> cells)
         {
-            
+            InitializeVectors(cells);
+            InitializeTriangles(cells);
+            InitializeBoundaries(cells);
+
+        }
+
+        private void InitializeBoundaries(List<Cell> cells)
+        {
+            var boundaryEdges = new List<Edge>();
+
+            foreach (var cell in cells)
+            {
+                boundaryEdges.AddRange(AtmosphereFacesToBeRendered(cell).SelectMany(face => face.Edges));
+            }
+
+            var distinctBoundaryEdges = boundaryEdges.Distinct();
+
+            Boundaries = new List<int[]>();
+            foreach (var boundaryEdge in distinctBoundaryEdges)
+            {
+                var boundaryVertexIndices = boundaryEdge.Vertices.Select(vertex => _vertexIndices[vertex]);
+                Boundaries.Add(boundaryVertexIndices.ToArray());
+            }
         }
 
         public void InitializeVectors(List<Cell> cells)
@@ -55,6 +77,8 @@ namespace Renderer.ShallowFluid
 
         public void InitializeTriangles(List<Cell> cells)
         {
+            LayerTriangles = new List<int[]>();
+
             var atmosphereTriangleBuffer = new List<int>();
             var surfaceTriangleBuffer = new List<int>();
 
@@ -74,8 +98,8 @@ namespace Renderer.ShallowFluid
                 }
             }
 
-            AtmosphereTriangles = atmosphereTriangleBuffer.ToArray();
-            SurfaceTriangles = surfaceTriangleBuffer.ToArray();
+            LayerTriangles.Add(surfaceTriangleBuffer.ToArray());
+            LayerTriangles.Add(atmosphereTriangleBuffer.ToArray());
         }
 
         private List<Face> SurfaceFacesToBeRendered(Cell cell)
