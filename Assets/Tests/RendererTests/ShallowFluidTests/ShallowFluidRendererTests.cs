@@ -18,26 +18,26 @@ namespace Tests.RendererTests.ShallowFluidTests
     {
         private IRenderer _atmoRenderer;
 
-        [TestInitialize]
-        public void Create_Shallow_Fluid_Renderer()
-        {
-            var options = new Options { Radius = 10f, Resolution = 5f, Height = 2f };
+        //[TestInitialize]
+        //public void Create_Shallow_Fluid_Renderer()
+        //{
+        //    var options = new Options { Radius = 10f, Resolution = 5f, Height = 2f };
 
-            var binder = new InjectionBinder();
-            binder.Bind<IMonolayerAtmosphereOptions>().Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().Bind<IShallowFluidRendererOptions>().ToValue(options);
-            binder.Bind<IGrid>().To<GeodesicGrid>();
-            binder.Bind<ISurface>().To<FlatSurface>();
-            binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
-            binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
+        //    var binder = new InjectionBinder();
+        //    binder.Bind<IMonolayerAtmosphereOptions>().Bind<IFlatSurfaceOptions>().Bind<IIcosahedralGridOptions>().Bind<IShallowFluidRendererOptions>().ToValue(options);
+        //    binder.Bind<IGrid>().To<GeodesicGrid>();
+        //    binder.Bind<ISurface>().To<FlatSurface>();
+        //    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
+        //    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
 
-            //var atmo = binder.GetInstance<IAtmosphere>() as IAtmosphere;
-            _atmoRenderer = binder.GetInstance<IRenderer>() as IRenderer;
-        }
+        //    //var atmo = binder.GetInstance<IAtmosphere>() as IAtmosphere;
+        //    _atmoRenderer = binder.GetInstance<IRenderer>() as IRenderer;
+        //}
 
-        [TestMethod]
-        public void Does_Atmo_Renderer_Exist()
-        {
+        //[TestMethod]
+        //public void Does_Atmo_Renderer_Exist()
+        //{
             
-        }
+        //}
     }
 }

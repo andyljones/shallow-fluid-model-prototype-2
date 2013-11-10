@@ -142,7 +142,8 @@ namespace Renderer.ShallowFluid
             var faceIndex = _faceIndices[face];
             var facePosition = Vectors[faceIndex];
 
-            var clockwiseComparer = new CompareVectorsClockwise(facePosition, new Vector3(0, 0, 1));
+            var localEast = Vector3.Cross(facePosition, new Vector3(0, 0, 1));
+            var clockwiseComparer = new CompareVectorsClockwise(facePosition, localEast); //TODO: Uhh this'll still be degenerate at the poles
             var vertexIndices = face.Vertices.Select(vertex => _vertexIndices[vertex]);
             var clockwiseSortedIndices = vertexIndices.OrderBy(index => Vectors[index], clockwiseComparer).ToList();
 
