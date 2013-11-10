@@ -19,7 +19,7 @@ namespace Tests.FoamTests
         [TestMethod]
         public void There_Should_Be_Only_One_Face_Of_Cell0_With_A_Neighbour()
         {
-            var facesWithNeighbours = _fakeAtmo.Cells[0].FacesWithNeighbours();
+            var facesWithNeighbours = FoamUtils.FacesWithNeighbours(_fakeAtmo.Cells[0]);
 
             var expectedNumberOFaces = 1;
             var actualNumberOfFaces = facesWithNeighbours.Count;
@@ -30,7 +30,7 @@ namespace Tests.FoamTests
         [TestMethod]
         public void Cell0_Should_Have_Three_Vertical_Edges()
         {
-            var verticalEdges = _fakeAtmo.Cells[0].VerticalEdges();
+            var verticalEdges = FoamUtils.VerticalEdgesOf(_fakeAtmo.Cells[0]);
 
             var expectedNumber = 3;
             var actualNumber = verticalEdges.Count;

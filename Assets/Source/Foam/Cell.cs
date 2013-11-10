@@ -11,6 +11,8 @@ namespace Foam
         public float Streamfunction;
         public float VelocityPotential;
         public float Depth;
+
         public float Area;
+        public Face[] VerticalFaces;
     }
 }

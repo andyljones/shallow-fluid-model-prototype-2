@@ -14,9 +14,9 @@ namespace Simulator.ShallowFluidSimulator
             return edge.Cells.Average(cell => cellField.GetValue(cell));
         }
 
-        public static float JacobianOf(FloatFieldInfo fieldA, FloatFieldInfo fieldB, Cell cell)
-        {
-            throw new NotImplementedException();
-        }
+        //public static float FluxDivergence(FloatFieldInfo fieldA, FloatFieldInfo fieldB, Cell cell)
+        //{
+            
+        //}
     }
 }

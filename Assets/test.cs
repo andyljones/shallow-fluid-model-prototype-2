@@ -8,10 +8,11 @@ using Grids.IcosahedralGridGenerator;
 using Initialization;
 using Renderer;
 using Renderer.ShallowFluid;
+using Simulator;
+using Simulator.ShallowFluidSimulator;
 using strange.extensions.injector.impl;
 using Surfaces;
 using Surfaces.FlatSurface;
-using Tests.Fakes;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -26,22 +27,27 @@ public class test : MonoBehaviour {
 
 	    var options = new Options
 	    {
-	        Radius = 10f,
-	        Resolution = 1f,
-	        Height = 1f,
+	        Radius = 6000f,
+	        Resolution = 1500f,
+	        Height = 8f,
+            DayLength = 80000,
+            Timestep = 300,
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
-	        BoundaryMaterial = "Materials/Boundaries"
+	        BoundaryMaterial = "Materials/Boundaries",
+            DetailMultiplier = 1f
 	    };
 
 	    var binder = new InjectionBinder();
 	    binder.Bind<IMonolayerAtmosphereOptions>()
 	        .Bind<IFlatSurfaceOptions>()
 	        .Bind<IIcosahedralGridOptions>()
+            .Bind<IShallowFluidSimulatorOptions>()
 	        .Bind<IShallowFluidRendererOptions>()
 	        .ToValue(options);
 	    binder.Bind<IGrid>().To<GeodesicGrid>();
 	    binder.Bind<ISurface>().To<FlatSurface>();
 	    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
+	    binder.Bind<ISimulator>().To<ShallowFluidSimulator>();
 	    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
 
 	    var planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;

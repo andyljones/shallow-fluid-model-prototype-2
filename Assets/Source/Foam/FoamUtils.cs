@@ -7,6 +7,11 @@ namespace Foam
 {
     public static class FoamUtils
     {
+        public static Cell NeighbourAcross(Face face, Cell cell)
+        {
+            return face.Cells.Single(neighbour => neighbour != cell);
+        }
+
         public static float HorizontalAreaOf(Cell cell)
         {
             var areaOfTopFace = AreaOf(TopFaceOf(cell));
@@ -98,12 +103,12 @@ namespace Foam
             return centerOfFace;
         }
 
-        public static List<Face> FacesWithNeighbours(this Cell cell)
+        public static List<Face> FacesWithNeighbours(Cell cell)
         {
             return cell.Faces.Where(face => face.Cells.Count > 1).ToList();
         }
 
-        public static List<Edge> VerticalEdges(this Cell cell)
+        public static List<Edge> VerticalEdgesOf(Cell cell)
         {
             var topFace = TopFaceOf(cell);
             var bottomFace = BottomFaceOf(cell);

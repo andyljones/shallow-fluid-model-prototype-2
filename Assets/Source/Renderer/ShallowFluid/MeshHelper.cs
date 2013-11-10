@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Atmosphere;
 using Foam;
 using UnityEngine;
 
@@ -15,8 +14,12 @@ namespace Renderer.ShallowFluid
         private Dictionary<Vertex, int> _vertexIndices = new Dictionary<Vertex, int>();
         private Dictionary<Face, int> _faceIndices = new Dictionary<Face, int>();
 
-        public MeshHelper(List<Cell> cells)
+        private float _detailMultiplier;
+
+        public MeshHelper(List<Cell> cells, IShallowFluidRendererOptions options)
         {
+            _detailMultiplier = options.DetailMultiplier;
+
             InitializeVectors(cells);
             InitializeTriangles(cells);
             InitializeBoundaries(cells);
@@ -64,6 +67,21 @@ namespace Renderer.ShallowFluid
                 var position = CenterOfFace(face);
                 Vectors[i + vertices.Count] = position;
                 _faceIndices.Add(face, i + vertices.Count);
+            }
+
+            var vectorsToBeMultiplied = new List<int>();
+
+            foreach (var cell in cells)
+            {
+                var atmosphereFaces = AtmosphereFacesToBeRendered(cell);
+                var atmosphereVertices = atmosphereFaces.SelectMany(face => face.Vertices);
+                vectorsToBeMultiplied.AddRange(atmosphereFaces.Select(face => _faceIndices[face]));
+                vectorsToBeMultiplied.AddRange(atmosphereVertices.Select(vertex => _vertexIndices[vertex]));
+            }
+
+            foreach (var vectorIndex in vectorsToBeMultiplied.Distinct())
+            {
+                Vectors[vectorIndex] *= 1.05f * _detailMultiplier;
             }
 
         }

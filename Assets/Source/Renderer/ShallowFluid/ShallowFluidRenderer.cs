@@ -2,15 +2,16 @@
 using System.Linq;
 using Atmosphere;
 using Foam;
+using Simulator;
 using UnityEngine;
 
 namespace Renderer.ShallowFluid
 {
     public class ShallowFluidRenderer : IRenderer
     {
-        public ShallowFluidRenderer(IAtmosphere atmosphere, IShallowFluidRendererOptions options)
+        public ShallowFluidRenderer(ISimulator simulator, IShallowFluidRendererOptions options)
         {
-            var helper = new MeshHelper(atmosphere.Cells);
+            var helper = new MeshHelper(simulator.Cells, options);
 
             RenderLayers(helper, options);
             RenderBoundaries(helper, options);
@@ -22,7 +23,7 @@ namespace Renderer.ShallowFluid
             var boundaryHolder = new GameObject("Boundary Holder");
 
             var boundaryMaterial = (Material) Resources.Load(options.BoundaryMaterial, typeof (Material));
-            var boundaryWidth = 0.02f;
+            var boundaryWidth = 0.003f * options.Radius * options.DetailMultiplier;
 
             foreach (var boundary in helper.Boundaries)
             {
@@ -36,7 +37,7 @@ namespace Renderer.ShallowFluid
 
                 for (int i = 0; i < boundary.Length; i++)
                 {
-                    var vector = helper.Vectors[boundary[i]] * 1.001f;
+                    var vector = helper.Vectors[boundary[i]] * 1.005f;
                     lineRenderer.SetPosition(i, vector);
                 }
             }
