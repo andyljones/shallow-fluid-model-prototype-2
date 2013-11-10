@@ -27,7 +27,7 @@ public class test : MonoBehaviour {
 	    var options = new Options
 	    {
 	        Radius = 10f,
-	        Resolution = 5f,
+	        Resolution = 1f,
 	        Height = 1f,
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
 	        BoundaryMaterial = "Materials/Boundaries"
@@ -41,7 +41,7 @@ public class test : MonoBehaviour {
 	        .ToValue(options);
 	    binder.Bind<IGrid>().To<GeodesicGrid>();
 	    binder.Bind<ISurface>().To<FlatSurface>();
-	    binder.Bind<IAtmosphere>().To<FakeAtmosphere>();
+	    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
 	    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
 
 	    var planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;

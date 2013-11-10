@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Foam;
+using UnityEngine;
 
 namespace Simulator.ShallowFluidSimulator
 {
@@ -14,9 +14,9 @@ namespace Simulator.ShallowFluidSimulator
             return edge.Cells.Average(cell => cellField.GetValue(cell));
         }
 
-        //public static float JacobianOf(FloatFieldInfo fieldA, FloatFieldInfo fieldB, Cell cell)
-        //{
-
-        //}
+        public static float JacobianOf(FloatFieldInfo fieldA, FloatFieldInfo fieldB, Cell cell)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
