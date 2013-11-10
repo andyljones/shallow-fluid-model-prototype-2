@@ -8,34 +8,28 @@ public class CameraControl : MonoBehaviour
      * Should be minimally sufficient for orbiting and zooming parent
      */
 
-    public float xSpeed = 5.0F;
-    public float ySpeed = 5.0F;
+    public float xSpeed = 0.1F;
+    public float ySpeed = 0.1F;
     public float rSpeed = 20.0F;
 
     private float azi;
     private float pol;
     private float r;
 
-    private Vector3 _initialPosition;
-    private Quaternion _initialRotation;
-
     void Start()
     {
-        _initialPosition = transform.position;
-        azi = Mathf.Atan2(_initialPosition.x, _initialPosition.y);
-        pol = Mathf.Acos(_initialPosition.z/_initialPosition.magnitude);
-        r = _initialPosition.magnitude;
-
-        _initialRotation = transform.rotation;
-
+        var position = transform.position;
+        r = position.magnitude;
+        pol = Mathf.Acos(position.z / position.magnitude);
+        azi = Mathf.Atan2(position.x, position.y);
     }
 
     void LateUpdate()
     {
         if (Input.GetButton("Fire1"))
         {
-            azi = (azi + Input.GetAxis("Mouse X") * xSpeed) % 360;
-            pol = (pol + Input.GetAxis("Mouse Y") * ySpeed) % 360;
+            azi = azi + Input.GetAxis("Mouse X") * xSpeed;
+            pol = pol + Input.GetAxis("Mouse Y") * ySpeed;
         }
 
         r += Input.GetAxis("Mouse ScrollWheel") * rSpeed;
@@ -44,11 +38,11 @@ public class CameraControl : MonoBehaviour
         var y = r*Mathf.Cos(azi)*Mathf.Sin(pol);
         var z = r*Mathf.Cos(pol);
 
-        Vector3 cameraPosition = new Vector3(x, y, z);
-        Vector3 localEast = Vector3.Cross(cameraPosition, new Vector3(0, 0, 1));
-        Vector3 localNorth = Vector3.Cross(localEast, cameraPosition);
+        var position = new Vector3(x, y, z);
+        var localEast = Vector3.Cross(position, new Vector3(0, 0, 1));
+        var localNorth = Vector3.Cross(localEast, position);
 
-        transform.rotation = Quaternion.LookRotation(-cameraPosition, localNorth);
-        transform.position = cameraPosition;
+        transform.rotation = Quaternion.LookRotation(-position, localNorth);
+        transform.position = position;
     }
 }

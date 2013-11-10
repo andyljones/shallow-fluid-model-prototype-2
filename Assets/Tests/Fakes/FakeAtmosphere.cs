@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Atmosphere;
 using Foam;
 using Surfaces;
@@ -130,25 +133,48 @@ namespace Tests.Fakes
                 }
             };
 
-            vertices[0].Edges.AddRange(new[] { edges[0], edges[1], edges[10] });
-            vertices[1].Edges.AddRange(new[] { edges[2], edges[3], edges[11] }); // Wrong
-            vertices[2].Edges.AddRange(new[] { edges[2], edges[4], edges[12] }); // Wrong.
-            vertices[3].Edges.AddRange(new[] { edges[3], edges[4], edges[13] });
-            vertices[4].Edges.AddRange(new[] { edges[5], edges[6], edges[10] });
-            vertices[5].Edges.AddRange(new[] { edges[7], edges[8], edges[11] });
-            vertices[6].Edges.AddRange(new[] { edges[7], edges[9], edges[12] });
-            vertices[7].Edges.AddRange(new[] { edges[8], edges[9], edges[13] });
+            Cells = new List<Cell>
+            {
+                new Cell
+                {
+                    Faces = new List<Face> {faces[0], faces[2], faces[4], faces[5], faces[6]},
+                    Edges = new List<Edge> {edges[0], edges[1], edges[2], edges[5], edges[6], edges[7], edges[10], edges[11], edges[12]},
+                    Vertices = new List<Vertex> {vertices[0], vertices[1], vertices[2], vertices[4], vertices[5], vertices[6]}
+                },
+                new Cell
+                {
+                    Faces = new List<Face> {faces[1], faces[3], faces[6], faces[7], faces[8]},
+                    Edges = new List<Edge> {edges[2], edges[3], edges[4], edges[7], edges[8], edges[9], edges[11], edges[12], edges[13]},
+                    Vertices = new List<Vertex> {vertices[1], vertices[2], vertices[3], vertices[5], vertices[6], vertices[7]}
+                }
+            };
 
-            vertices[0].Faces.AddRange(new[] { faces[0], faces[4], faces[5] });
-            vertices[1].Faces.AddRange(new[] { faces[0], faces[1], faces[4], faces[6], faces[7] }); // Wrong?
-            vertices[2].Faces.AddRange(new[] { faces[0], faces[1] }); // Wrong.
-            vertices[3].Faces.AddRange(new[] { faces[1] });
+            Link<Cell,Face>(Cells);
+            Link<Cell,Edge>(Cells);
+            Link<Cell, Vertex>(Cells);
 
-            edges[0].Faces.AddRange(new[] { faces[0] });
-            edges[1].Faces.AddRange(new[] { faces[0] });
-            edges[2].Faces.AddRange(new[] { faces[0], faces[1] });
-            edges[3].Faces.AddRange(new[] { faces[1] });
-            edges[4].Faces.AddRange(new[] { faces[1] });
+            Link<Face, Edge>(faces);
+            Link<Face, Vertex>(faces);
+            
+            Link<Edge, Vertex>(edges);
+        }
+
+        //TODO: Yeah this should be documented.
+        private void Link<TCell, TFace>(List<TCell> cells)
+        {
+            var faceFieldInCells = typeof(TCell).GetFields().Single(field => field.FieldType == typeof(List<TFace>));
+            var cellFieldInFaces = typeof (TFace).GetFields().Single(field => field.FieldType == typeof(List<TCell>));
+
+            foreach (var cell in cells)
+            {
+                var faces = (List<TFace>)faceFieldInCells.GetValue(cell);
+
+                foreach (var face in faces)
+                {
+                    var cellsInFace = (List<TCell>) cellFieldInFaces.GetValue(face);
+                    cellsInFace.Add(cell);
+                }
+            }
         }
     }
 }

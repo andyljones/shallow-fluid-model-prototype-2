@@ -45,6 +45,7 @@ namespace Renderer.ShallowFluid
         public void InitializeVectors(List<Cell> cells)
         {
             var vertices = cells.SelectMany(cell => cell.Vertices).Distinct().ToList();
+            //TODO: Cull the vertical faces which aren't gonna be rendered.
             var faces = cells.SelectMany(cell => cell.Faces).Distinct().ToList();
 
             Vectors = new Vector3[vertices.Count + faces.Count];

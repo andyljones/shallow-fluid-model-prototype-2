@@ -29,15 +29,15 @@ namespace Renderer.ShallowFluid
                 var boundaryObject = new GameObject("Boundary Object");
                 boundaryObject.transform.parent = boundaryHolder.transform;
 
-                var lr = boundaryObject.AddComponent<LineRenderer>();
-                lr.SetVertexCount(boundary.Length);
-                lr.SetWidth(boundaryWidth, boundaryWidth);
-                lr.material = boundaryMaterial;
+                var lineRenderer = boundaryObject.AddComponent<LineRenderer>();
+                lineRenderer.SetVertexCount(boundary.Length);
+                lineRenderer.SetWidth(boundaryWidth, boundaryWidth);
+                lineRenderer.material = boundaryMaterial;
 
                 for (int i = 0; i < boundary.Length; i++)
                 {
                     var vector = helper.Vectors[boundary[i]] * 1.001f;
-                    lr.SetPosition(i, vector);
+                    lineRenderer.SetPosition(i, vector);
                 }
             }
         }
