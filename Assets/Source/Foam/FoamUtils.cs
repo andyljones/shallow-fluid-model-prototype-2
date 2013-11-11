@@ -74,17 +74,22 @@ namespace Foam
 
         public static float AreaOf(Face face)
         {
+            var center = CenterOf(face);
+            var baseline = face.Vertices.First().Position;
+            var clockwiseComparer = new CompareVectorsClockwise(center, baseline);
+            var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseComparer).Reverse().ToList();
+
             var sumOfCrossProducts = new Vector3();
 
-            for (int i = 0; i < face.Vertices.Count; i++)
+            for (int i = 0; i < sortedVertices.Count; i++)
             {
-                var currentPosition = face.Vertices[i].Position;
-                var nextPosition = face.Vertices[(i + 1) % face.Vertices.Count].Position;
+                var currentPosition = sortedVertices[i].Position;
+                var nextPosition = sortedVertices[(i + 1) % sortedVertices.Count].Position;
 
                 sumOfCrossProducts += Vector3.Cross(nextPosition, currentPosition);
             }
 
-            var normalToFace = CenterOf(face).normalized;
+            var normalToFace = center.normalized;
             var area = Vector3.Dot(sumOfCrossProducts, normalToFace) / 2;
 
             return area;
@@ -121,6 +126,15 @@ namespace Foam
             var verticalEdges = cell.Edges.Except(topFace.Edges).Except(bottomFace.Edges);
 
             return verticalEdges.ToList();
+        }
+
+        public static List<Face> VerticalFacesOf(Cell cell)
+        {
+            var faces = cell.Faces;
+            faces.Remove(TopFaceOf(cell));
+            faces.Remove(BottomFaceOf(cell));
+
+            return faces;
         }
 
         public static Face TopFaceOf(Cell cell)

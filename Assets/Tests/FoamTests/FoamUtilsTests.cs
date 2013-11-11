@@ -141,9 +141,9 @@ namespace Tests.FoamTests
         }
 
         [TestMethod]
-        public void Width_Of_Cell0Face2_Should_Be_Sqrt264_Point_5()
+        public void Width_Of_Cell0Face2_Should_Be_Sqrt529_Over_2()
         {
-            var expectedWidth = Mathf.Sqrt(264.5f);
+            var expectedWidth = Mathf.Sqrt(529f / 2f);
             var actualWidth = FoamUtils.WidthOfVerticalFace(_fakeAtmo.Cells[0].Faces[2]);
 
             var tolerance = 0.001f;
