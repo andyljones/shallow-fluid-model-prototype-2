@@ -7,9 +7,9 @@ namespace Renderer.ShallowFluid
 {
     public class MeshHelper
     {
-        public Vector3[] Vectors { get; private set; }
-        public List<int[]> LayerTriangles;
-        public List<int[]> Boundaries; 
+        public Vector3[] Vectors;
+        public List<int[]> LayerTriangles = new List<int[]>();
+        public List<int[]> Boundaries = new List<int[]>();
 
         private Dictionary<Vertex, int> _vertexIndices = new Dictionary<Vertex, int>();
         private Dictionary<Face, int> _faceIndices = new Dictionary<Face, int>();
@@ -23,33 +23,32 @@ namespace Renderer.ShallowFluid
             InitializeVectors(cells);
             InitializeTriangles(cells);
             InitializeBoundaries(cells);
-
         }
 
+        // This method fills the Boundaries member with a list of lists, where each list contains a list of vector indices
+        // that will be used to create a LineRenderer that renders the edges of cells.
         private void InitializeBoundaries(List<Cell> cells)
         {
-            var boundaryEdges = new List<Edge>();
+            var atmosphericFaces = cells.Select<Cell, Face>(FoamUtils.TopFaceOf);
+            var atmosphericEdges = atmosphericFaces.SelectMany(face => face.Edges).Distinct().ToList();
 
-            foreach (var cell in cells)
+            var routeFinder = new BoundaryRouteFinder(atmosphericEdges);
+
+            while (!routeFinder.AllEdgesVisited())
             {
-                boundaryEdges.AddRange(AtmosphereFacesToBeRendered(cell).SelectMany(face => face.Edges));
-            }
+                var route = routeFinder.GetRoute();
+                var routeIndices = route.Select(vertex => _vertexIndices[vertex]);
 
-            var distinctBoundaryEdges = boundaryEdges.Distinct();
-
-            Boundaries = new List<int[]>();
-            foreach (var boundaryEdge in distinctBoundaryEdges)
-            {
-                var boundaryVertexIndices = boundaryEdge.Vertices.Select(vertex => _vertexIndices[vertex]);
-                Boundaries.Add(boundaryVertexIndices.ToArray());
+                Boundaries.Add(routeIndices.ToArray());
             }
         }
 
-        public void InitializeVectors(List<Cell> cells)
+        private void InitializeVectors(List<Cell> cells)
         {
             var vertices = cells.SelectMany(cell => cell.Vertices).Distinct().ToList();
-            //TODO: Cull the vertical faces which aren't gonna be rendered.
-            var faces = cells.SelectMany(cell => cell.Faces).Distinct().ToList();
+            var surfaceFaces = cells.Select<Cell, Face>(FoamUtils.BottomFaceOf).ToList();
+            var atmosphereFaces = cells.Select<Cell, Face>(FoamUtils.TopFaceOf).ToList();
+            var faces = surfaceFaces.Concat(atmosphereFaces).ToList();
 
             Vectors = new Vector3[vertices.Count + faces.Count];
 
@@ -71,12 +70,10 @@ namespace Renderer.ShallowFluid
 
             var vectorsToBeMultiplied = new List<int>();
 
-            foreach (var cell in cells)
+            foreach (var face in atmosphereFaces)
             {
-                var atmosphereFaces = AtmosphereFacesToBeRendered(cell);
-                var atmosphereVertices = atmosphereFaces.SelectMany(face => face.Vertices);
-                vectorsToBeMultiplied.AddRange(atmosphereFaces.Select(face => _faceIndices[face]));
-                vectorsToBeMultiplied.AddRange(atmosphereVertices.Select(vertex => _vertexIndices[vertex]));
+                vectorsToBeMultiplied.Add(_faceIndices[face]);
+                vectorsToBeMultiplied.AddRange(face.Vertices.Select(vertex => _vertexIndices[vertex]));
             }
 
             foreach (var vectorIndex in vectorsToBeMultiplied.Distinct())
@@ -94,7 +91,7 @@ namespace Renderer.ShallowFluid
             return centerOfFace;
         }
 
-        public void InitializeTriangles(List<Cell> cells)
+        private void InitializeTriangles(List<Cell> cells)
         {
             LayerTriangles = new List<int[]>();
 
@@ -103,38 +100,15 @@ namespace Renderer.ShallowFluid
 
             foreach (var cell in cells)
             {
-                var atmosphereFaces = AtmosphereFacesToBeRendered(cell);
-                var surfaceFaces = SurfaceFacesToBeRendered(cell);
+                var atmosphereFace = FoamUtils.TopFaceOf(cell);
+                var surfaceFace = FoamUtils.BottomFaceOf(cell);
 
-                foreach (var face in atmosphereFaces)
-                {
-                    atmosphereTriangleBuffer.AddRange(TrianglesInFace(face));
-                }
-
-                foreach (var face in surfaceFaces)
-                {
-                    surfaceTriangleBuffer.AddRange(TrianglesInFace(face));
-                }
+                atmosphereTriangleBuffer.AddRange(TrianglesInFace(atmosphereFace));
+                surfaceTriangleBuffer.AddRange(TrianglesInFace(surfaceFace));
             }
 
             LayerTriangles.Add(surfaceTriangleBuffer.ToArray());
             LayerTriangles.Add(atmosphereTriangleBuffer.ToArray());
-        }
-
-        private List<Face> SurfaceFacesToBeRendered(Cell cell)
-        {
-            var verticesOrderedByHeight = cell.Vertices.OrderBy(vertex => vertex.Position.magnitude).ToList();
-
-            var facesNeighbouringLowestVertex = verticesOrderedByHeight[0].Faces;
-            var facesNeighbouringSecondLowestVertex = verticesOrderedByHeight[1].Faces;
-            var facesNeighbouringThirdLowestVertex = verticesOrderedByHeight[2].Faces;
-
-            var lowestFace =
-                facesNeighbouringLowestVertex
-                .Intersect(facesNeighbouringSecondLowestVertex)
-                .Intersect(facesNeighbouringThirdLowestVertex);
-
-            return lowestFace.ToList();
         }
 
         private IEnumerable<int> TrianglesInFace(Face face)
@@ -157,22 +131,6 @@ namespace Renderer.ShallowFluid
             }
 
             return triangles;
-        }
-
-        private List<Face> AtmosphereFacesToBeRendered(Cell cell)
-        {
-            var verticesOrderedByHeight = cell.Vertices.OrderByDescending(vertex => vertex.Position.magnitude).ToList();
-
-            var facesNeighbouringHighestVertex = verticesOrderedByHeight[0].Faces;
-            var facesNeighbouringSecondHighestVertex = verticesOrderedByHeight[1].Faces;
-            var facesNeighbouringThirdHighestVertex = verticesOrderedByHeight[2].Faces;
-
-            var highestFace =
-                facesNeighbouringHighestVertex
-                .Intersect(facesNeighbouringSecondHighestVertex)
-                .Intersect(facesNeighbouringThirdHighestVertex);
-
-            return highestFace.ToList();
         }
 
     }

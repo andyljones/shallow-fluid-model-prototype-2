@@ -7,6 +7,11 @@ namespace Foam
 {
     public static class FoamUtils
     {
+        public static Vertex OtherEndpointFrom(this Edge edge, Vertex origin)
+        {
+            return edge.Vertices.Single(vertex => vertex != origin);
+        }
+
         public static Cell NeighbourAcross(Face face, Cell cell)
         {
             return face.Cells.Single(neighbour => neighbour != cell);
