@@ -124,7 +124,7 @@ namespace Renderer.ShallowFluid
                 var layerMesh = layerObject.AddComponent<MeshFilter>();
                 layerMesh.mesh.vertices = helper.Vectors;
                 layerMesh.mesh.triangles = helper.LayerTriangles[i];
-                layerMesh.mesh.RecalculateNormals();
+                layerMesh.mesh.normals = helper.Vectors.Select(vector => vector.normalized).ToArray();
 
                 var layerRenderer = layerObject.AddComponent<MeshRenderer>();
                 layerRenderer.material = (Material) Resources.Load(options.LayerMaterials[i], typeof(Material));

@@ -28,6 +28,16 @@ namespace Simulator.ShallowFluidSimulator
 
         //}
 
+        //public FloatField FluxDivergence(FloatField A, FloatField B)
+        //{
+            
+        //}
+
+        //public FloatField Laplacian(FloatField A)
+        //{
+            
+        //}
+
         private int[][] GetIndicesOfNeighboursOf(List<Cell> cells, Dictionary<Cell, int> cellIndices)
         {
             var allNeighbourIndices = new int[cells.Count][];
