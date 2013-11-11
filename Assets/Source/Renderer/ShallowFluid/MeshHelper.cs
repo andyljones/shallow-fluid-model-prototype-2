@@ -41,6 +41,8 @@ namespace Renderer.ShallowFluid
 
                 Boundaries.Add(routeIndices.ToArray());
             }
+
+            Debug.Log(Boundaries.Count);
         }
 
         private void InitializeVectors(List<Cell> cells)
@@ -116,8 +118,8 @@ namespace Renderer.ShallowFluid
             var faceIndex = _faceIndices[face];
             var facePosition = Vectors[faceIndex];
 
-            var localEast = Vector3.Cross(facePosition, new Vector3(0, 0, 1));
-            var clockwiseComparer = new CompareVectorsClockwise(facePosition, localEast); //TODO: Uhh this'll still be degenerate at the poles
+            var baseline = Vector3.Cross(facePosition, face.Vertices.First().Position);
+            var clockwiseComparer = new CompareVectorsClockwise(facePosition, baseline); //TODO: Uhh this'll still be degenerate at the poles
             var vertexIndices = face.Vertices.Select(vertex => _vertexIndices[vertex]);
             var clockwiseSortedIndices = vertexIndices.OrderBy(index => Vectors[index], clockwiseComparer).ToList();
 

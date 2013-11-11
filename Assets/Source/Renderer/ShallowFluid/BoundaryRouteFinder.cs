@@ -6,33 +6,39 @@ namespace Renderer.ShallowFluid
 {
     public class BoundaryRouteFinder
     {
-        private List<Edge> _validEdges;
-        private Dictionary<Edge, bool> _visitedEdges;
+        private HashSet<Edge> _validEdges;
+        private HashSet<Edge> _unvisitedEdges;
 
         public BoundaryRouteFinder(List<Edge> validEdges)
         {
-            _validEdges = validEdges;
-            _visitedEdges = _validEdges.ToDictionary(edge => edge, edge => false);
+            _validEdges = new HashSet<Edge>(validEdges);
+            _unvisitedEdges = new HashSet<Edge>(validEdges);
         }
 
         public List<Vertex> GetRoute()
         {
-            var possibleStarts = _validEdges.Where(edge => !_visitedEdges[edge]).ToList();
-            var currentEdge = possibleStarts[possibleStarts.Count()/2];
+            var currentEdge = _unvisitedEdges.First();
             var currentVertex = currentEdge.Vertices.First();
-            var path = new List<Vertex> {currentVertex};
+            var path = new List<Vertex> { currentVertex };
 
             while (currentEdge != default(Edge))
             {
                 currentVertex = currentEdge.OtherEndpointFrom(currentVertex);
 
                 path.Add(currentVertex);
-                _visitedEdges[currentEdge] = true;
+                _unvisitedEdges.Remove(currentEdge);
 
                 var liveEdges = LiveEdgesOf(currentVertex);
-                var notDeadends = liveEdges.Where(edge => !IsDeadend(edge.OtherEndpointFrom(currentVertex)));
+                var notDeadends = liveEdges.Where(edge => !IsDeadend(edge.OtherEndpointFrom(currentVertex))).ToList();
 
-                currentEdge = notDeadends.FirstOrDefault();
+                if (notDeadends.Any())
+                {
+                    currentEdge = notDeadends.First();
+                }
+                else
+                {
+                    currentEdge = liveEdges.FirstOrDefault();
+                }
             }
 
             return path;
@@ -45,15 +51,12 @@ namespace Renderer.ShallowFluid
 
         private List<Edge> LiveEdgesOf(Vertex currentVertex)
         {
-            var validEdges = currentVertex.Edges.Intersect(_validEdges);
-            var liveEdges = validEdges.Where(edge => !_visitedEdges[edge]);
-
-            return liveEdges.ToList();
+            return currentVertex.Edges.Where(edge => _validEdges.Contains(edge) && _unvisitedEdges.Contains(edge)).ToList();
         }
 
         public bool AllEdgesVisited()
         {
-            return !_visitedEdges.ContainsValue(false);
+            return _unvisitedEdges.Count == 0;
         }
     }
 }
