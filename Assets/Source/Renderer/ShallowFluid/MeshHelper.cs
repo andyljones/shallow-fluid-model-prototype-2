@@ -41,6 +41,8 @@ namespace Renderer.ShallowFluid
 
                 Boundaries.Add(routeIndices.ToArray());
             }
+
+            Debug.Log(Boundaries.Count);
         }
 
         private void InitializeVectors(List<Cell> cells)
