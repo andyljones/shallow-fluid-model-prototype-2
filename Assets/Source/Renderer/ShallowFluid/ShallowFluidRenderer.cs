@@ -33,12 +33,15 @@ namespace Renderer.ShallowFluid
         {
             var localVertices = new Vector3[2*_cells.Count];
 
+            var t = Time.time;
+
             foreach (var cell in _cells)
             {
                 var cellCenter = _cellCenter[cell];
                 var localEast = _localEast[cell];
                 var localNorth = _localNorth[cell];
-                cell.Velocity.y = Mathf.Sin(Time.time); 
+                cell.Velocity.x = Mathf.Cos(t);
+                cell.Velocity.y = Mathf.Sin(t); 
                 var arrowVector = cell.Velocity.x * localEast + cell.Velocity.y * localNorth;
 
                 var arrowIndex = _arrowIndex[cell];
@@ -81,6 +84,8 @@ namespace Renderer.ShallowFluid
             arrowMesh.mesh.subMeshCount = _cells.Count;
             arrowMesh.mesh.vertices = vectors;
             arrowMesh.mesh.SetIndices(lines, MeshTopology.Lines, 0);
+            arrowMesh.mesh.normals = vectors.Select(vector => vector.normalized).ToArray();
+            arrowMesh.mesh.uv = new Vector2[vectors.Length];
 
             _arrowMesh = arrowMesh.mesh;
 

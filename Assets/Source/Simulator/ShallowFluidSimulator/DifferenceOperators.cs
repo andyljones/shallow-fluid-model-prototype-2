@@ -22,6 +22,12 @@ namespace Simulator.ShallowFluidSimulator
             DistancesBetweenCenters = CalculateDistancesBetweenCenters(cells, IndicesOfCells, IndicesOfNeighbours);
         }
 
+        //public FloatField Jacobian(FloatField A, FloatField B)
+        //{
+            
+
+        //}
+
         private int[][] GetIndicesOfNeighboursOf(List<Cell> cells, Dictionary<Cell, int> cellIndices)
         {
             var allNeighbourIndices = new int[cells.Count][];
