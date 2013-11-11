@@ -22,6 +22,7 @@ namespace Initialization
         public float Timestep { get; set; }
         public List<String> LayerMaterials { get; set; }
         public String BoundaryMaterial { get; set; }
+        public String ArrowMaterial { get; set; }
         public float DetailMultiplier { get; set; }
     }
 }

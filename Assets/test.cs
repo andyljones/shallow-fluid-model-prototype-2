@@ -17,9 +17,10 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 public class test : MonoBehaviour {
+    private IRenderer _planetRenderer;
 
 
-	// Use this for initialization
+    // Use this for initialization
 	void Start ()
 	{
 	    var stopwatch = new Stopwatch();
@@ -34,7 +35,8 @@ public class test : MonoBehaviour {
             Timestep = 300,
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
 	        BoundaryMaterial = "Materials/Boundaries",
-            DetailMultiplier = 1f
+            ArrowMaterial = "Materials/WindArrows",
+            DetailMultiplier = 1.05f
 	    };
 
 	    var binder = new InjectionBinder();
@@ -50,14 +52,15 @@ public class test : MonoBehaviour {
 	    binder.Bind<ISimulator>().To<ShallowFluidSimulator>();
 	    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
 
-	    var planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;
+	    _planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;
 
 	    stopwatch.Stop();
         Debug.Log("TIME: " + stopwatch.ElapsedMilliseconds);
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void Update () 
+    {
+	    _planetRenderer.UpdateRender();
 	}
 }

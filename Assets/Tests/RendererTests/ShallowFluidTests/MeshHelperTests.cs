@@ -23,19 +23,28 @@ namespace Tests.RendererTests.ShallowFluidTests
         }
 
         [TestMethod]
-        public void Boundaries_List_Should_Contain_One_Array()
+        public void Boundaries_List_Should_Contain_Two_Arrays()
         {
-            var expectedNumber = 1;
+            var expectedNumber = 2;
             var actualNumber = _helper.Boundaries.Count;
 
             Assert.AreEqual(expectedNumber, actualNumber);
         }
 
         [TestMethod]
-        public void First_Element_Of_Boundaries_List_Should_Have_Six_Elements()
+        public void First_Element_Of_Boundaries_List_Should_Have_Five_Elements()
         {
-            var expected = 6;
+            var expected = 5;
             var actual = _helper.Boundaries.First().Count();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Second_Element_Of_Boundaries_List_Should_Have_Two_Elements()
+        {
+            var expected = 2;
+            var actual = _helper.Boundaries[1].Count();
 
             Assert.AreEqual(expected, actual);
         }

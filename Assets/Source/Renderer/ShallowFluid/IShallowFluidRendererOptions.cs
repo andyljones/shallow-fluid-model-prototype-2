@@ -7,6 +7,7 @@ namespace Renderer
     {
         List<String> LayerMaterials { get; }
         String BoundaryMaterial { get; }
+        String ArrowMaterial { get; }
         float Radius { get; }
         float DetailMultiplier { get; }
     }

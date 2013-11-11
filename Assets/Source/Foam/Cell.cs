@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Foam
 {
@@ -11,5 +12,6 @@ namespace Foam
         //TODO: Move all this to arrays held internally by the simulator. Renderer only cares about height & velocity maps, and they can be passed as a dictionary
         //That destroys the ISimulator interface though doesn't it?
         public float Depth;
+        public Vector2 Velocity = new Vector2(1, 0);
     }
 }

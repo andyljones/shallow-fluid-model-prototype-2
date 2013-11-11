@@ -41,8 +41,6 @@ namespace Renderer.ShallowFluid
 
                 Boundaries.Add(routeIndices.ToArray());
             }
-
-            Debug.Log(Boundaries.Count);
         }
 
         private void InitializeVectors(List<Cell> cells)
@@ -80,7 +78,7 @@ namespace Renderer.ShallowFluid
 
             foreach (var vectorIndex in vectorsToBeMultiplied.Distinct())
             {
-                Vectors[vectorIndex] *= 1.05f * _detailMultiplier;
+                Vectors[vectorIndex] *= _detailMultiplier;
             }
 
         }
