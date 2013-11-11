@@ -4,9 +4,6 @@ namespace Foam
 {
     public class Face
     {
-        public float Width;
-        public float DistanceBetweenFaceCenters;
-
         public List<Cell> Cells = new List<Cell>();
 
         public List<Edge> Edges = new List<Edge>();

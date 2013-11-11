@@ -6,7 +6,13 @@ using UnityEngine;
 
 namespace Simulator.ShallowFluidSimulator
 {
-
+    public class DifferenceOperators
+    {
+        public DifferenceOperators(List<Cell> cells)
+        {
+            
+        }
+    }
 
     
 }

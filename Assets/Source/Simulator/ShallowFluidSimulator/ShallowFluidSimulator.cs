@@ -11,6 +11,8 @@ namespace Simulator.ShallowFluidSimulator
     {
         public List<Cell> Cells { get; private set; }
 
+        private Dictionary<String, float[]> _fields;
+
         public ShallowFluidSimulator(IAtmosphere atmosphere)
         {
             Cells = atmosphere.Cells;
