@@ -12,10 +12,13 @@ namespace Simulator.ShallowFluidSimulator
         public List<Cell> Cells { get; private set; }
 
         private Dictionary<String, float[]> _fields;
+        private DifferenceOperators _operators;
 
         public ShallowFluidSimulator(IAtmosphere atmosphere)
         {
             Cells = atmosphere.Cells;
+            _operators = new DifferenceOperators(Cells);
+            Debug.Log(Cells.Count);
         }
     }
 }

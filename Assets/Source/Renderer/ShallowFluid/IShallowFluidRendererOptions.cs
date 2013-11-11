@@ -9,6 +9,8 @@ namespace Renderer
         String BoundaryMaterial { get; }
         String ArrowMaterial { get; }
         float Radius { get; }
+        float Resolution { get; }
         float DetailMultiplier { get; }
+
     }
 }

@@ -12,10 +12,11 @@ namespace Renderer.ShallowFluid
         private List<Cell> _cells;
         private IShallowFluidRendererOptions _options;
 
-        private Dictionary<Cell, LineRenderer> _arrows = new Dictionary<Cell, LineRenderer>();
+        private Dictionary<Cell, int> _arrowIndex = new Dictionary<Cell, int>();
         private Dictionary<Cell, Vector3> _cellCenter = new Dictionary<Cell, Vector3>(); 
         private Dictionary<Cell, Vector3> _localEast = new Dictionary<Cell, Vector3>();
-        private Dictionary<Cell, Vector3> _localNorth = new Dictionary<Cell, Vector3>(); 
+        private Dictionary<Cell, Vector3> _localNorth = new Dictionary<Cell, Vector3>();
+        private Mesh _arrowMesh;
 
         public ShallowFluidRenderer(ISimulator simulator, IShallowFluidRendererOptions options)
         {
@@ -30,29 +31,33 @@ namespace Renderer.ShallowFluid
 
         public void UpdateRender()
         {
+            var localVertices = new Vector3[2*_cells.Count];
+
             foreach (var cell in _cells)
             {
                 var cellCenter = _cellCenter[cell];
                 var localEast = _localEast[cell];
                 var localNorth = _localNorth[cell];
-                var arrow = _arrows[cell];
-
+                cell.Velocity.y = Mathf.Sin(Time.time); 
                 var arrowVector = cell.Velocity.x * localEast + cell.Velocity.y * localNorth;
 
-                arrow.SetPosition(0, cellCenter);
-                arrow.SetPosition(1, cellCenter + 100 * arrowVector);
+                var arrowIndex = _arrowIndex[cell];
+                localVertices[arrowIndex - 1] = cellCenter;
+                localVertices[arrowIndex] = cellCenter + arrowVector * _options.Radius * _options.Resolution / 40000;
             }
+
+            _arrowMesh.vertices = localVertices;
         }
 
         private void InitializeArrows()
         {
-            var arrowHolder = new GameObject("Arrow Holder");
+            var vectors = new Vector3[2*_cells.Count];
+            var lines = new int[2*_cells.Count];
 
-            var arrowMaterial = (Material)Resources.Load(_options.ArrowMaterial, typeof(Material));
-            var arrowWidth = 0.003f * _options.Radius;
-
-            foreach (var cell in _cells)
+            for (int i =0; i < _cells.Count; i++)
             {
+                var cell = _cells[i];
+
                 var cellCenter = FoamUtils.CenterOf(cell) * _options.DetailMultiplier;
                 var localEast = Vector3.Cross(cellCenter, new Vector3(0, 0, 1)).normalized;
                 var localNorth = Vector3.Cross(localEast, cellCenter).normalized;
@@ -60,48 +65,46 @@ namespace Renderer.ShallowFluid
                 _cellCenter.Add(cell, cellCenter);
                 _localEast.Add(cell, localEast);
                 _localNorth.Add(cell, localNorth);
-
-                var arrowObject = new GameObject("Arrow Object");
-                arrowObject.transform.parent = arrowHolder.transform;
-
-                var lineRenderer = arrowObject.AddComponent<LineRenderer>();
-                lineRenderer.SetVertexCount(2);
-                lineRenderer.SetWidth(arrowWidth, 0);
-                lineRenderer.material = arrowMaterial;
+                _arrowIndex.Add(cell, 2*i + 1);
 
                 var arrowVector = cell.Velocity.x*localEast + cell.Velocity.y*localNorth;
 
-                lineRenderer.SetPosition(0, cellCenter);
-                lineRenderer.SetPosition(1, cellCenter + 100 * arrowVector);
+                vectors[2*i] = cellCenter;
+                vectors[2*i + 1] = cellCenter + arrowVector * _options.Radius * _options.Resolution / 40000;
 
-                _arrows.Add(cell, lineRenderer);
+                lines[2*i] = 2*i;
+                lines[2*i + 1] = 2*i + 1;
             }
+
+            var arrowObject = new GameObject("Arrows");
+            var arrowMesh = arrowObject.AddComponent<MeshFilter>();
+            arrowMesh.mesh.subMeshCount = _cells.Count;
+            arrowMesh.mesh.vertices = vectors;
+            arrowMesh.mesh.SetIndices(lines, MeshTopology.Lines, 0);
+
+            _arrowMesh = arrowMesh.mesh;
+
+            var arrowRenderer = arrowObject.AddComponent<MeshRenderer>();
+            var arrowMaterial = (Material) Resources.Load(_options.ArrowMaterial, typeof (Material));
+            arrowRenderer.material = arrowMaterial;
         }
 
-        //TODO: Implement a Chinese Postman solution.
         private void InitializeBoundaries(MeshHelper helper, IShallowFluidRendererOptions options)
         {
-            var boundaryHolder = new GameObject("Boundary Holder");
+            var boundaryObject = new GameObject("Boundaries");
+            var boundaryMesh = boundaryObject.AddComponent<MeshFilter>();
+            boundaryMesh.mesh.vertices = helper.Vectors;
+            boundaryMesh.mesh.subMeshCount = helper.Boundaries.Count;
 
-            var boundaryMaterial = (Material) Resources.Load(options.BoundaryMaterial, typeof (Material));
-            var boundaryWidth = 0.003f * options.Radius;
-
-            foreach (var boundary in helper.Boundaries)
+            for (int i = 0; i < helper.Boundaries.Count; i++)
             {
-                var boundaryObject = new GameObject("Boundary Object");
-                boundaryObject.transform.parent = boundaryHolder.transform;
-
-                var lineRenderer = boundaryObject.AddComponent<LineRenderer>();
-                lineRenderer.SetVertexCount(boundary.Length);
-                lineRenderer.SetWidth(boundaryWidth, boundaryWidth);
-                lineRenderer.material = boundaryMaterial;
-
-                for (int i = 0; i < boundary.Length; i++)
-                {
-                    var vector = helper.Vectors[boundary[i]] * 1.005f;
-                    lineRenderer.SetPosition(i, vector);
-                }
+                var boundary = helper.Boundaries[i];
+                boundaryMesh.mesh.SetIndices(boundary, MeshTopology.LineStrip, i);
             }
+
+            var boundaryRenderer = boundaryObject.AddComponent<MeshRenderer>();
+            var boundaryMaterial = (Material) Resources.Load(options.BoundaryMaterial, typeof (Material));
+            boundaryRenderer.materials = Enumerable.Repeat(boundaryMaterial, helper.Boundaries.Count).ToArray();
         }
 
         private void InitializeLayers(MeshHelper helper, IShallowFluidRendererOptions options)
