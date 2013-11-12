@@ -39,13 +39,15 @@ namespace Simulator.ShallowFluidSimulator
 
         private void InitializeConditions()
         {
+            var rand = new System.Random();
+
             var angularVelocity = 2*Mathf.PI/_options.DayLength;
             _coriolis = new FloatField(Cells.Select(cell => 2 * angularVelocity * FoamUtils.CenterOf(cell).normalized.z).ToArray());
-            _eta = new FloatField(Cells.Count);
-            _delta = new FloatField(Cells.Count);
             _chi = new FloatField(Cells.Count);
             _phi = new FloatField(Cells.Count);
-            _h = new FloatField(Cells.Select(cell => _options.Height).ToArray());
+            _h = new FloatField(Cells.Select(cell => _options.Height + rand.Next(-3, 3)).ToArray());
+            _eta = _ops.Laplacian(_phi) + _coriolis;
+            _delta = _ops.Laplacian(_chi);
 
             StepFields(Matsuno);
             StepFields(Matsuno);
@@ -73,8 +75,10 @@ namespace Simulator.ShallowFluidSimulator
 
             var energy = 0.5f *
                          (_ops.FluxDivergence(_phi, _phi) - _phi * _ops.Laplacian(_phi) +
-                          _ops.FluxDivergence(_chi, _chi) - _chi * _ops.Laplacian(_chi)) +
+                          _ops.FluxDivergence(_chi, _chi) - _chi * _ops.Laplacian(_chi)) -
                           _ops.Jacobian(_phi, _chi) + 0.00981f * _h;
+
+            //Debug.Log(energy.Values.Max());
 
             var dDeltaDt = _ops.FluxDivergence(_eta, _phi) + _ops.Jacobian(_eta, _chi) - _ops.Laplacian(energy);
 
@@ -93,7 +97,7 @@ namespace Simulator.ShallowFluidSimulator
         private FloatField AdamsBashforth(List<FloatField> oldFields, FloatField latestField)
         {
             oldFields.Add(latestField);
-            var result = 0.125f*(23*oldFields[2] - 16*oldFields[1] + 5*oldFields[0]);
+            var result = (1/12f)*(23*oldFields[2] - 16*oldFields[1] + 5*oldFields[0]);
             oldFields.Remove(oldFields[0]);
 
             return result;

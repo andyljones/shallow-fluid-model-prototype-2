@@ -40,11 +40,11 @@ namespace Renderer.ShallowFluid
             foreach (var cell in _cells)
             {
                 var cellCenter = _cellCenter[cell];
-                var arrowVector = cell.Velocity.normalized; //TODO Remove this.
+                var arrowVector = cell.Velocity;
 
                 var arrowIndex = _arrowIndex[cell];
                 localVertices[arrowIndex - 1] = cellCenter;
-                localVertices[arrowIndex] = cellCenter + arrowVector * _options.Radius * _options.Resolution / 40000;
+                localVertices[arrowIndex] = cellCenter + arrowVector* 1000000;
             }
 
             _arrowMesh.vertices = localVertices;

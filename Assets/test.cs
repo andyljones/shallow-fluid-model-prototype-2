@@ -32,7 +32,7 @@ public class test : MonoBehaviour {
 	        Resolution = 750f,
 	        Height = 8f,
             DayLength = 80000,
-            Timestep = 30,
+            Timestep = 50,
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",
