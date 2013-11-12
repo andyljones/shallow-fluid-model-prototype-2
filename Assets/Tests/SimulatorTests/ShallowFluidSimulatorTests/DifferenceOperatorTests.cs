@@ -24,7 +24,7 @@ namespace Tests.SimulatorTests.ShallowFluidSimulatorTests
         public void Constructor_Should_Assign_Contiguous_Indices_To_Each_Cell()
         {
             var expected = new[] {0, 1};
-            var actual = _operators.IndicesOfCells.Values;
+            var actual = _operators.CellIndexDict.Values;
 
             CollectionAssert.AreEquivalent(expected, actual);
         }

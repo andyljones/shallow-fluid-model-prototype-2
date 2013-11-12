@@ -9,6 +9,7 @@ namespace Renderer.ShallowFluid
 {
     public class ShallowFluidRenderer : IRenderer
     {
+        private ISimulator _simulator;
         private List<Cell> _cells;
         private IShallowFluidRendererOptions _options;
 
@@ -20,6 +21,7 @@ namespace Renderer.ShallowFluid
 
         public ShallowFluidRenderer(ISimulator simulator, IShallowFluidRendererOptions options)
         {
+            _simulator = simulator;
             _cells = simulator.Cells;
             _options = options;
             var helper = new MeshHelper(simulator.Cells, _options);
@@ -31,6 +33,8 @@ namespace Renderer.ShallowFluid
 
         public void UpdateRender()
         {
+            _simulator.StepSimulation();
+
             var localVertices = new Vector3[2*_cells.Count];
 
             var t = Time.time;
@@ -38,11 +42,11 @@ namespace Renderer.ShallowFluid
             foreach (var cell in _cells)
             {
                 var cellCenter = _cellCenter[cell];
-                var localEast = _localEast[cell];
-                var localNorth = _localNorth[cell];
-                cell.Velocity.x = Mathf.Cos(t);
-                cell.Velocity.y = Mathf.Sin(t); 
-                var arrowVector = cell.Velocity.x * localEast + cell.Velocity.y * localNorth;
+                //var localEast = _localEast[cell];
+                //var localNorth = _localNorth[cell];
+                //cell.Velocity.x = Mathf.Cos(t);
+                //cell.Velocity.y = Mathf.Sin(t); 
+                var arrowVector = cell.Velocity;
 
                 var arrowIndex = _arrowIndex[cell];
                 localVertices[arrowIndex - 1] = cellCenter;

@@ -6,5 +6,7 @@ namespace Simulator
     public interface ISimulator
     {
         List<Cell> Cells { get; }
+
+        void StepSimulation();
     }
 }

@@ -1,42 +1,162 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Foam;
+using UnityEngine;
 
 namespace Simulator.ShallowFluidSimulator
 {
     public class DifferenceOperators
     {
-        public Dictionary<Cell, int> IndicesOfCells;
+        public Dictionary<Cell, int> CellIndexDict;
+        public int[] CellIndices;
 
         public int[][] IndicesOfNeighbours;
         public float[] Areas;
         public float[][] Widths;
         public float[][] DistancesBetweenCenters;
+        public Vector3[][] NormalsToFaces;
 
         public DifferenceOperators(List<Cell> cells)
         {
-            IndicesOfCells = AssignIndicesTo(cells);
-            IndicesOfNeighbours = GetIndicesOfNeighboursOf(cells, IndicesOfCells);
-            Areas = CalculateAreasOf(cells, IndicesOfCells);
-            Widths = CalculateWidthsOfFacesOf(cells, IndicesOfCells, IndicesOfNeighbours);
-            DistancesBetweenCenters = CalculateDistancesBetweenCenters(cells, IndicesOfCells, IndicesOfNeighbours);
+            CellIndexDict = AssignIndicesTo(cells);
+            CellIndices = CellIndexDict.Values.ToArray();
+
+            IndicesOfNeighbours = GetIndicesOfNeighboursOf(cells, CellIndexDict);
+            Areas = CalculateAreasOf(cells, CellIndexDict);
+            Widths = CalculateWidthsOfFacesOf(cells, CellIndexDict, IndicesOfNeighbours);
+            DistancesBetweenCenters = CalculateDistancesBetweenCenters(cells, CellIndexDict, IndicesOfNeighbours);
+            NormalsToFaces = CalculateNormalsToCenters(cells, CellIndexDict, IndicesOfNeighbours);
         }
 
-        //public FloatField Jacobian(FloatField A, FloatField B)
-        //{
-            
+        public FloatField Jacobian(FloatField A, FloatField B)
+        {
+            var jacobian = new FloatField(A.Values.Length);
 
-        //}
+            foreach (int cell in CellIndices)
+            {
+                int[] neighbourIndices = IndicesOfNeighbours[cell];
+                float sum = 0;
 
-        //public FloatField FluxDivergence(FloatField A, FloatField B)
-        //{
-            
-        //}
+                for (int j = 0; j < neighbourIndices.Length; j++)
+                {
+                    var previousNeighbour = neighbourIndices[MathMod(j - 1, neighbourIndices.Length)];
+                    var currentNeighbour = neighbourIndices[j];
+                    var nextNeighbour = neighbourIndices[MathMod(j + 1, neighbourIndices.Length)];
+                    sum += (A[cell] + A[currentNeighbour])*(B[nextNeighbour] - B[previousNeighbour]);
+                }
 
-        //public FloatField Laplacian(FloatField A)
-        //{
-            
-        //}
+                var jacobianAtPoint = sum/(6*Areas[cell]);
+
+                jacobian[cell] = jacobianAtPoint;
+            }
+
+            return jacobian;
+        }
+
+        public FloatField FluxDivergence(FloatField A, FloatField B)
+        {
+            var fluxDivergence = new FloatField(A.Values.Length);
+
+            foreach (int cell in CellIndices)
+            {
+                int[] neighbourIndices = IndicesOfNeighbours[cell];
+                float sum = 0;
+
+                for (int j = 0; j < neighbourIndices.Length; j++)
+                {
+                    var currentNeighbour = neighbourIndices[j];
+                    var widthToDistance = Widths[cell][j]/DistancesBetweenCenters[cell][j];
+                    sum += widthToDistance * (A[cell] + A[currentNeighbour]) * (B[currentNeighbour] - B[cell]);
+                }
+
+                var fluxDivergenceAtPoint = sum / (2 * Areas[cell]);
+
+                fluxDivergence[cell] = fluxDivergenceAtPoint;
+            }
+
+            return fluxDivergence;
+        }
+
+        public FloatField Laplacian(FloatField A)
+        {
+            var laplacian = new FloatField(A.Values.Length);
+
+            foreach (int cell in CellIndices)
+            {
+                int[] neighbourIndices = IndicesOfNeighbours[cell];
+                float sum = 0;
+
+                for (int j = 0; j < neighbourIndices.Length; j++)
+                {
+                    var currentNeighbour = neighbourIndices[j];
+                    var widthToDistance = Widths[cell][j] / DistancesBetweenCenters[cell][j];
+                    sum += widthToDistance * (A[currentNeighbour] - A[cell]);
+                }
+
+                var laplacianAtPoint = sum / Areas[cell];
+
+                laplacian[cell] = laplacianAtPoint;
+            }
+
+            return laplacian;
+        }
+
+        public FloatField InvertElliptic(FloatField U, FloatField f)
+        {
+            var newU = new FloatField(U.Values.Length);
+
+            foreach (int cell in CellIndices)
+            {
+                int[] neighbourIndices = IndicesOfNeighbours[cell];
+                float sum = 0;
+                float sumOfWidthsToDistances = 0;
+                float areaTimesF = Areas[cell]*f[cell];
+
+                for (int j = 0; j < neighbourIndices.Length; j++)
+                {
+                    var currentNeighbour = neighbourIndices[j];
+                    var widthToDistance = Widths[cell][j] / DistancesBetweenCenters[cell][j];
+                    sum += widthToDistance * U[currentNeighbour] - areaTimesF;
+                    sumOfWidthsToDistances += widthToDistance;
+                }
+
+                var newUatPoint = sum/sumOfWidthsToDistances;
+
+                newU[cell] = newUatPoint;
+            }
+
+            return newU;
+        }
+
+        public Vector3[] Gradient(FloatField A)
+        {
+            var gradient = new Vector3[A.Values.Length];
+
+            foreach (var cell in CellIndices)
+            {
+                int[] neighbourIndices = IndicesOfNeighbours[cell];
+                var valueAtCell = A[cell];
+                var sum = new Vector3();
+
+                for (int j = 0; j < neighbourIndices.Length; j++)
+                {
+                    var currentNeighbour = neighbourIndices[j];
+                    var valueAtFace = (A[currentNeighbour] + valueAtCell) / 2;
+                    var normalToFace = NormalsToFaces[cell][j];
+
+                    sum += valueAtFace*normalToFace;
+                }
+
+                gradient[cell] = sum/Areas[cell];
+            }
+
+            return gradient;
+        }
+
+        private int MathMod(int x, int m)
+        {
+            return ((x%m) + m)%m;
+        }
 
         private int[][] GetIndicesOfNeighboursOf(List<Cell> cells, Dictionary<Cell, int> cellIndices)
         {
@@ -103,6 +223,30 @@ namespace Simulator.ShallowFluidSimulator
 
             return allDistances;
         }
+
+        //TODO: Test
+        private Vector3[][] CalculateNormalsToCenters(List<Cell> cells, Dictionary<Cell, int> indicesOfCells, int[][] allNeighbourIndices)
+        {
+            var allNormals = new Vector3[cells.Count][];
+
+            var cellAtIndex = indicesOfCells.ToDictionary(pair => pair.Value, pair => pair.Key);
+
+            foreach (var cell in cells)
+            {
+                var cellCenter = FoamUtils.CenterOf(cell);
+
+                var indicesOfNeighbours = allNeighbourIndices[indicesOfCells[cell]];
+                var neighbours = indicesOfNeighbours.Select(neighbourIndex => cellAtIndex[neighbourIndex]);
+                var centersOfNeighbours = neighbours.Select(neighbour => FoamUtils.CenterOf(neighbour));
+                var normalsToNeighbours = centersOfNeighbours.Select((neighbourCenter => (neighbourCenter - cellCenter).normalized));
+
+                var index = indicesOfCells[cell];
+                allNormals[index] = normalsToNeighbours.ToArray();
+            }
+
+            return allNormals;
+        }
+
 
         private float[] CalculateAreasOf(List<Cell> cells, Dictionary<Cell, int> indices)
         {
