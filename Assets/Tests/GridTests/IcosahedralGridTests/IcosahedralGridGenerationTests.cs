@@ -14,14 +14,14 @@ namespace Tests.GridTests.IcosahedralGrid
         [TestInitialize]
         public void Create_Icosahedral_Grid_With_Angular_Resolution_Of_1f()
         {
-            var options = new Options() {Radius = 1f, Resolution = 1f};
+            var options = new Options {Radius = 1f, Resolution = 1f};
             _grid = new Grids.IcosahedralGridGenerator.IcosahedralGrid(options);
         }
 
         [TestMethod]
         public void Specifying_Angular_Resolution_Greater_Than_1_Point_06_Should_Return_An_Icosahedron()
         {
-            var icosahedronOptions = new Options() { Radius = 1f, Resolution = 2f };
+            var icosahedronOptions = new Options { Radius = 1f, Resolution = 2f };
 
             _grid = new Grids.IcosahedralGridGenerator.IcosahedralGrid(icosahedronOptions);
 

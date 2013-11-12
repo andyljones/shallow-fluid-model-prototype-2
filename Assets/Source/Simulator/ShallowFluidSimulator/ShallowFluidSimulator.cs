@@ -72,7 +72,7 @@ namespace Simulator.ShallowFluidSimulator
 
             foreach (var cell in Cells)
             {
-                var cellIndex = _operators.CellIndexDict[cell];
+                var cellIndex = _operators.Preprocessor.CellIndexDict[cell];
                 var velocity = Vector3.Cross(FoamUtils.CenterOf(cell).normalized, streamfunctionGradient[cellIndex]) +
                                velocityPotentialGradient[cellIndex];
                 cell.Velocity = velocity;
