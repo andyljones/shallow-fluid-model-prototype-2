@@ -64,7 +64,6 @@ namespace Simulator.ShallowFluidSimulator
             return new FloatField(sum);
         }
         
-        //TODO: Needs testing.
         public static FloatField operator *(FloatField lhs, FloatField rhs)
         {
             if (lhs.Values.Length != rhs.Values.Length)
@@ -82,7 +81,6 @@ namespace Simulator.ShallowFluidSimulator
             return new FloatField(sum);
         }
 
-        //TODO: Needs testing.
         public static FloatField operator *(float lhs, FloatField rhs)
         {
             var sum = new float[rhs.Values.Length];
@@ -95,7 +93,6 @@ namespace Simulator.ShallowFluidSimulator
             return new FloatField(sum);
         }
 
-        //TODO: Needs testing.
         public static FloatField operator +(FloatField lhs, float rhs)
         {
             var sum = new float[lhs.Values.Length];

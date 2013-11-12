@@ -1,26 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Foam;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Simulator.ShallowFluidSimulator
 {
     public class DifferenceOperators
     {
-        public CellPreprocessor Preprocessor;
+        private IPreprocessor _preprocessor;
 
-        public DifferenceOperators(List<Cell> cells)
+        public DifferenceOperators(IPreprocessor preprocessor)
         {
-            Preprocessor = new CellPreprocessor(cells);
+            _preprocessor = preprocessor;
         }
 
         public FloatField Jacobian(FloatField A, FloatField B)
         {
             var jacobian = new FloatField(A.Values.Length);
 
-            foreach (int cell in Preprocessor.CellIndices)
+            foreach (int cell in _preprocessor.CellIndices)
             {
-                int[] neighbourIndices = Preprocessor.IndicesOfNeighbours[cell];
+                int[] neighbourIndices = _preprocessor.IndicesOfNeighbours[cell];
                 float sum = 0;
 
                 for (int j = 0; j < neighbourIndices.Length; j++)
@@ -31,7 +28,7 @@ namespace Simulator.ShallowFluidSimulator
                     sum += (A[cell] + A[currentNeighbour])*(B[nextNeighbour] - B[previousNeighbour]);
                 }
 
-                var jacobianAtPoint = sum/(6*Preprocessor.Areas[cell]);
+                var jacobianAtPoint = sum/(6*_preprocessor.Areas[cell]);
 
                 jacobian[cell] = jacobianAtPoint;
             }
@@ -43,19 +40,19 @@ namespace Simulator.ShallowFluidSimulator
         {
             var fluxDivergence = new FloatField(A.Values.Length);
 
-            foreach (int cell in Preprocessor.CellIndices)
+            foreach (int cell in _preprocessor.CellIndices)
             {
-                int[] neighbourIndices = Preprocessor.IndicesOfNeighbours[cell];
+                int[] neighbourIndices = _preprocessor.IndicesOfNeighbours[cell];
                 float sum = 0;
 
                 for (int j = 0; j < neighbourIndices.Length; j++)
                 {
                     var currentNeighbour = neighbourIndices[j];
-                    var widthToDistance = Preprocessor.Widths[cell][j]/Preprocessor.DistancesBetweenCenters[cell][j];
+                    var widthToDistance = _preprocessor.Widths[cell][j]/_preprocessor.DistancesBetweenCenters[cell][j];
                     sum += widthToDistance * (A[cell] + A[currentNeighbour]) * (B[currentNeighbour] - B[cell]);
                 }
 
-                var fluxDivergenceAtPoint = sum / (2 * Preprocessor.Areas[cell]);
+                var fluxDivergenceAtPoint = sum / (2 * _preprocessor.Areas[cell]);
 
                 fluxDivergence[cell] = fluxDivergenceAtPoint;
             }
@@ -67,19 +64,19 @@ namespace Simulator.ShallowFluidSimulator
         {
             var laplacian = new FloatField(A.Values.Length);
 
-            foreach (int cell in Preprocessor.CellIndices)
+            foreach (int cell in _preprocessor.CellIndices)
             {
-                int[] neighbourIndices = Preprocessor.IndicesOfNeighbours[cell];
+                int[] neighbourIndices = _preprocessor.IndicesOfNeighbours[cell];
                 float sum = 0;
 
                 for (int j = 0; j < neighbourIndices.Length; j++)
                 {
                     var currentNeighbour = neighbourIndices[j];
-                    var widthToDistance = Preprocessor.Widths[cell][j] / Preprocessor.DistancesBetweenCenters[cell][j];
+                    var widthToDistance = _preprocessor.Widths[cell][j] / _preprocessor.DistancesBetweenCenters[cell][j];
                     sum += widthToDistance * (A[currentNeighbour] - A[cell]);
                 }
 
-                var laplacianAtPoint = sum / Preprocessor.Areas[cell];
+                var laplacianAtPoint = sum / _preprocessor.Areas[cell];
 
                 laplacian[cell] = laplacianAtPoint;
             }
@@ -91,22 +88,22 @@ namespace Simulator.ShallowFluidSimulator
         {
             var newU = new FloatField(U.Values.Length);
 
-            foreach (int cell in Preprocessor.CellIndices)
+            foreach (int cell in _preprocessor.CellIndices)
             {
-                int[] neighbourIndices = Preprocessor.IndicesOfNeighbours[cell];
+                int[] neighbourIndices = _preprocessor.IndicesOfNeighbours[cell];
                 float sum = 0;
                 float sumOfWidthsToDistances = 0;
-                float areaTimesF = Preprocessor.Areas[cell]*f[cell];
+                float areaTimesF = _preprocessor.Areas[cell]*f[cell];
 
                 for (int j = 0; j < neighbourIndices.Length; j++)
                 {
                     var currentNeighbour = neighbourIndices[j];
-                    var widthToDistance = Preprocessor.Widths[cell][j] / Preprocessor.DistancesBetweenCenters[cell][j];
-                    sum += widthToDistance * U[currentNeighbour] - areaTimesF;
+                    var widthToDistance = _preprocessor.Widths[cell][j] / _preprocessor.DistancesBetweenCenters[cell][j];
+                    sum += widthToDistance * U[currentNeighbour];
                     sumOfWidthsToDistances += widthToDistance;
                 }
 
-                var newUatPoint = sum/sumOfWidthsToDistances;
+                var newUatPoint = (sum - areaTimesF) / sumOfWidthsToDistances;
 
                 newU[cell] = newUatPoint;
             }
@@ -118,9 +115,9 @@ namespace Simulator.ShallowFluidSimulator
         {
             var gradient = new Vector3[A.Values.Length];
 
-            foreach (var cell in Preprocessor.CellIndices)
+            foreach (var cell in _preprocessor.CellIndices)
             {
-                int[] neighbourIndices = Preprocessor.IndicesOfNeighbours[cell];
+                int[] neighbourIndices = _preprocessor.IndicesOfNeighbours[cell];
                 var valueAtCell = A[cell];
                 var sum = new Vector3();
 
@@ -128,12 +125,12 @@ namespace Simulator.ShallowFluidSimulator
                 {
                     var currentNeighbour = neighbourIndices[j];
                     var valueAtFace = (A[currentNeighbour] + valueAtCell) / 2;
-                    var normalToFace = Preprocessor.NormalsToFaces[cell][j];
+                    var normalToFace = _preprocessor.NormalsToFaces[cell][j];
 
                     sum += valueAtFace*normalToFace;
                 }
 
-                gradient[cell] = sum/Preprocessor.Areas[cell];
+                gradient[cell] = sum/_preprocessor.Areas[cell];
             }
 
             return gradient;

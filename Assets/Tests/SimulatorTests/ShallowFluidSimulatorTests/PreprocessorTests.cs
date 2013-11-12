@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using Foam;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulator;
 using Simulator.ShallowFluidSimulator;
 using Tests.Fakes;
 using UnityEngine;
@@ -90,6 +88,26 @@ namespace Tests.SimulatorTests.ShallowFluidSimulatorTests
             var expectedNumberOfCells = 2;
             var expectedDistancesPerCell = 1;
             var actualDistancesPerCell = _preprocessor.Widths.Select(arrayOfWidths => arrayOfWidths.Count()).ToList();
+
+            Assert.AreEqual(expectedNumberOfCells, actualDistancesPerCell.Count());
+            Assert.IsTrue(actualDistancesPerCell.All(count => count == expectedDistancesPerCell));
+        }
+
+        [TestMethod]
+        public void Constructor_Should_Calculate_Normals_To_Faces_Correctly()
+        {
+            var expected = new Vector3(0, 0, -1);
+            var actual = _preprocessor.NormalsToFaces[0][0];
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Constructor_Should_Calculate_Normals_To_Faces_For_Each_Cell()
+        {
+            var expectedNumberOfCells = 2;
+            var expectedDistancesPerCell = 1;
+            var actualDistancesPerCell = _preprocessor.NormalsToFaces.Select(arrayOfWidths => arrayOfWidths.Count()).ToList();
 
             Assert.AreEqual(expectedNumberOfCells, actualDistancesPerCell.Count());
             Assert.IsTrue(actualDistancesPerCell.All(count => count == expectedDistancesPerCell));

@@ -61,5 +61,32 @@ namespace Tests.SimulatorTests.ShallowFluidSimulatorTests
 
             CollectionAssert.AreEqual(expected.Values, actual.Values);
         }
+
+        [TestMethod]
+        public void Product_Of_A_And_B_Should_Be_Correct()
+        {
+            var expected = new FloatField(new float[] { -8, -4, 42 });
+            var actual = _fieldA * _fieldB;
+
+            CollectionAssert.AreEqual(expected.Values, actual.Values);
+        }
+
+        [TestMethod]
+        public void Product_Of_A_Constant_And_A_Should_Be_Correct()
+        {
+            var expected = new FloatField(new float[] { 6, 12, 18 });
+            var actual = 3 * _fieldA;
+
+            CollectionAssert.AreEqual(expected.Values, actual.Values);
+        }
+
+        [TestMethod]
+        public void Sum_Of_A_And_A_Constant_Should_Be_Correct()
+        {
+            var expected = new FloatField(new float[] { 6, 8, 10 });
+            var actual = _fieldA + 4;
+
+            CollectionAssert.AreEqual(expected.Values, actual.Values);
+        }
     }
 }

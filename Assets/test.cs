@@ -29,10 +29,10 @@ public class test : MonoBehaviour {
 	    var options = new Options
 	    {
 	        Radius = 6000f,
-	        Resolution = 3000f,
+	        Resolution = 750f,
 	        Height = 8f,
             DayLength = 80000,
-            Timestep = 300,
+            Timestep = 30,
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",

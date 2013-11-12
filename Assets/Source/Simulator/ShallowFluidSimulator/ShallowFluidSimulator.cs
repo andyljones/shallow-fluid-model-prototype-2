@@ -12,19 +12,27 @@ namespace Simulator.ShallowFluidSimulator
         public List<Cell> Cells { get; private set; }
 
         private IShallowFluidSimulatorOptions _options;
-        private DifferenceOperators _operators;
+        private DifferenceOperators _ops;
+        private CellPreprocessor _preprocessor;
         private FloatField _coriolis;
-        private FloatField _vorticity;
-        private FloatField _divergence;
-        private FloatField _velocityPotential;
-        private FloatField _streamfunction;
-        private FloatField _height;
+
+        private FloatField _eta;
+        private FloatField _delta;
+        
+        private FloatField _chi;
+        private FloatField _phi;
+        private FloatField _h;
+
+        private List<FloatField> latestDEtaDt = new List<FloatField>();
+        private List<FloatField> latestDDeltaDt = new List<FloatField>();
+        private List<FloatField> latestDhDt = new List<FloatField>();
 
         public ShallowFluidSimulator(IAtmosphere atmosphere, IShallowFluidSimulatorOptions options)
         {
             Cells = atmosphere.Cells;
             _options = options;
-            _operators = new DifferenceOperators(Cells);
+            _preprocessor = new CellPreprocessor(Cells);
+            _ops = new DifferenceOperators(_preprocessor);
             
             InitializeConditions();
         }
@@ -33,50 +41,69 @@ namespace Simulator.ShallowFluidSimulator
         {
             var angularVelocity = 2*Mathf.PI/_options.DayLength;
             _coriolis = new FloatField(Cells.Select(cell => 2 * angularVelocity * FoamUtils.CenterOf(cell).normalized.z).ToArray());
-            _vorticity = new FloatField(Cells.Count);
-            _divergence = new FloatField(Cells.Count);
-            _velocityPotential = new FloatField(Cells.Count);
-            _streamfunction = new FloatField(Cells.Count);
-            _height = new FloatField(Cells.Select(cell => _options.Height).ToArray());
+            _eta = new FloatField(Cells.Count);
+            _delta = new FloatField(Cells.Count);
+            _chi = new FloatField(Cells.Count);
+            _phi = new FloatField(Cells.Count);
+            _h = new FloatField(Cells.Select(cell => _options.Height).ToArray());
+
+            StepFields(Matsuno);
+            StepFields(Matsuno);
         }
 
         public void StepSimulation()
         {
-            var derivativeOfVorticity = _operators.Jacobian(_vorticity, _velocityPotential) -
-                                        _operators.FluxDivergence(_vorticity, _streamfunction);
+            StepFields(AdamsBashforth);
 
-            var energy = 0.5f *
-                         (_operators.FluxDivergence(_streamfunction, _streamfunction) -
-                          _streamfunction*_operators.Laplacian(_streamfunction) +
-                          _operators.FluxDivergence(_velocityPotential, _velocityPotential) -
-                          _velocityPotential*_operators.Laplacian(_velocityPotential)) +
-                          _operators.Jacobian(_streamfunction, _velocityPotential) +
-                          9.81f * _height;
-
-            var derivativeOfDivergence = _operators.FluxDivergence(_vorticity, _velocityPotential) +
-                                         _operators.Jacobian(_vorticity, _streamfunction) -
-                                         _operators.Laplacian(energy);
-
-            var derivativeOfDepth = _operators.Jacobian(_height, _streamfunction) -
-                                    _operators.FluxDivergence(_height, _streamfunction);
-
-            _vorticity = _vorticity + _options.Timestep * derivativeOfVorticity;
-            _divergence = _divergence + _options.Timestep * derivativeOfDivergence;
-            _height = _height + _options.Timestep * derivativeOfDepth;
-
-            _streamfunction = _operators.InvertElliptic(_streamfunction, _vorticity - _coriolis);
-            _velocityPotential = _operators.InvertElliptic(_velocityPotential, _divergence);
-
-            var streamfunctionGradient = _operators.Gradient(_streamfunction);
-            var velocityPotentialGradient = _operators.Gradient(_velocityPotential);
+            var phiGradient = _ops.Gradient(_phi);
+            var chiGradient = _ops.Gradient(_chi);
 
             foreach (var cell in Cells)
             {
-                var cellIndex = _operators.Preprocessor.CellIndexDict[cell];
-                var velocity = Vector3.Cross(FoamUtils.CenterOf(cell).normalized, streamfunctionGradient[cellIndex]) +
-                               velocityPotentialGradient[cellIndex];
+                var cellIndex = _preprocessor.CellIndexDict[cell];
+                var velocity = Vector3.Cross(FoamUtils.CenterOf(cell).normalized, phiGradient[cellIndex]) +
+                               chiGradient[cellIndex];
                 cell.Velocity = velocity;
             }
+        }
+
+        private void StepFields(Solver solver)
+        {
+            var dEtaDt = _ops.Jacobian(_eta, _phi) - _ops.FluxDivergence(_eta, _chi);
+
+            var energy = 0.5f *
+                         (_ops.FluxDivergence(_phi, _phi) - _phi * _ops.Laplacian(_phi) +
+                          _ops.FluxDivergence(_chi, _chi) - _chi * _ops.Laplacian(_chi)) +
+                          _ops.Jacobian(_phi, _chi) + 0.00981f * _h;
+
+            var dDeltaDt = _ops.FluxDivergence(_eta, _phi) + _ops.Jacobian(_eta, _chi) - _ops.Laplacian(energy);
+
+            var dHdT = _ops.Jacobian(_h, _phi) - _ops.FluxDivergence(_h, _chi);
+
+            _eta = _eta + _options.Timestep * solver(latestDEtaDt, dEtaDt);
+            _delta = _delta + _options.Timestep * solver(latestDDeltaDt, dDeltaDt);
+            _h = _h + _options.Timestep * solver(latestDhDt, dHdT);
+
+            _phi = _ops.InvertElliptic(_phi, _eta - _coriolis);
+            _chi = _ops.InvertElliptic(_chi, _delta);
+        }
+
+        private delegate FloatField Solver(List<FloatField> oldFields, FloatField latestField);
+
+        private FloatField AdamsBashforth(List<FloatField> oldFields, FloatField latestField)
+        {
+            oldFields.Add(latestField);
+            var result = 0.125f*(23*oldFields[2] - 16*oldFields[1] + 5*oldFields[0]);
+            oldFields.Remove(oldFields[0]);
+
+            return result;
+        }
+
+        private FloatField Matsuno(List<FloatField> oldFields, FloatField latestField)
+        {
+            oldFields.Add(latestField);
+
+            return latestField;
         }
     }
 }

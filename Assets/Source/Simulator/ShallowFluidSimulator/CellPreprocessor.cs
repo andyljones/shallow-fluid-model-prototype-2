@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace Simulator.ShallowFluidSimulator
 {
-    public class CellPreprocessor
+    public class CellPreprocessor : IPreprocessor
     {
-        public Dictionary<Cell, int> CellIndexDict;
-        public int[] CellIndices;
+        public Dictionary<Cell, int> CellIndexDict { get; private set; }
+        public int[] CellIndices { get; private set; }
 
-        public int[][] IndicesOfNeighbours;
-        public float[] Areas;
-        public float[][] Widths;
-        public float[][] DistancesBetweenCenters;
-        public Vector3[][] NormalsToFaces;
+        public int[][] IndicesOfNeighbours { get; private set; }
+        public float[] Areas { get; private set; }
+        public float[][] Widths { get; private set; }
+        public float[][] DistancesBetweenCenters { get; private set; }
+        public Vector3[][] NormalsToFaces { get; private set; }
 
         public CellPreprocessor(List<Cell> cells)
         {
@@ -25,7 +25,7 @@ namespace Simulator.ShallowFluidSimulator
             Areas = CalculateAreasOf(cells, CellIndexDict);
             Widths = CalculateWidthsOfFacesOf(cells, CellIndexDict, IndicesOfNeighbours);
             DistancesBetweenCenters = CalculateDistancesBetweenCenters(cells, CellIndexDict, IndicesOfNeighbours);
-            NormalsToFaces = CalculateNormalsToCenters(cells, CellIndexDict, IndicesOfNeighbours);
+            NormalsToFaces = CalculateNormalsToFaces(cells, CellIndexDict, IndicesOfNeighbours);
         }
 
         private int[][] GetIndicesOfNeighboursOf(List<Cell> cells, Dictionary<Cell, int> cellIndices)
@@ -94,8 +94,8 @@ namespace Simulator.ShallowFluidSimulator
             return allDistances;
         }
 
-        //TODO: Test
-        private Vector3[][] CalculateNormalsToCenters(List<Cell> cells, Dictionary<Cell, int> indicesOfCells, int[][] allNeighbourIndices)
+        //TODO: This'll only be correct when the vector between neighbouring cells is perpendicular to the face that divides them.
+        private Vector3[][] CalculateNormalsToFaces(List<Cell> cells, Dictionary<Cell, int> indicesOfCells, int[][] allNeighbourIndices)
         {
             var allNormals = new Vector3[cells.Count][];
 

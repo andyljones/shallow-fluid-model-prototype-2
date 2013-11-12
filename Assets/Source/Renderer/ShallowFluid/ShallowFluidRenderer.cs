@@ -37,16 +37,10 @@ namespace Renderer.ShallowFluid
 
             var localVertices = new Vector3[2*_cells.Count];
 
-            var t = Time.time;
-
             foreach (var cell in _cells)
             {
                 var cellCenter = _cellCenter[cell];
-                //var localEast = _localEast[cell];
-                //var localNorth = _localNorth[cell];
-                //cell.Velocity.x = Mathf.Cos(t);
-                //cell.Velocity.y = Mathf.Sin(t); 
-                var arrowVector = cell.Velocity;
+                var arrowVector = cell.Velocity.normalized; //TODO Remove this.
 
                 var arrowIndex = _arrowIndex[cell];
                 localVertices[arrowIndex - 1] = cellCenter;
