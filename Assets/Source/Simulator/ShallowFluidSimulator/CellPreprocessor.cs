@@ -11,6 +11,7 @@ namespace Simulator.ShallowFluidSimulator
         public int[] CellIndices { get; private set; }
 
         public int[][] IndicesOfNeighbours { get; private set; }
+        public Vector3[] CellCenters { get; private set; }
         public float[] Areas { get; private set; }
         public float[][] Widths { get; private set; }
         public float[][] DistancesBetweenCenters { get; private set; }
@@ -22,10 +23,25 @@ namespace Simulator.ShallowFluidSimulator
             CellIndices = CellIndexDict.Values.ToArray();
 
             IndicesOfNeighbours = GetIndicesOfNeighboursOf(cells, CellIndexDict);
+            CellCenters = CalculateCellCenters(cells, CellIndexDict);
             Areas = CalculateAreasOf(cells, CellIndexDict);
             Widths = CalculateWidthsOfFacesOf(cells, CellIndexDict, IndicesOfNeighbours);
             DistancesBetweenCenters = CalculateDistancesBetweenCenters(cells, CellIndexDict, IndicesOfNeighbours);
             NormalsToFaces = CalculateNormalsToFaces(cells, CellIndexDict, IndicesOfNeighbours);
+        }
+
+        //TODO: Test
+        private Vector3[] CalculateCellCenters(List<Cell> cells, Dictionary<Cell, int> cellIndexDict)
+        {
+            var cellCenters = new Vector3[cells.Count];
+
+            foreach (var cell in cells)
+            {
+                var index = cellIndexDict[cell];
+                cellCenters[index] = FoamUtils.CenterOf(cell);
+            }
+
+            return cellCenters;
         }
 
         private int[][] GetIndicesOfNeighboursOf(List<Cell> cells, Dictionary<Cell, int> cellIndices)
