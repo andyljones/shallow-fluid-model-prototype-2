@@ -70,7 +70,7 @@ namespace Renderer.ShallowFluid
 
                 var arrowIndex = _arrowIndices[cell];
                 localVertices[arrowIndex - 1] = cellCenter;
-                localVertices[arrowIndex] = cellCenter + arrowVector * 1000000;
+                localVertices[arrowIndex] = cellCenter + arrowVector * 500000;
             }
 
             _arrowMesh.vertices = localVertices;

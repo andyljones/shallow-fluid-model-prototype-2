@@ -23,7 +23,8 @@ namespace Renderer.ShallowFluid
             VertexIndices = SetVertexIndices(faces);
             FaceIndices = SetFaceIndices(faces, VertexIndices.Count);
             Positions = InitializePositions(VertexIndices, FaceIndices, heightMultiplier);
-            _initialPositions = Positions;
+            _initialPositions = new Vector3[Positions.Length];
+            Positions.CopyTo(_initialPositions, 0);
             _initialHeights = GetHeights(VertexIndices, FaceIndices);
             Triangles = InitializeTriangles(faces);
         }
@@ -103,8 +104,9 @@ namespace Renderer.ShallowFluid
                 var index = vertexAndIndex.Value;
                 var originalHeight = _initialHeights[index];
                 var originalPosition = _initialPositions[index];
-                var currentHeight = vertex.Cells.Average(cell => cell.Height); //TODO: this is probably slow
+                var currentHeight = vertex.Cells[0].Height; //TODO: this is probably slow
                 Positions[index] = (1 + (currentHeight - originalHeight) * multiplier) * originalPosition;
+
             }
 
             foreach (var faceAndIndex in FaceIndices)
@@ -113,7 +115,7 @@ namespace Renderer.ShallowFluid
                 var index = faceAndIndex.Value;
                 var originalHeight = _initialHeights[index];
                 var originalPosition = _initialPositions[index];
-                var currentHeight = face.Cells.Average(cell => cell.Height); //TODO: as is this
+                var currentHeight = face.Cells[0].Height; //TODO: as is this
                 Positions[index] = (1 + (currentHeight - originalHeight) * multiplier) * originalPosition;
             }
         }

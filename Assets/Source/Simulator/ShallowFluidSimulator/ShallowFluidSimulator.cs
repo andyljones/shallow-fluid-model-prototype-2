@@ -27,6 +27,8 @@ namespace Simulator.ShallowFluidSimulator
         private List<FloatField> latestDDeltaDt = new List<FloatField>();
         private List<FloatField> latestDhDt = new List<FloatField>();
 
+        private bool _firstStep = true;
+
         public ShallowFluidSimulator(IAtmosphere atmosphere, IShallowFluidSimulatorOptions options)
         {
             Cells = atmosphere.Cells;
@@ -39,25 +41,33 @@ namespace Simulator.ShallowFluidSimulator
 
         private void InitializeConditions()
         {
-            var rand = new System.Random();
-
             var angularVelocity = 2*Mathf.PI/_options.DayLength;
             _coriolis = new FloatField(Cells.Select(cell => 2 * angularVelocity * FoamUtils.CenterOf(cell).normalized.z).ToArray());
             _chi = new FloatField(Cells.Count);
             _phi = new FloatField(Cells.Count);
-            _h = new FloatField(Cells.Select(cell => _options.Height + rand.Next(-3, 3)).ToArray());
+            _h = new FloatField(Cells.Select(cell => _options.Height).ToArray());
             _eta = _ops.Laplacian(_phi) + _coriolis;
             _delta = _ops.Laplacian(_chi);
 
             UpdateCellConditions();
-
-            StepFields(Matsuno);
-            StepFields(Matsuno);
         }
 
         public void StepSimulation()
         {
-            StepFields(AdamsBashforth);
+            if (_firstStep)
+            {
+                _h = new FloatField(Cells.Select(cell => _options.Height).ToArray());
+                _phi = new FloatField(Cells.Select(cell => -1*FoamUtils.CenterOf(cell).normalized.z).ToArray());
+                _eta = _ops.Laplacian(_phi) + _coriolis;
+                StepFields(Matsuno);
+                StepFields(Matsuno);
+                _firstStep = false;
+            }
+            else
+            {
+                StepFields(AdamsBashforth);
+            }
+
         }
 
         public void UpdateCellConditions()
@@ -74,6 +84,8 @@ namespace Simulator.ShallowFluidSimulator
                 cell.Velocity = velocity;
                 cell.Height = _h[cellIndex];
             }
+
+            //Debug.Log(_h.Values.Sum());
         }
 
         private void StepFields(Solver solver)
@@ -85,7 +97,7 @@ namespace Simulator.ShallowFluidSimulator
                           _ops.FluxDivergence(_chi, _chi) - _chi * _ops.Laplacian(_chi)) -
                           _ops.Jacobian(_phi, _chi) + 0.00981f * _h;
 
-            //Debug.Log(energy.Values.Max());
+            Debug.Log(energy.Values.Sum());
 
             var dDeltaDt = _ops.FluxDivergence(_eta, _phi) + _ops.Jacobian(_eta, _chi) - _ops.Laplacian(energy);
 

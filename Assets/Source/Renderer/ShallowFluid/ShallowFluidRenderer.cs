@@ -39,7 +39,7 @@ namespace Renderer.ShallowFluid
             _simulator.StepSimulation();
             _simulator.UpdateCellConditions();
 
-            _atmosphereRenderer.UpdateLayer(.00002f);
+            _atmosphereRenderer.UpdateLayer((1f-1f/1.05f)/8f); //TODO: fix hardcoded value
 
             _arrowRenderer.UpdateArrows();
         }
