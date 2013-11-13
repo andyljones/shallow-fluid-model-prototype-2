@@ -11,8 +11,8 @@ namespace Renderer.ShallowFluid
         public List<int[]> LayerTriangles = new List<int[]>();
         public List<int[]> Boundaries = new List<int[]>();
 
-        private Dictionary<Vertex, int> _vertexIndices = new Dictionary<Vertex, int>();
-        private Dictionary<Face, int> _faceIndices = new Dictionary<Face, int>();
+        public Dictionary<Vertex, int> VertexIndices = new Dictionary<Vertex, int>();
+        public Dictionary<Face, int> FaceIndices = new Dictionary<Face, int>();
 
         private float _detailMultiplier;
 
@@ -22,25 +22,6 @@ namespace Renderer.ShallowFluid
 
             InitializeVectors(cells);
             InitializeTriangles(cells);
-            InitializeBoundaries(cells);
-        }
-
-        // This method fills the Boundaries member with a list of lists, where each list contains a list of vector indices
-        // that will be used to create a LineRenderer that renders the edges of cells.
-        private void InitializeBoundaries(List<Cell> cells)
-        {
-            var atmosphericFaces = cells.Select<Cell, Face>(FoamUtils.TopFaceOf);
-            var atmosphericEdges = atmosphericFaces.SelectMany(face => face.Edges).Distinct().ToList();
-
-            var routeFinder = new BoundaryRouteFinder(atmosphericEdges);
-
-            while (!routeFinder.AllEdgesVisited())
-            {
-                var route = routeFinder.GetRoute();
-                var routeIndices = route.Select(vertex => _vertexIndices[vertex]);
-
-                Boundaries.Add(routeIndices.ToArray());
-            }
         }
 
         private void InitializeVectors(List<Cell> cells)
@@ -57,7 +38,7 @@ namespace Renderer.ShallowFluid
                 var vertex = vertices[i];
                 var position = vertex.Position;
                 Vectors[i] = position;
-                _vertexIndices.Add(vertex, i);
+                VertexIndices.Add(vertex, i);
             }
 
             for (int i = 0; i < faces.Count; i++)
@@ -65,15 +46,15 @@ namespace Renderer.ShallowFluid
                 var face = faces[i];
                 var position = CenterOfFace(face);
                 Vectors[i + vertices.Count] = position;
-                _faceIndices.Add(face, i + vertices.Count);
+                FaceIndices.Add(face, i + vertices.Count);
             }
 
             var vectorsToBeMultiplied = new List<int>();
 
             foreach (var face in atmosphereFaces)
             {
-                vectorsToBeMultiplied.Add(_faceIndices[face]);
-                vectorsToBeMultiplied.AddRange(face.Vertices.Select(vertex => _vertexIndices[vertex]));
+                vectorsToBeMultiplied.Add(FaceIndices[face]);
+                vectorsToBeMultiplied.AddRange(face.Vertices.Select(vertex => VertexIndices[vertex]));
             }
 
             foreach (var vectorIndex in vectorsToBeMultiplied.Distinct())
@@ -113,12 +94,12 @@ namespace Renderer.ShallowFluid
 
         private IEnumerable<int> TrianglesInFace(Face face)
         {
-            var faceIndex = _faceIndices[face];
+            var faceIndex = FaceIndices[face];
             var facePosition = Vectors[faceIndex];
 
             var baseline = Vector3.Cross(facePosition, face.Vertices.First().Position);
             var clockwiseComparer = new CompareVectorsClockwise(facePosition, baseline); //TODO: Uhh this'll still be degenerate at the poles
-            var vertexIndices = face.Vertices.Select(vertex => _vertexIndices[vertex]);
+            var vertexIndices = face.Vertices.Select(vertex => VertexIndices[vertex]);
             var clockwiseSortedIndices = vertexIndices.OrderBy(index => Vectors[index], clockwiseComparer).ToList();
 
             var triangles = new List<int>();
