@@ -29,7 +29,7 @@ public class test : MonoBehaviour {
 	    var options = new Options
 	    {
 	        Radius = 6000f,
-	        Resolution = 375f,
+	        Resolution = 750f,
 	        Height = 8f,
             DayLength = 80000,
             Timestep = 50,

@@ -56,7 +56,10 @@ namespace Simulator.ShallowFluidSimulator
         public void StepSimulation()
         {
             StepFields(AdamsBashforth);
+        }
 
+        public void UpdateCellConditions()
+        {
             var phiGradient = _ops.Gradient(_phi);
             var chiGradient = _ops.Gradient(_chi);
 

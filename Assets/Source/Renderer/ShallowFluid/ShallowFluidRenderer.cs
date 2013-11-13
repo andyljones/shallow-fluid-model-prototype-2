@@ -12,12 +12,11 @@ namespace Renderer.ShallowFluid
         private ISimulator _simulator;
         private List<Cell> _cells;
         private IShallowFluidRendererOptions _options;
+        private ArrowRenderer _arrowRenderer;
 
-        private Dictionary<Cell, int> _arrowIndex = new Dictionary<Cell, int>();
-        private Dictionary<Cell, Vector3> _cellCenter = new Dictionary<Cell, Vector3>(); 
-        private Dictionary<Cell, Vector3> _localEast = new Dictionary<Cell, Vector3>();
-        private Dictionary<Cell, Vector3> _localNorth = new Dictionary<Cell, Vector3>();
-        private Mesh _arrowMesh;
+        //private Dictionary<Cell, int> _arrowIndex = new Dictionary<Cell, int>();
+        //private Dictionary<Cell, Vector3> _cellCenter = new Dictionary<Cell, Vector3>(); 
+        //private Mesh _arrowMesh;
 
         public ShallowFluidRenderer(ISimulator simulator, IShallowFluidRendererOptions options)
         {
@@ -28,69 +27,67 @@ namespace Renderer.ShallowFluid
 
             InitializeLayers(helper, _options);
             InitializeBoundaries(helper, _options);
-            InitializeArrows();
+
+            _arrowRenderer = new ArrowRenderer(_cells, _options.DetailMultiplier, _options.ArrowMaterial);
         }
 
         public void UpdateRender()
         {
             _simulator.StepSimulation();
+            _simulator.UpdateCellConditions();
 
-            var localVertices = new Vector3[2*_cells.Count];
-
-            foreach (var cell in _cells)
-            {
-                var cellCenter = _cellCenter[cell];
-                var arrowVector = cell.Velocity;
-
-                var arrowIndex = _arrowIndex[cell];
-                localVertices[arrowIndex - 1] = cellCenter;
-                localVertices[arrowIndex] = cellCenter + arrowVector* 1000000;
-            }
-
-            _arrowMesh.vertices = localVertices;
+            _arrowRenderer.UpdateArrows();
         }
 
-        private void InitializeArrows()
-        {
-            var vectors = new Vector3[2*_cells.Count];
-            var lines = new int[2*_cells.Count];
+        //public void UpdateArrows()
+        //{
+        //    var localVertices = new Vector3[2 * _cells.Count];
 
-            for (int i =0; i < _cells.Count; i++)
-            {
-                var cell = _cells[i];
+        //    foreach (var cell in _cells)
+        //    {
+        //        var cellCenter = _cellCenter[cell];
+        //        var arrowVector = cell.Velocity;
 
-                var cellCenter = FoamUtils.CenterOf(cell) * _options.DetailMultiplier;
-                var localEast = Vector3.Cross(cellCenter, new Vector3(0, 0, 1)).normalized;
-                var localNorth = Vector3.Cross(localEast, cellCenter).normalized;
+        //        var arrowIndex = _arrowIndex[cell];
+        //        localVertices[arrowIndex - 1] = cellCenter;
+        //        localVertices[arrowIndex] = cellCenter + arrowVector * 1000000;
+        //    }
 
-                _cellCenter.Add(cell, cellCenter);
-                _localEast.Add(cell, localEast);
-                _localNorth.Add(cell, localNorth);
-                _arrowIndex.Add(cell, 2*i + 1);
+        //    _arrowMesh.vertices = localVertices;
+        //}
 
-                var arrowVector = cell.Velocity.x*localEast + cell.Velocity.y*localNorth;
+        //private void InitializeArrows()
+        //{
+        //    var vectors = new Vector3[2*_cells.Count];
+        //    var lines = new int[2*_cells.Count];
 
-                vectors[2*i] = cellCenter;
-                vectors[2*i + 1] = cellCenter + arrowVector * _options.Radius * _options.Resolution / 40000;
+        //    for (int i =0; i < _cells.Count; i++)
+        //    {
+        //        var cell = _cells[i];
 
-                lines[2*i] = 2*i;
-                lines[2*i + 1] = 2*i + 1;
-            }
+        //        var cellCenter = FoamUtils.CenterOf(cell) * _options.DetailMultiplier;
 
-            var arrowObject = new GameObject("Arrows");
-            var arrowMesh = arrowObject.AddComponent<MeshFilter>();
-            arrowMesh.mesh.subMeshCount = _cells.Count;
-            arrowMesh.mesh.vertices = vectors;
-            arrowMesh.mesh.SetIndices(lines, MeshTopology.Lines, 0);
-            arrowMesh.mesh.normals = vectors.Select(vector => vector.normalized).ToArray();
-            arrowMesh.mesh.uv = new Vector2[vectors.Length];
+        //        _cellCenter.Add(cell, cellCenter);
+        //        _arrowIndex.Add(cell, 2*i + 1);
 
-            _arrowMesh = arrowMesh.mesh;
+        //        lines[2*i] = 2*i;
+        //        lines[2*i + 1] = 2*i + 1;
+        //    }
 
-            var arrowRenderer = arrowObject.AddComponent<MeshRenderer>();
-            var arrowMaterial = (Material) Resources.Load(_options.ArrowMaterial, typeof (Material));
-            arrowRenderer.material = arrowMaterial;
-        }
+        //    var arrowObject = new GameObject("Arrows");
+        //    var arrowMesh = arrowObject.AddComponent<MeshFilter>();
+        //    arrowMesh.mesh.subMeshCount = _cells.Count;
+        //    arrowMesh.mesh.vertices = vectors;
+        //    arrowMesh.mesh.SetIndices(lines, MeshTopology.Lines, 0);
+        //    arrowMesh.mesh.normals = vectors.Select(vector => vector.normalized).ToArray();
+        //    arrowMesh.mesh.uv = new Vector2[vectors.Length];
+
+        //    _arrowMesh = arrowMesh.mesh;
+
+        //    var arrowRenderer = arrowObject.AddComponent<MeshRenderer>();
+        //    var arrowMaterial = (Material) Resources.Load(_options.ArrowMaterial, typeof (Material));
+        //    arrowRenderer.material = arrowMaterial;
+        //}
 
         private void InitializeBoundaries(MeshHelper helper, IShallowFluidRendererOptions options)
         {

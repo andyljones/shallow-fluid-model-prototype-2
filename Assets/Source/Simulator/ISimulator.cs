@@ -8,5 +8,7 @@ namespace Simulator
         List<Cell> Cells { get; }
 
         void StepSimulation();
+
+        void UpdateCellConditions();
     }
 }
