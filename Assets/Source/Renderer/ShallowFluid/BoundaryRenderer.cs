@@ -21,7 +21,7 @@ namespace Renderer.ShallowFluid
 
             var boundaryObject = new GameObject("Boundaries");
             var boundaryMesh = boundaryObject.AddComponent<MeshFilter>();
-            boundaryMesh.mesh.vertices = _helper.Vectors;
+            boundaryMesh.mesh.vertices = _helper.Positions;
             boundaryMesh.mesh.subMeshCount = boundaryRoutes.Count;
 
             for (int i = 0; i < boundaryRoutes.Count; i++)

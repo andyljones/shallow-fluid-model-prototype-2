@@ -7,100 +7,85 @@ namespace Renderer.ShallowFluid
 {
     public class MeshHelper
     {
-        public Vector3[] Vectors;
-        public List<int[]> LayerTriangles = new List<int[]>();
-        public List<int[]> Boundaries = new List<int[]>();
+        public Vector3[] Positions;
+        public int[] Triangles;
 
-        public Dictionary<Vertex, int> VertexIndices = new Dictionary<Vertex, int>();
-        public Dictionary<Face, int> FaceIndices = new Dictionary<Face, int>();
+        public Dictionary<Vertex, int> VertexIndices;
+        public Dictionary<Face, int> FaceIndices;
 
-        private float _detailMultiplier;
-
-        public MeshHelper(List<Cell> cells, IShallowFluidRendererOptions options)
+        public MeshHelper(List<Face> faces, float heightMultiplier)
         {
-            _detailMultiplier = options.DetailMultiplier;
-
-            InitializeVectors(cells);
-            InitializeTriangles(cells);
+            VertexIndices = SetVertexIndices(faces);
+            FaceIndices = SetFaceIndices(faces, VertexIndices.Count);
+            Positions = InitializeVectors(faces, heightMultiplier);
+            Triangles = InitializeTriangles(faces);
         }
 
-        private void InitializeVectors(List<Cell> cells)
+        private Dictionary<Vertex, int> SetVertexIndices(List<Face> faces)
         {
-            var vertices = cells.SelectMany(cell => cell.Vertices).Distinct().ToList();
-            var surfaceFaces = cells.Select<Cell, Face>(FoamUtils.BottomFaceOf).ToList();
-            var atmosphereFaces = cells.Select<Cell, Face>(FoamUtils.TopFaceOf).ToList();
-            var faces = surfaceFaces.Concat(atmosphereFaces).ToList();
-
-            Vectors = new Vector3[vertices.Count + faces.Count];
+            var vertices = faces.SelectMany(cell => cell.Vertices).Distinct().ToList();
+            var vertexIndices = new Dictionary<Vertex, int>(vertices.Count);
 
             for (int i = 0; i < vertices.Count; i++)
             {
-                var vertex = vertices[i];
-                var position = vertex.Position;
-                Vectors[i] = position;
-                VertexIndices.Add(vertex, i);
+                vertexIndices.Add(vertices[i], i);
+            }
+
+            return vertexIndices;
+        }
+
+        private Dictionary<Face, int> SetFaceIndices(List<Face> faces, int offset)
+        {
+            var faceIndices = new Dictionary<Face, int>(faces.Count);
+
+            for (int i = 0; i < faces.Count; i++)
+            {
+                faceIndices.Add(faces[i], i + offset);
+            }
+
+            return faceIndices;
+        }
+
+        private Vector3[] InitializeVectors(List<Face> faces, float heightMultiplier)
+        {
+            var vertices = faces.SelectMany(cell => cell.Vertices).Distinct().ToList();
+
+            var positions = new Vector3[vertices.Count + faces.Count];
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                positions[i] = vertices[i].Position * heightMultiplier;
             }
 
             for (int i = 0; i < faces.Count; i++)
             {
-                var face = faces[i];
-                var position = CenterOfFace(face);
-                Vectors[i + vertices.Count] = position;
-                FaceIndices.Add(face, i + vertices.Count);
+                positions[i + vertices.Count] = FoamUtils.CenterOf(faces[i]) * heightMultiplier;
             }
 
-            var vectorsToBeMultiplied = new List<int>();
-
-            foreach (var face in atmosphereFaces)
-            {
-                vectorsToBeMultiplied.Add(FaceIndices[face]);
-                vectorsToBeMultiplied.AddRange(face.Vertices.Select(vertex => VertexIndices[vertex]));
-            }
-
-            foreach (var vectorIndex in vectorsToBeMultiplied.Distinct())
-            {
-                Vectors[vectorIndex] *= _detailMultiplier;
-            }
-
+            return positions;
         }
 
-        private Vector3 CenterOfFace(Face face)
+        private int[] InitializeTriangles(List<Face> faces)
         {
-            var sumOfVertexPositions = face.Vertices.Aggregate(new Vector3(), (position, vertex) => position + vertex.Position);
-            var centerOfFace = sumOfVertexPositions / face.Vertices.Count;
+            var triangleBuffer = new List<int>();
 
-            return centerOfFace;
-        }
-
-        private void InitializeTriangles(List<Cell> cells)
-        {
-            LayerTriangles = new List<int[]>();
-
-            var atmosphereTriangleBuffer = new List<int>();
-            var surfaceTriangleBuffer = new List<int>();
-
-            foreach (var cell in cells)
+            foreach (var face in faces)
             {
-                var atmosphereFace = FoamUtils.TopFaceOf(cell);
-                var surfaceFace = FoamUtils.BottomFaceOf(cell);
-
-                atmosphereTriangleBuffer.AddRange(TrianglesInFace(atmosphereFace));
-                surfaceTriangleBuffer.AddRange(TrianglesInFace(surfaceFace));
+                triangleBuffer.AddRange(TrianglesInFace(face));
             }
 
-            LayerTriangles.Add(surfaceTriangleBuffer.ToArray());
-            LayerTriangles.Add(atmosphereTriangleBuffer.ToArray());
+            return triangleBuffer.ToArray();
         }
 
         private IEnumerable<int> TrianglesInFace(Face face)
         {
             var faceIndex = FaceIndices[face];
-            var facePosition = Vectors[faceIndex];
+            var faceCenter = Positions[faceIndex];
 
-            var baseline = Vector3.Cross(facePosition, face.Vertices.First().Position);
-            var clockwiseComparer = new CompareVectorsClockwise(facePosition, baseline); //TODO: Uhh this'll still be degenerate at the poles
+            var baseline = Vector3.Cross(faceCenter, face.Vertices.First().Position);
+            var clockwiseComparer = new CompareVectorsClockwise(faceCenter, baseline);
             var vertexIndices = face.Vertices.Select(vertex => VertexIndices[vertex]);
-            var clockwiseSortedIndices = vertexIndices.OrderBy(index => Vectors[index], clockwiseComparer).ToList();
+            var clockwiseSortedIndices = vertexIndices.OrderBy(index => Positions[index], clockwiseComparer).ToList();
 
             var triangles = new List<int>();
 
