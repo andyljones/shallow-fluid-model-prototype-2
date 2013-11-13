@@ -9,40 +9,41 @@ namespace Renderer.ShallowFluid
     {
         private MeshHelper _helper;
 
-        public BoundaryRenderer(List<Cell> cells, MeshHelper helper, string boundaryMaterialName)
+        public BoundaryRenderer(List<Face> faces, MeshHelper helper, string boundaryMaterialName, GameObject layerObject)
         {
             _helper = helper;
-            InitializeBoundaries(cells, boundaryMaterialName);
+            InitializeBoundaries(faces, boundaryMaterialName, layerObject);
         }
 
-        private void InitializeBoundaries(List<Cell> cells, string boundaryMaterialName)
+        private void InitializeBoundaries(List<Face> faces, string boundaryMaterialName, GameObject layerObject)
         {
-            var boundaryRoutes = FindBoundaryRoutes(cells);
+            var boundaryRoutes = FindBoundaryRoutes(faces);
 
-            var boundaryObject = new GameObject("Boundaries");
-            var boundaryMesh = boundaryObject.AddComponent<MeshFilter>();
-            boundaryMesh.mesh.vertices = _helper.Positions;
-            boundaryMesh.mesh.subMeshCount = boundaryRoutes.Count;
+            var layerMesh = layerObject.GetComponent<MeshFilter>();
+            var layerRenderer = layerObject.GetComponent<MeshRenderer>();
+
+            var oldSubmeshCount = layerMesh.mesh.subMeshCount;
+            layerMesh.mesh.subMeshCount = oldSubmeshCount + boundaryRoutes.Count;
 
             for (int i = 0; i < boundaryRoutes.Count; i++)
             {
                 var boundary = boundaryRoutes[i];
-                boundaryMesh.mesh.SetIndices(boundary, MeshTopology.LineStrip, i);
+                layerMesh.mesh.SetIndices(boundary, MeshTopology.LineStrip, i + oldSubmeshCount);
             }
 
-            var boundaryRenderer = boundaryObject.AddComponent<MeshRenderer>();
             var boundaryMaterial = (Material)Resources.Load(boundaryMaterialName, typeof(Material));
-            boundaryRenderer.materials = Enumerable.Repeat(boundaryMaterial, boundaryRoutes.Count).ToArray();
+            var oldMaterials = layerRenderer.materials;
+            var newMaterials = oldMaterials.Concat(Enumerable.Repeat(boundaryMaterial, boundaryRoutes.Count)).ToArray();
+            layerRenderer.materials = newMaterials;
         }
 
-        private List<int[]> FindBoundaryRoutes(List<Cell> cells)
+        private List<int[]> FindBoundaryRoutes(List<Face> faces)
         {
             var routes = new List<int[]>();
 
-            var atmosphericFaces = cells.Select<Cell, Face>(FoamUtils.TopFaceOf);
-            var atmosphericEdges = atmosphericFaces.SelectMany(face => face.Edges).Distinct().ToList();
+            var edges = faces.SelectMany(face => face.Edges).Distinct().ToList();
 
-            var routeFinder = new BoundaryRouteFinder(atmosphericEdges);
+            var routeFinder = new BoundaryRouteFinder(edges);
 
             while (!routeFinder.AllEdgesVisited())
             {

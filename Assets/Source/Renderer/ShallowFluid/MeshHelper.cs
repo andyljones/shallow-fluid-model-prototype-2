@@ -13,12 +13,40 @@ namespace Renderer.ShallowFluid
         public Dictionary<Vertex, int> VertexIndices;
         public Dictionary<Face, int> FaceIndices;
 
+        private readonly Vector3[] _initialPositions;
+        private readonly float _heightMultiplier;
+        private float[] _initialHeights;
+
         public MeshHelper(List<Face> faces, float heightMultiplier)
         {
+            _heightMultiplier = heightMultiplier;
             VertexIndices = SetVertexIndices(faces);
             FaceIndices = SetFaceIndices(faces, VertexIndices.Count);
-            Positions = InitializeVectors(faces, heightMultiplier);
+            Positions = InitializePositions(VertexIndices, FaceIndices, heightMultiplier);
+            _initialPositions = Positions;
+            _initialHeights = GetHeights(VertexIndices, FaceIndices);
             Triangles = InitializeTriangles(faces);
+        }
+
+        private float[] GetHeights(Dictionary<Vertex, int> vertexIndices, Dictionary<Face, int> faceIndices)
+        {
+            var heights = new float[vertexIndices.Count + faceIndices.Count];
+
+            foreach (var vertexAndIndex in vertexIndices)
+            {
+                var vertex = vertexAndIndex.Key;
+                var index = vertexAndIndex.Value;
+                heights[index] = vertex.Cells.Average(cell => cell.Height);
+            }
+
+            foreach (var faceAndIndex in faceIndices)
+            {
+                var face = faceAndIndex.Key;
+                var index = faceAndIndex.Value;
+                heights[index] = face.Cells.Average(cell => cell.Height);
+            }
+
+            return heights;
         }
 
         private Dictionary<Vertex, int> SetVertexIndices(List<Face> faces)
@@ -46,23 +74,48 @@ namespace Renderer.ShallowFluid
             return faceIndices;
         }
 
-        private Vector3[] InitializeVectors(List<Face> faces, float heightMultiplier)
+        private Vector3[] InitializePositions(Dictionary<Vertex, int> vertexIndices, Dictionary<Face, int> faceIndices, float heightMultiplier)
         {
-            var vertices = faces.SelectMany(cell => cell.Vertices).Distinct().ToList();
+            var positions = new Vector3[vertexIndices.Count + faceIndices.Count];
 
-            var positions = new Vector3[vertices.Count + faces.Count];
-
-            for (int i = 0; i < vertices.Count; i++)
+            foreach (var vertexAndIndex in vertexIndices)
             {
-                positions[i] = vertices[i].Position * heightMultiplier;
+                var vertex = vertexAndIndex.Key;
+                var index = vertexAndIndex.Value;
+                positions[index] = vertex.Position * heightMultiplier;
             }
 
-            for (int i = 0; i < faces.Count; i++)
+            foreach (var faceAndIndex in faceIndices)
             {
-                positions[i + vertices.Count] = FoamUtils.CenterOf(faces[i]) * heightMultiplier;
+                var face = faceAndIndex.Key;
+                var index = faceAndIndex.Value;
+                positions[index] = FoamUtils.CenterOf(face)*heightMultiplier;
             }
 
             return positions;
+        }
+
+        public void UpdatePositions(float multiplier)
+        {
+            foreach (var vertexAndIndex in VertexIndices)
+            {
+                var vertex = vertexAndIndex.Key;
+                var index = vertexAndIndex.Value;
+                var originalHeight = _initialHeights[index];
+                var originalPosition = _initialPositions[index];
+                var currentHeight = vertex.Cells.Average(cell => cell.Height); //TODO: this is probably slow
+                Positions[index] = (1 + (currentHeight - originalHeight) * multiplier) * originalPosition;
+            }
+
+            foreach (var faceAndIndex in FaceIndices)
+            {
+                var face = faceAndIndex.Key;
+                var index = faceAndIndex.Value;
+                var originalHeight = _initialHeights[index];
+                var originalPosition = _initialPositions[index];
+                var currentHeight = face.Cells.Average(cell => cell.Height); //TODO: as is this
+                Positions[index] = (1 + (currentHeight - originalHeight) * multiplier) * originalPosition;
+            }
         }
 
         private int[] InitializeTriangles(List<Face> faces)

@@ -27,18 +27,21 @@ namespace Renderer.ShallowFluid
             _surfaceRenderer = new LayerRenderer(surfaceFaces, 1, options.LayerMaterials[0]);
 
             var atmosphereFaces = _cells.Select(cell => FoamUtils.TopFaceOf(cell)).ToList();
-            _atmosphereRenderer = new LayerRenderer(atmosphereFaces, options.DetailMultiplier, options.LayerMaterials[1]);
+            _atmosphereRenderer = new LayerRenderer(atmosphereFaces, options.DetailMultiplier, options.LayerMaterials[1],
+                boundaryMaterialName: _options.BoundaryMaterial);
 
-            _boundaryRenderer = new BoundaryRenderer(_cells, _atmosphereRenderer.Helper, _options.BoundaryMaterial);
+            //_boundaryRenderer = new BoundaryRenderer(_cells, _atmosphereRenderer.Helper, _options.BoundaryMaterial);
             _arrowRenderer = new ArrowRenderer(_cells, _options.DetailMultiplier, _options.ArrowMaterial);
         }
 
         public void UpdateRender()
         {
-            //_simulator.StepSimulation();
-            //_simulator.UpdateCellConditions();
+            _simulator.StepSimulation();
+            _simulator.UpdateCellConditions();
 
-            //_arrowRenderer.UpdateArrows();
+            _atmosphereRenderer.UpdateLayer(.00002f);
+
+            _arrowRenderer.UpdateArrows();
         }
     }
 }

@@ -49,6 +49,8 @@ namespace Simulator.ShallowFluidSimulator
             _eta = _ops.Laplacian(_phi) + _coriolis;
             _delta = _ops.Laplacian(_chi);
 
+            UpdateCellConditions();
+
             StepFields(Matsuno);
             StepFields(Matsuno);
         }
@@ -70,6 +72,7 @@ namespace Simulator.ShallowFluidSimulator
                 var velocity = Vector3.Cross(cellCenter.normalized, phiGradient[cellIndex]) +
                                chiGradient[cellIndex];
                 cell.Velocity = velocity;
+                cell.Height = _h[cellIndex];
             }
         }
 
