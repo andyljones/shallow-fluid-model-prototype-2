@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Atmosphere.MonolayerAtmosphere;
 using Grids.IcosahedralGridGenerator;
 using Renderer;
-using Simulator.ShallowFluidSimulator;
 using Surfaces.FlatSurface;
 
 namespace Initialization
@@ -12,8 +11,7 @@ namespace Initialization
         IIcosahedralGridOptions, 
         IFlatSurfaceOptions, 
         IMonolayerAtmosphereOptions, 
-        IShallowFluidRendererOptions, 
-        IShallowFluidSimulatorOptions
+        IShallowFluidRendererOptions
     {
         public float Radius { get; set; }
         public float Resolution { get; set; }

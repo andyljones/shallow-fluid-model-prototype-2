@@ -9,7 +9,7 @@ using Initialization;
 using Renderer;
 using Renderer.ShallowFluid;
 using Simulator;
-using Simulator.ShallowFluidSimulator;
+using Simulator.ShallowFluid;
 using strange.extensions.injector.impl;
 using Surfaces;
 using Surfaces.FlatSurface;
@@ -43,7 +43,6 @@ public class test : MonoBehaviour {
 	    binder.Bind<IMonolayerAtmosphereOptions>()
 	        .Bind<IFlatSurfaceOptions>()
 	        .Bind<IIcosahedralGridOptions>()
-            .Bind<IShallowFluidSimulatorOptions>()
 	        .Bind<IShallowFluidRendererOptions>()
 	        .ToValue(options);
 	    binder.Bind<IGrid>().To<GeodesicGrid>();
