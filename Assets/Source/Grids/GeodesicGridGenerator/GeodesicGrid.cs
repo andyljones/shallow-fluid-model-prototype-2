@@ -80,10 +80,17 @@ namespace Grids.GeodesicGridGenerator
 
             foreach (var face in icosahedralFaces)
             {
-                var sumOfVertexPositions = face.Vertices.Aggregate(new Vector3(), (position, vertex) => (position + vertex.Position));
-                var centerOfFace = sumOfVertexPositions/face.Vertices.Count;
+                var centerOfFace = FoamUtils.CenterOf(face);
 
-                var geodesicVertex = new Vertex {Position = centerOfFace};
+                var corners = face.Vertices.Select(vertex => vertex.Position).ToList();
+                var clockwiseComparer = new CompareVectorsClockwise(centerOfFace, corners.First());
+                var orderedCorners = corners.OrderBy(corner => corner, clockwiseComparer).ToList();
+
+                var edgeA = orderedCorners[1].normalized - orderedCorners[0].normalized;
+                var edgeB = orderedCorners[2].normalized - orderedCorners[0].normalized;
+                var voronoiPoint = Vector3.Cross(edgeA, edgeB).normalized;
+
+                var geodesicVertex = new Vertex {Position = voronoiPoint};
                 geodesicVertices.Add(face, geodesicVertex);
             }
 

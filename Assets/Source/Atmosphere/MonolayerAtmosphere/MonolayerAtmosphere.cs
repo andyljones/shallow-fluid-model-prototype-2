@@ -94,7 +94,7 @@ namespace Atmosphere.MonolayerAtmosphere
         {
             var newCell = new Cell();
 
-            newCell.Velocity = new Vector2(1, 0);
+            newCell.Velocity = new Vector2(1, 0); //TODO: Actually write an initialization system.
             
             var bottomFace = facePair.Key;
             var topFace = facePair.Value;

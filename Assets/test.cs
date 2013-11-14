@@ -56,6 +56,11 @@ public class test : MonoBehaviour {
 
 	    _planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;
 
+        //binder.Unbind<IGrid>();
+        //binder.Bind<IGrid>().To<IcosahedralGrid>();
+
+        //binder.GetInstance<IRenderer>();
+
 	    stopwatch.Stop();
         Debug.Log("TIME: " + stopwatch.ElapsedMilliseconds);
 	}
