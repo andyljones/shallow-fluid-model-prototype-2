@@ -81,7 +81,7 @@ namespace Tests.FoamTests
         [TestMethod]
         public void Center_Of_Cell0s_Bottom_Face_Should_Be_Correct()
         {
-            var expectedVector = new Vector3(-10, 10, 10) / 3;
+            var expectedVector = new Vector3(-1, 1, 1).normalized * 10f;
             var actualVector = FoamUtils.CenterOf(_fakeAtmo.Cells[0].Faces[0]);
 
             var tolerance = 0.001f;
@@ -92,7 +92,7 @@ namespace Tests.FoamTests
         [TestMethod]
         public void Center_Of_Cell0_Should_Be_Correct()
         {
-            var expectedVector = new Vector3(-11.5f, 11.5f, 11.5f) / 3;
+            var expectedVector = new Vector3(-1, 1, 1).normalized * 11.5f;
             var actualVector = FoamUtils.CenterOf(_fakeAtmo.Cells[0]);
 
             var tolerance = 0.001f;
@@ -112,12 +112,13 @@ namespace Tests.FoamTests
         }
 
         [TestMethod]
-        public void Distance_Between_Cell_Centers_Should_Be_23_Over_3()
+        public void Distance_Between_Cell_Centers_Should_Be_23_Over_Sqrt3()
         {
-            var expectedDistance = 23f/3f;
+            var expectedDistance = 23f/Mathf.Sqrt(3);
             var actualDistance = FoamUtils.DistanceBetweenCellCentersAcross(_fakeAtmo.Cells[0].Faces[4]);
 
             var tolerance = 0.001f;
+            System.Console.WriteLine(actualDistance);
 
             Assert.IsTrue(Mathf.Abs(expectedDistance - actualDistance) < tolerance);
         }

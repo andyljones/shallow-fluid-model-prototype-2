@@ -7,6 +7,7 @@ using Grids.GeodesicGridGenerator;
 using Grids.IcosahedralGridGenerator;
 using Initialization;
 using Renderer;
+using Renderer.Heightmap;
 using Renderer.ShallowFluid;
 using Simulator;
 using Simulator.ShallowFluid;
@@ -36,7 +37,8 @@ public class test : MonoBehaviour {
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",
-            DetailMultiplier = 1.05f
+            ArrowLengthMultiplier = 100f,
+            DetailMultiplier = 100f
 	    };
 
 	    var binder = new InjectionBinder();
@@ -49,6 +51,7 @@ public class test : MonoBehaviour {
 	    binder.Bind<ISurface>().To<FlatSurface>();
 	    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
 	    binder.Bind<ISimulator>().To<ShallowFluidSimulator>();
+	    binder.Bind<IHeightmap>().To<MonolayerHeightmap>();
 	    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
 
 	    _planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;

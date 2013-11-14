@@ -93,6 +93,8 @@ namespace Atmosphere.MonolayerAtmosphere
         private void CreateCell(KeyValuePair<Face, Face> facePair)
         {
             var newCell = new Cell();
+
+            newCell.Velocity = new Vector2(1, 0);
             
             var bottomFace = facePair.Key;
             var topFace = facePair.Value;

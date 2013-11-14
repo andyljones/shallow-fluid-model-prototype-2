@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Foam;
+using Renderer.Heightmap;
 using UnityEngine;
 
 namespace Renderer.ShallowFluid
@@ -9,45 +10,21 @@ namespace Renderer.ShallowFluid
     {
         public Vector3[] Positions;
         public int[] Triangles;
-
         public Dictionary<Vertex, int> VertexIndices;
         public Dictionary<Face, int> FaceIndices;
 
-        private readonly Vector3[] _initialPositions;
-        private readonly float _heightMultiplier;
-        private float[] _initialHeights;
+        private readonly IHeightmap _heightmap;
 
-        public MeshHelper(List<Face> faces, float heightMultiplier)
+        public MeshHelper(List<Face> faces, IHeightmap heightmap)
         {
-            _heightMultiplier = heightMultiplier;
+            _heightmap = heightmap;
             VertexIndices = SetVertexIndices(faces);
             FaceIndices = SetFaceIndices(faces, VertexIndices.Count);
-            Positions = InitializePositions(VertexIndices, FaceIndices, heightMultiplier);
-            _initialPositions = new Vector3[Positions.Length];
-            Positions.CopyTo(_initialPositions, 0);
-            _initialHeights = GetHeights(VertexIndices, FaceIndices);
+
+            Positions = new Vector3[VertexIndices.Count + FaceIndices.Count];
+            UpdatePositions();
+
             Triangles = InitializeTriangles(faces);
-        }
-
-        private float[] GetHeights(Dictionary<Vertex, int> vertexIndices, Dictionary<Face, int> faceIndices)
-        {
-            var heights = new float[vertexIndices.Count + faceIndices.Count];
-
-            foreach (var vertexAndIndex in vertexIndices)
-            {
-                var vertex = vertexAndIndex.Key;
-                var index = vertexAndIndex.Value;
-                heights[index] = vertex.Cells.Average(cell => cell.Height);
-            }
-
-            foreach (var faceAndIndex in faceIndices)
-            {
-                var face = faceAndIndex.Key;
-                var index = faceAndIndex.Value;
-                heights[index] = face.Cells.Average(cell => cell.Height);
-            }
-
-            return heights;
         }
 
         private Dictionary<Vertex, int> SetVertexIndices(List<Face> faces)
@@ -75,48 +52,22 @@ namespace Renderer.ShallowFluid
             return faceIndices;
         }
 
-        private Vector3[] InitializePositions(Dictionary<Vertex, int> vertexIndices, Dictionary<Face, int> faceIndices, float heightMultiplier)
-        {
-            var positions = new Vector3[vertexIndices.Count + faceIndices.Count];
-
-            foreach (var vertexAndIndex in vertexIndices)
-            {
-                var vertex = vertexAndIndex.Key;
-                var index = vertexAndIndex.Value;
-                positions[index] = vertex.Position * heightMultiplier;
-            }
-
-            foreach (var faceAndIndex in faceIndices)
-            {
-                var face = faceAndIndex.Key;
-                var index = faceAndIndex.Value;
-                positions[index] = FoamUtils.CenterOf(face)*heightMultiplier;
-            }
-
-            return positions;
-        }
-
-        public void UpdatePositions(float multiplier)
+        public void UpdatePositions()
         {
             foreach (var vertexAndIndex in VertexIndices)
             {
                 var vertex = vertexAndIndex.Key;
                 var index = vertexAndIndex.Value;
-                var originalHeight = _initialHeights[index];
-                var originalPosition = _initialPositions[index];
-                var currentHeight = vertex.Cells[0].Height; //TODO: this is probably slow
-                Positions[index] = (1 + (currentHeight - originalHeight) * multiplier) * originalPosition;
-
+                var position = vertex.Position;
+                Positions[index] = _heightmap.VisualPositionFromActualPosition(position);
             }
 
             foreach (var faceAndIndex in FaceIndices)
             {
                 var face = faceAndIndex.Key;
                 var index = faceAndIndex.Value;
-                var originalHeight = _initialHeights[index];
-                var originalPosition = _initialPositions[index];
-                var currentHeight = face.Cells[0].Height; //TODO: as is this
-                Positions[index] = (1 + (currentHeight - originalHeight) * multiplier) * originalPosition;
+                var position = FoamUtils.CenterOf(face);
+                Positions[index] = _heightmap.VisualPositionFromActualPosition(position);
             }
         }
 

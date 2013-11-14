@@ -10,6 +10,6 @@ namespace Foam
         public List<Vertex> Vertices = new List<Vertex>();
 
         public float Height;
-        public Vector3 Velocity = new Vector3();
+        public Vector2 Velocity = new Vector2();
     }
 }

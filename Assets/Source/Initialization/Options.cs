@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Atmosphere.MonolayerAtmosphere;
 using Grids.IcosahedralGridGenerator;
-using Renderer;
+using Renderer.ShallowFluid;
 using Surfaces.FlatSurface;
 
 namespace Initialization
@@ -21,6 +21,7 @@ namespace Initialization
         public List<String> LayerMaterials { get; set; }
         public String BoundaryMaterial { get; set; }
         public String ArrowMaterial { get; set; }
+        public float ArrowLengthMultiplier { get; set; }
         public float DetailMultiplier { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Renderer
+namespace Renderer.ShallowFluid
 {
     public interface IShallowFluidRendererOptions
     {
@@ -11,6 +11,7 @@ namespace Renderer
         float Radius { get; }
         float Resolution { get; }
         float DetailMultiplier { get; }
+        float ArrowLengthMultiplier { get; }
 
     }
 }

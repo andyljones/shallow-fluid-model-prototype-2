@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Foam;
+using Renderer.Heightmap;
 using UnityEngine;
 
 namespace Renderer.ShallowFluid
@@ -11,17 +12,15 @@ namespace Renderer.ShallowFluid
         public GameObject LayerObject { get; set; }
         public MeshHelper Helper { get; private set; }
 
-        private BoundaryRenderer _boundaryRenderer;
-
-        public LayerRenderer(List<Face> faces, float heightMultiplier, string layerMaterialName, string boundaryMaterialName = null)
+        public LayerRenderer(List<Face> faces, IHeightmap heightmap, string layerMaterialName, string boundaryMaterialName = null)
         {
-            Helper = new MeshHelper(faces, heightMultiplier);
+            Helper = new MeshHelper(faces, heightmap);
             LayerObject = InitializeLayer(Helper, layerMaterialName);
             LayerMesh = LayerObject.GetComponent<MeshFilter>().mesh;
 
             if (boundaryMaterialName != null)
             {
-                _boundaryRenderer = new BoundaryRenderer(faces, Helper, boundaryMaterialName, LayerObject);
+                new BoundaryRenderer(faces, Helper, boundaryMaterialName, LayerObject);
             }
         }
 
@@ -42,9 +41,9 @@ namespace Renderer.ShallowFluid
             return layerObject;
         }
 
-        public void UpdateLayer(float multiplier)
+        public void UpdateLayer()
         {
-            Helper.UpdatePositions(multiplier);
+            Helper.UpdatePositions();
             LayerMesh.vertices = Helper.Positions;
         }
     }

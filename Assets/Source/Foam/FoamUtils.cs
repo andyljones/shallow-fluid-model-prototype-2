@@ -108,7 +108,8 @@ namespace Foam
         public static Vector3 CenterOf(Face face)
         {
             var sumOfVertexPositions = face.Vertices.Aggregate(new Vector3(), (position, vertex) => position + vertex.Position);
-            var centerOfFace = sumOfVertexPositions / face.Vertices.Count;
+            var sumOfVertexMagnitudes = face.Vertices.Average(vertex => vertex.Position.magnitude);
+            var centerOfFace = sumOfVertexPositions.normalized * sumOfVertexMagnitudes;
 
             return centerOfFace;
         }
@@ -167,6 +168,16 @@ namespace Foam
                 .Intersect(facesNeighbouringThirdLowestVertex);
 
             return lowestFace.Single();
+        }
+
+        public static float ThicknessOf(Cell cell)
+        {
+            var topFace = TopFaceOf(cell);
+            var bottomFace = BottomFaceOf(cell);
+            var topFaceHeight = topFace.Vertices.Average(vertex => vertex.Position.magnitude);
+            var bottomFaceHeight = bottomFace.Vertices.Average(vertex => vertex.Position.magnitude);
+
+            return topFaceHeight - bottomFaceHeight;
         }
     }
 }
