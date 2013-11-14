@@ -56,9 +56,7 @@ namespace Simulator.ShallowFluidSimulator
         {
             if (_firstStep)
             {
-                _h = new FloatField(Cells.Select(cell => _options.Height).ToArray());
-                _phi = new FloatField(Cells.Select(cell => -1*FoamUtils.CenterOf(cell).normalized.z).ToArray());
-                _eta = _ops.Laplacian(_phi) + _coriolis;
+                _h = new FloatField(Cells.Select(cell => _options.Height + 0.05f*FoamUtils.CenterOf(cell).normalized.z).ToArray());
                 StepFields(Matsuno);
                 StepFields(Matsuno);
                 _firstStep = false;
@@ -97,7 +95,7 @@ namespace Simulator.ShallowFluidSimulator
                           _ops.FluxDivergence(_chi, _chi) - _chi * _ops.Laplacian(_chi)) -
                           _ops.Jacobian(_phi, _chi) + 0.00981f * _h;
 
-            Debug.Log(energy.Values.Sum());
+            Debug.Log("Energy: " + energy.Values.Sum());
 
             var dDeltaDt = _ops.FluxDivergence(_eta, _phi) + _ops.Jacobian(_eta, _chi) - _ops.Laplacian(energy);
 

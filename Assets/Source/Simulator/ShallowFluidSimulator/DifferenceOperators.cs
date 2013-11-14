@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using Foam;
+using UnityEngine;
 
 namespace Simulator.ShallowFluidSimulator
 {
@@ -134,6 +137,17 @@ namespace Simulator.ShallowFluidSimulator
             }
 
             return gradient;
+        }
+
+        public FloatField Divergence(Vector3[] vectors)
+        {
+            throw new NotImplementedException();                        
+        }
+
+        public FloatField Curl(Vector3[] vectors)
+        {
+            throw new NotImplementedException();
+
         }
 
         private int MathMod(int x, int m)

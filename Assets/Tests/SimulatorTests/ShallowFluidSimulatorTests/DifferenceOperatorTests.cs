@@ -1,4 +1,6 @@
-﻿using FakeItEasy;
+﻿using System.Collections.Generic;
+using FakeItEasy;
+using Foam;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simulator.ShallowFluidSimulator;
 using UnityEngine;
@@ -11,6 +13,7 @@ namespace Tests.SimulatorTests.ShallowFluidSimulatorTests
         private DifferenceOperators _operators;
         private FloatField _fieldA;
         private FloatField _fieldB;
+        private Vector3[] _vectors;
 
         [TestInitialize]
         public void Create_DifferenceOperators_From_Fake_Preprocessor()
@@ -65,6 +68,7 @@ namespace Tests.SimulatorTests.ShallowFluidSimulatorTests
             _operators = new DifferenceOperators(fakePreprocessor);
             _fieldA = new FloatField(new float[] {-4, -9, -5, -8,   5, 9, 6});
             _fieldB = new FloatField(new float[] {-5, -7,  2,  7, -10, 3, 1});
+            _vectors = new Vector3[] {};
         }
 
         [TestMethod]

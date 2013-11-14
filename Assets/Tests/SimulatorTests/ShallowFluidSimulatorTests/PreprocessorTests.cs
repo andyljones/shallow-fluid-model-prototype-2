@@ -103,6 +103,15 @@ namespace Tests.SimulatorTests.ShallowFluidSimulatorTests
         }
 
         [TestMethod]
+        public void Constructor_Should_Calculate_Normals_To_Faces_Correctly2()
+        {
+            var expected = new Vector3(0, 0, 1);
+            var actual = _preprocessor.NormalsToFaces[1][0];
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void Constructor_Should_Calculate_Normals_To_Faces_For_Each_Cell()
         {
             var expectedNumberOfCells = 2;

@@ -110,7 +110,6 @@ namespace Simulator.ShallowFluidSimulator
             return allDistances;
         }
 
-        //TODO: This'll only be correct when the vector between neighbouring cells is perpendicular to the face that divides them.
         private Vector3[][] CalculateNormalsToFaces(List<Cell> cells, Dictionary<Cell, int> indicesOfCells, int[][] allNeighbourIndices)
         {
             var allNormals = new Vector3[cells.Count][];
@@ -119,18 +118,31 @@ namespace Simulator.ShallowFluidSimulator
 
             foreach (var cell in cells)
             {
-                var cellCenter = FoamUtils.CenterOf(cell);
-
                 var indicesOfNeighbours = allNeighbourIndices[indicesOfCells[cell]];
                 var neighbours = indicesOfNeighbours.Select(neighbourIndex => cellAtIndex[neighbourIndex]);
-                var centersOfNeighbours = neighbours.Select(neighbour => FoamUtils.CenterOf(neighbour));
-                var normalsToNeighbours = centersOfNeighbours.Select((neighbourCenter => (neighbourCenter - cellCenter).normalized));
+                var normalsToNeighbours = neighbours.Select(neighbour => NormalToFaceBetween(cell, neighbour));
 
                 var index = indicesOfCells[cell];
                 allNormals[index] = normalsToNeighbours.ToArray();
             }
 
             return allNormals;
+        }
+
+        private Vector3 NormalToFaceBetween(Cell cell, Cell neighbour)
+        {
+            var dividingFace = cell.Faces.Intersect(neighbour.Faces).Single();
+            var vertexPositions = dividingFace.Vertices.Select(vertex => vertex.Position).ToArray();
+
+            var firstVectorAlongFace = vertexPositions[1] - vertexPositions[0];
+            var secondVectorAlongFace = vertexPositions[2] - vertexPositions[0];
+
+            var normalToFace = Vector3.Cross(secondVectorAlongFace, firstVectorAlongFace);
+
+            var outDirection = FoamUtils.CenterOf(dividingFace) - FoamUtils.CenterOf(cell);
+            var outwardsNormalToFace = Mathf.Sign(Vector3.Dot(normalToFace, outDirection))*normalToFace.normalized;
+
+            return outwardsNormalToFace;
         }
 
 
