@@ -38,7 +38,7 @@ public class test : MonoBehaviour {
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",
             ArrowLengthMultiplier = 100f,
-            DetailMultiplier = 100f
+            DetailMultiplier = 50f
 	    };
 
 	    var binder = new InjectionBinder();
@@ -55,11 +55,6 @@ public class test : MonoBehaviour {
 	    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
 
 	    _planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;
-
-        //binder.Unbind<IGrid>();
-        //binder.Bind<IGrid>().To<IcosahedralGrid>();
-
-        //binder.GetInstance<IRenderer>();
 
 	    stopwatch.Stop();
         Debug.Log("TIME: " + stopwatch.ElapsedMilliseconds);
