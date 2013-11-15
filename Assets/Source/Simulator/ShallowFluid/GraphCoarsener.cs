@@ -28,7 +28,7 @@ namespace Simulator.ShallowFluid
             CoarsenedGraphs = new List<Dictionary<T, List<T>>> { mostCoarseGraph };
 
             // The coarsest possible graph has a single node, so we keep coarsening until we get an adjacency 
-            // dictionary with one element.
+            // dictionary with one entry.
             while (mostCoarseGraph.Count > 1)
             {
                 mostCoarseGraph = CoarsenGraph(mostCoarseGraph);
@@ -65,7 +65,7 @@ namespace Simulator.ShallowFluid
         private List<T> FindMaximalIndependentSetIn(Dictionary<T, List<T>> graph)
         {
             var independentSet = new List<T>();            
-            // Set of nodes who aren't in the independent set and don't have neighbours in it.
+            // This is the set of nodes who aren't in the independent set and don't have neighbours in it.
             var uncoveredNodes = new HashSet<T>(graph.Keys); 
 
             while (uncoveredNodes.Count > 0)

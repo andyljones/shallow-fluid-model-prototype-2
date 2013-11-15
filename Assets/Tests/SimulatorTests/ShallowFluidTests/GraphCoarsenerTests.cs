@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Foam;
-using NUnit;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
 
@@ -11,7 +9,18 @@ namespace Tests.SimulatorTests.ShallowFluidTests
     public class GraphCoarsenerTests
     {
         [Test]
-        public void Constructor_GivenSingleNodeGraph_ShouldSetLeastCoarsenedFoamToIt()
+        public void Constructor_GivenSingleNodeGraph_ShouldGenerateOneCoarsenedGraph()
+        {
+            var singleNode = new Dictionary<int, List<int>> { { 0, new List<int>() } };
+            var graphCoarsener = new GraphCoarsener<int>(singleNode);
+
+            var numberOfCoarsenedGraphs = graphCoarsener.CoarsenedGraphs;
+
+            Assert.That(numberOfCoarsenedGraphs.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Constructor_GivenSingleNodeGraph_ShouldSetLeastCoarsenedGraphToIt()
         {
             var singleNode = new Dictionary<int, List<int>> {{0, new List<int>()}};
             var graphCoarsener = new GraphCoarsener<int>(singleNode);
@@ -41,6 +50,18 @@ namespace Tests.SimulatorTests.ShallowFluidTests
             var mostCoarsenedGraph = graphCoarsener.CoarsenedGraphs.Last();
 
             Assert.That(mostCoarsenedGraph.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateMostCoarseGraphWhoseFirstNodeHasOneNeighbour()
+        {
+            var adjacentPair = new Dictionary<int, List<int>> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var graphCoarsener = new GraphCoarsener<int>(adjacentPair);
+
+            var mostCoarsenedGraph = graphCoarsener.CoarsenedGraphs.Last();
+            var firstNodesNeighbours = mostCoarsenedGraph.First().Value;
+
+            Assert.That(firstNodesNeighbours.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -77,6 +98,23 @@ namespace Tests.SimulatorTests.ShallowFluidTests
             var secondLeastCoarsenedGraph = graphCoarsener.CoarsenedGraphs[1];
 
             Assert.That(secondLeastCoarsenedGraph.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Constructor_GivenCompleteGraphOnThreeNodes_ShouldGenerateTwoCoarsenedGraphs()
+        {
+            var completeGraphOnThreeNodes = new Dictionary<int, List<int>>
+            {
+                {0, new List<int> {1, 2}},
+                {1, new List<int> {0, 2}},
+                {2, new List<int> {0, 1}}
+            };
+
+            var graphCoarsener = new GraphCoarsener<int>(completeGraphOnThreeNodes);
+
+            var numberOfCoarsenedGraphs = graphCoarsener.CoarsenedGraphs;
+
+            Assert.That(numberOfCoarsenedGraphs.Count, Is.EqualTo(2));
         }
     }
 }
