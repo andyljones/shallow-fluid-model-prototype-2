@@ -3,25 +3,25 @@ using Foam;
 using Grids;
 using Grids.GeodesicGridGenerator;
 using Initialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using UnityEngine;
 
 //TODO: Add some more tests
 namespace Tests.GridTests.GeodesicGridTests
 {
-    [TestClass]
+    [TestFixture]
     public class GeodesicGridGeneratorTests
     {
         private IGrid _grid;
 
-        [TestInitialize]
+        [SetUp]
         public void Create_Icosahedral_Grid_With_Angular_Resolution_Of_1f()
         {
             var options = new Options { Radius = 1f, Resolution = 1f };
             _grid = new GeodesicGrid(options);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_Be_120_Edges()
         {
             var edges = _grid.Faces.SelectMany(face => face.Edges).Distinct();
@@ -32,7 +32,7 @@ namespace Tests.GridTests.GeodesicGridTests
             Assert.AreEqual(expectedNumberOfEdges, actualNumberOfEdges);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_Be_80_Vertices()
         {
             var vertices = _grid.Faces.SelectMany(face => face.Vertices).Distinct();
@@ -42,7 +42,7 @@ namespace Tests.GridTests.GeodesicGridTests
             Assert.AreEqual(expectedNumberOfVertices, actualNumberOfEdges);
         }
 
-        [TestMethod]
+        [Test]
         public void Every_Edge_Should_Have_Two_Vertices()
         {
             var edges = _grid.Faces.SelectMany(face => face.Edges).Distinct();
@@ -53,7 +53,7 @@ namespace Tests.GridTests.GeodesicGridTests
             CollectionAssert.AreEqual(expectedVerticesOnEachEdge, actualVerticesOnEachEdge);
         }
 
-        [TestMethod]
+        [Test]
         public void There_Should_Be_12_Faces_With_Five_Edges()
         {
             var expectedNumberOfFaces = 12;
@@ -62,7 +62,7 @@ namespace Tests.GridTests.GeodesicGridTests
             Assert.AreEqual(expectedNumberOfFaces, actualNumberOfFaces);
         }
 
-        [TestMethod]
+        [Test]
         public void There_Should_Be_30_Faces_With_Six_Edges()
         {
             var expectedNumberOfFaces = 30;
@@ -71,7 +71,7 @@ namespace Tests.GridTests.GeodesicGridTests
             Assert.AreEqual(expectedNumberOfFaces, actualNumberOfFaces);
         }
 
-        [TestMethod]
+        [Test]
         public void Every_Edge_Should_Have_Two_Faces()
         {
             var edges = _grid.Faces.SelectMany(face => face.Edges).Distinct();

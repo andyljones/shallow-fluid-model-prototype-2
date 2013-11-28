@@ -3,19 +3,19 @@ using System.Linq;
 using Atmosphere;
 using Atmosphere.MonolayerAtmosphere;
 using FakeItEasy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using strange.extensions.injector.impl;
 using Surfaces;
 using Tests.Fakes;
 
 namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
 {
-    [TestClass]
+    [TestFixture]
     public class MonolayerAtmosphereTests
     {
         private IAtmosphere _atmosphere;
 
-        [TestInitialize]
+        [SetUp]
         public void Create_Monolayer_Atmosphere_From_Fake_Surface()
         {
             var options = A.Fake<IMonolayerAtmosphereOptions>();
@@ -29,7 +29,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             _atmosphere = binder.GetInstance<IAtmosphere>() as IAtmosphere;
         }
 
-        [TestMethod]
+        [Test]
         public void Atmosphere_Should_Have_Two_Cells()
         {
             var expectedNumberOfCells = 2;
@@ -38,7 +38,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.AreEqual(expectedNumberOfCells, actualNumberOfCells);
         }
 
-        [TestMethod]
+        [Test]
         public void Each_Cell_Should_Have_Five_Faces()
         {
             var expectedFaceCounts = 5;
@@ -47,7 +47,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.IsTrue(actualFaceCounts.All(count => count == expectedFaceCounts));
         }
 
-        [TestMethod]
+        [Test]
         public void Each_Cell_Should_Have_Six_Vertices()
         {
             var expectedVertexCount = 6;
@@ -56,7 +56,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.IsTrue(actualVertexCount.All(count => count == expectedVertexCount));
         }
 
-        [TestMethod]
+        [Test]
         public void Four_Distinct_Vertices_Should_Have_Magnitude_10_And_Four_Should_Have_Magnitude_13()
         {
             var vertices = _atmosphere.Cells.SelectMany(cell => cell.Vertices).Distinct();
@@ -67,7 +67,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             CollectionAssert.AreEquivalent(expectedMagnitudes, actualMagnitudes);
         }
 
-        [TestMethod]
+        [Test]
         public void There_Should_Be_Fourteen_Distinct_Edges_Total()
         {
             var expectedEdgeCount = 14;
@@ -76,7 +76,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.AreEqual(expectedEdgeCount, actualEdgeCount);
         }
 
-        [TestMethod]
+        [Test]
         public void Each_Cell_Should_Have_Nine_Distinct_Edges()
         {
             var expectedEdgeCount = 9;
@@ -85,7 +85,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.IsTrue(actualEdgeCount.All(count => count == expectedEdgeCount));
         }
 
-        [TestMethod]
+        [Test]
         public void Ten_Distinct_Edges_Should_Link_Vertices_Of_The_Same_Magnitude()
         {
             var edges = _atmosphere.Cells.SelectMany(cell => cell.Edges).Distinct();
@@ -98,7 +98,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.AreEqual(expectedNumberOfEdges, actualNumberOfEdges);
         }
 
-        [TestMethod]
+        [Test]
         public void Five_Distinct_Edges_Should_Link_Vertices_Of_Different_Magnitude()
         {
             var edges = _atmosphere.Cells.SelectMany(cell => cell.Edges).Distinct();
@@ -111,7 +111,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.AreEqual(expectedNumberOfEdges, actualNumberOfEdges);
         }
 
-        [TestMethod]
+        [Test]
         public void There_Should_Be_Nine_Faces_Total()
         {
             var expectedNumberOfFaces = 9;
@@ -120,7 +120,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
             Assert.AreEqual(expectedNumberOfFaces, actualNumberOfFaces);
         }
 
-        [TestMethod]
+        [Test]
         public void There_Should_Be_Eight_Vertices_Total()
         {
             var expectedNumberOfVertices = 8;

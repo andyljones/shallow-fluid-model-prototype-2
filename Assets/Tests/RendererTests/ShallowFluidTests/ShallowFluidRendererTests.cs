@@ -4,7 +4,7 @@ using Grids;
 using Grids.GeodesicGridGenerator;
 using Grids.IcosahedralGridGenerator;
 using Initialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Renderer;
 using Renderer.ShallowFluid;
 using strange.extensions.injector.impl;
@@ -13,12 +13,12 @@ using Surfaces.FlatSurface;
 
 namespace Tests.RendererTests.ShallowFluidTests
 {
-    [TestClass]
+    [TestFixture]
     public class ShallowFluidRendererTests
     {
         private IRenderer _atmoRenderer;
 
-        //[TestInitialize]
+        //[SetUp]
         //public void Create_Shallow_Fluid_Renderer()
         //{
         //    var options = new Options { Radius = 10f, Resolution = 5f, Height = 2f };
@@ -34,7 +34,7 @@ namespace Tests.RendererTests.ShallowFluidTests
         //    _atmoRenderer = binder.GetInstance<IRenderer>() as IRenderer;
         //}
 
-        //[TestMethod]
+        //[Test]
         //public void Does_Atmo_Renderer_Exist()
         //{
             

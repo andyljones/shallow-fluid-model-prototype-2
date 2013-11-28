@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Foam;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tests.Fakes;
 using Tests.GridTests;
 
 namespace Tests
 {
     // TODO: Update tests to reflect new FoamCopier
-    [TestClass]
+    [TestFixture]
     public class DeepCopyTests
     {
         private List<Face> _oldFaces;
         private List<Face> _newFaces;
             
-        [TestInitialize]
+        [SetUp]
         public void Create_And_Copy_A_List_Of_Faces()
         {
             _oldFaces = new FakeGrid().Faces;
@@ -22,7 +22,7 @@ namespace Tests
             _newFaces = new FoamCopier(_oldFaces).FaceDictionary.Values.ToList();
         }
 
-        [TestMethod]
+        [Test]
         public void New_Faces_Should_Be_Different_Objects_From_Old_Faces()
         {
             var allFaces = _oldFaces.Union(_newFaces);
@@ -33,7 +33,7 @@ namespace Tests
             Assert.AreEqual(expectedNumberOfUniqueFaceObjects, actualNumberOfUniqueFaceObjects);
         }
 
-        [TestMethod]
+        [Test]
         public void New_Edges_Should_Be_Different_Objects_From_Old_Edges()
         {
             var oldEdges = _oldFaces.SelectMany(face => face.Edges);
@@ -47,7 +47,7 @@ namespace Tests
             Assert.AreEqual(expectedNumberOfUniqueEdgeObjects, actualNumberOfUniqueEdgeObjects);
         }
 
-        [TestMethod]
+        [Test]
         public void New_Vertices_Should_Be_Different_Objects_From_Old_Edges()
         {
             var oldVertices = _oldFaces.SelectMany(face => face.Vertices);
@@ -61,7 +61,7 @@ namespace Tests
             Assert.AreEqual(expectedNumberOfUniqueVertexObjects, actualNumberOfUniqueVertexObjects);
         }
 
-        [TestMethod]
+        [Test]
         public void Face_References_From_New_Vertices_Should_Be_New_Faces()
         {
             var newVertices = _newFaces.SelectMany(face => face.Vertices);
@@ -74,7 +74,7 @@ namespace Tests
             Assert.AreEqual(expectedNumberOfUniqueFaces, actualNumberOfUniqueFaces);
         }
 
-        [TestMethod]
+        [Test]
         public void Face_References_From_New_Edges_Should_Be_New_Faces()
         {
             var newFaces = _newFaces.SelectMany(face => face.Edges);
@@ -87,7 +87,7 @@ namespace Tests
             Assert.AreEqual(expectedNumberOfUniqueFaces, actualNumberOfUniqueFaces);
         }
 
-        [TestMethod]
+        [Test]
         public void Every_New_Edge_Should_Have_Two_Vertices()
         {
             var newEdges = _newFaces.SelectMany(face => face.Edges).Distinct();
@@ -98,7 +98,7 @@ namespace Tests
             CollectionAssert.AreEquivalent(expectedVertexCounts, actualVertexCounts);
         }
 
-        [TestMethod]
+        [Test]
         public void New_Vertices_Should_Have_The_Correct_Number_Of_Edges()
         {
             var newVertices = _newFaces.SelectMany(face => face.Vertices).Distinct();

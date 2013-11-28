@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using FakeItEasy;
 using Foam;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Renderer;
 using Renderer.ShallowFluid;
 using Tests.Fakes;
 
 namespace Tests.RendererTests.ShallowFluidTests
 {
-    [TestClass]
+    [TestFixture]
     public class MeshHelperTests
     {
         private MeshHelper _helper;

@@ -1,22 +1,21 @@
 ﻿using System.Linq;
 using Grids;
 using Initialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using strange.extensions.injector.impl;
 using Surfaces;
 using Surfaces.FlatSurface;
 using Tests.Fakes;
-using Tests.GridTests;
 using UnityEngine;
 
 namespace Tests.SurfaceTests.FlatSurfaceTests
 {
-    [TestClass]
+    [TestFixture]
     public class FlatSurfaceTests
     {
         private ISurface _surface;
 
-        [TestInitialize]
+        [SetUp]
         public void Create_Flat_Surface()
         {
             var options = new Options {Radius = 10};
@@ -28,7 +27,7 @@ namespace Tests.SurfaceTests.FlatSurfaceTests
             _surface = binder.GetInstance<ISurface>() as ISurface;
         }
 
-        [TestMethod]
+        [Test]
         public void Surface_Should_Have_Two_Faces()
         {
             var expectedNumberOfFaces = 2;
@@ -37,7 +36,7 @@ namespace Tests.SurfaceTests.FlatSurfaceTests
             Assert.AreEqual(expectedNumberOfFaces, actualNumberOfFaces);
         }
 
-        [TestMethod]
+        [Test]
         public void Vertices_Should_Have_Magnitude_10()
         {
             var expectedMagnitude = 10f;
