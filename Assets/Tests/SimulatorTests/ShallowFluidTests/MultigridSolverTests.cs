@@ -14,8 +14,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         {
             var graph = new AdjacencyDictionary<int> { { 0, default(List<int>) } };
             var positions = new VectorField<int> { { 0, default(Vector3) } };
-            var areas = new ScalarField<int> { { 0, default(float) } };
-            var solver = new MultigridSolver<int>(graph, positions, areas);
+            var solver = new MultigridSolver<int>(graph, positions);
 
             var expectedCoarsenedGraphs = new List<AdjacencyDictionary<int>> {graph}; 
             var coarsenedGraphs = solver.CoarsenedGraphs;
@@ -28,8 +27,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         {
             var graph = new AdjacencyDictionary<int> {{0, default(List<int>)}};
             var positions = new VectorField<int> {{0, default(Vector3)}};
-            var areas = new ScalarField<int> {{0, default(float)}};
-            var solver = new MultigridSolver<int>(graph, positions, areas);
+            var solver = new MultigridSolver<int>(graph, positions);
 
             var U = new ScalarField<int> {{0, 0f}};
             var f = new ScalarField<int> {{0, 0f}};

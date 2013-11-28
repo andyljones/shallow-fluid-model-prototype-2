@@ -66,7 +66,7 @@ namespace Renderer.ShallowFluid
             {
                 var face = faceAndIndex.Key;
                 var index = faceAndIndex.Value;
-                var position = FoamUtils.CenterOf(face);
+                var position = FoamUtils.Center(face);
                 Positions[index] = _heightmap.VisualPositionFromActualPosition(position);
             }
         }

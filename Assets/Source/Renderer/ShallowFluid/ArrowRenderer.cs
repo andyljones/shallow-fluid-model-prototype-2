@@ -40,7 +40,7 @@ namespace Renderer.ShallowFluid
             {
                 var cell = _cells[i];
 
-                var cellCenter = _heightmap.VisualPositionFromActualPosition(FoamUtils.CenterOf(FoamUtils.TopFaceOf(cell)));
+                var cellCenter = _heightmap.VisualPositionFromActualPosition(FoamUtils.Center(FoamUtils.TopFace(cell)));
                 var localEast = Vector3.Cross(cellCenter, new Vector3(0, 0, 1)).normalized;
                 var localNorth = Vector3.Cross(localEast, cellCenter).normalized;
 

@@ -80,7 +80,7 @@ namespace Grids.GeodesicGridGenerator
 
             foreach (var face in icosahedralFaces)
             {
-                var centerOfFace = FoamUtils.CenterOf(face);
+                var centerOfFace = FoamUtils.Center(face);
 
                 var corners = face.Vertices.Select(vertex => vertex.Position).ToList();
                 var clockwiseComparer = new CompareVectorsClockwise(centerOfFace, corners.First());

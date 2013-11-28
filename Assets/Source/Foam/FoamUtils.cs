@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -12,28 +11,28 @@ namespace Foam
             return edge.Vertices.Single(vertex => vertex != origin);
         }
 
-        public static Cell NeighbourAcross(Face face, Cell cell)
+        public static Cell NeighbourAcross(this Cell cell, Face face)
         {
             return face.Cells.Single(neighbour => neighbour != cell);
         }
 
-        public static float HorizontalAreaOf(Cell cell)
+        public static float HorizontalArea(this Cell cell)
         {
-            var areaOfTopFace = AreaOf(TopFaceOf(cell));
-            var areaOfBottomFace = AreaOf(BottomFaceOf(cell));
+            var areaOfTopFace = Area(TopFace(cell));
+            var areaOfBottomFace = Area(BottomFace(cell));
 
             return (areaOfTopFace + areaOfBottomFace)/2;
         }
 
-        public static float WidthOfVerticalFace(Face face)
+        public static float VerticalWidth(this Face face)
         {
-            var widthOfTopEdge = LengthOf(TopEdgeOf(face));
-            var widthOfBottomEdge = LengthOf(BottomEdgeOf(face));
+            var widthOfTopEdge = Length(TopEdge(face));
+            var widthOfBottomEdge = Length(face.BottomEdge());
 
             return (widthOfTopEdge + widthOfBottomEdge)/2;
         }
 
-        public static Edge BottomEdgeOf(Face face)
+        public static Edge BottomEdge(this Face face)
         {
             var verticesSortedByHeight = face.Vertices.OrderBy(vertex => vertex.Position.magnitude).ToList();
 
@@ -45,7 +44,7 @@ namespace Foam
             return topEdge;
         }
         
-        public static Edge TopEdgeOf(Face face)
+        public static Edge TopEdge(this Face face)
         {
             var verticesSortedByHeight = face.Vertices.OrderByDescending(vertex => vertex.Position.magnitude).ToList();
 
@@ -57,24 +56,24 @@ namespace Foam
             return topEdge;
         }
 
-        public static float LengthOf(Edge edge)
+        public static float Length(this Edge edge)
         {
             return (edge.Vertices[0].Position - edge.Vertices[1].Position).magnitude;
         }
 
-        public static float DistanceBetweenCellCentersAcross(Face face)
+        public static float DistanceBetweenNeighbouringCellCenters(this Face face)
         {
-            var centerOfCellA = CenterOf(face.Cells[0]);
-            var centerOfCellB = CenterOf(face.Cells[1]);
+            var centerOfCellA = Center(face.Cells[0]);
+            var centerOfCellB = Center(face.Cells[1]);
 
             var distanceBetweenCellCenters = (centerOfCellB - centerOfCellA).magnitude;
 
             return distanceBetweenCellCenters;
         }
 
-        public static float AreaOf(Face face)
+        public static float Area(this Face face)
         {
-            var center = CenterOf(face);
+            var center = Center(face);
             var baseline = face.Vertices.First().Position;
             var clockwiseComparer = new CompareVectorsClockwise(center, baseline);
             var sortedVertices = face.Vertices.OrderBy(vertex => vertex.Position, clockwiseComparer).Reverse().ToList();
@@ -95,17 +94,17 @@ namespace Foam
             return area;
         }
 
-        public static Vector3 CenterOf(Cell cell)
+        public static Vector3 Center(this Cell cell)
         {
-            var centerOfTopFace = CenterOf(TopFaceOf(cell));
-            var centerOfBottomFace = CenterOf(BottomFaceOf(cell));
+            var centerOfTopFace = Center(TopFace(cell));
+            var centerOfBottomFace = Center(BottomFace(cell));
 
             var centerOfCell = (centerOfTopFace + centerOfBottomFace) / 2;
 
             return centerOfCell;
         }
 
-        public static Vector3 CenterOf(Face face)
+        public static Vector3 Center(this Face face)
         {
             var sumOfVertexPositions = face.Vertices.Aggregate(new Vector3(), (position, vertex) => position + vertex.Position);
             var sumOfVertexMagnitudes = face.Vertices.Average(vertex => vertex.Position.magnitude);
@@ -114,31 +113,31 @@ namespace Foam
             return centerOfFace;
         }
 
-        public static List<Face> FacesWithNeighbours(Cell cell)
+        public static List<Face> FacesWithNeighbours(this Cell cell)
         {
             return cell.Faces.Where(face => face.Cells.Count > 1).ToList();
         }
 
-        public static List<Edge> VerticalEdgesOf(Cell cell)
+        public static List<Edge> VerticalEdges(this Cell cell)
         {
-            var topFace = TopFaceOf(cell);
-            var bottomFace = BottomFaceOf(cell);
+            var topFace = TopFace(cell);
+            var bottomFace = BottomFace(cell);
 
             var verticalEdges = cell.Edges.Except(topFace.Edges).Except(bottomFace.Edges);
 
             return verticalEdges.ToList();
         }
 
-        public static List<Face> VerticalFacesOf(Cell cell)
+        public static List<Face> VerticalFaces(this Cell cell)
         {
             var faces = cell.Faces;
-            faces.Remove(TopFaceOf(cell));
-            faces.Remove(BottomFaceOf(cell));
+            faces.Remove(TopFace(cell));
+            faces.Remove(BottomFace(cell));
 
             return faces;
         }
 
-        public static Face TopFaceOf(Cell cell)
+        public static Face TopFace(this Cell cell)
         {
             var verticesOrderedByHeight = cell.Vertices.OrderByDescending(vertex => vertex.Position.magnitude).ToList();
 
@@ -154,7 +153,7 @@ namespace Foam
             return highestFace.Single();
         }
 
-        public static Face BottomFaceOf(Cell cell)
+        public static Face BottomFace(this Cell cell)
         {
             var verticesOrderedByHeight = cell.Vertices.OrderBy(vertex => vertex.Position.magnitude).ToList();
 
@@ -170,10 +169,10 @@ namespace Foam
             return lowestFace.Single();
         }
 
-        public static float ThicknessOf(Cell cell)
+        public static float Thickness(this Cell cell)
         {
-            var topFace = TopFaceOf(cell);
-            var bottomFace = BottomFaceOf(cell);
+            var topFace = TopFace(cell);
+            var bottomFace = BottomFace(cell);
             var topFaceHeight = topFace.Vertices.Average(vertex => vertex.Position.magnitude);
             var bottomFaceHeight = bottomFace.Vertices.Average(vertex => vertex.Position.magnitude);
 

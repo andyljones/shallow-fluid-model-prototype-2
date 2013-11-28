@@ -24,10 +24,10 @@ namespace Renderer.ShallowFluid
             _cells = simulator.Cells;
             _options = options;
 
-            var surfaceFaces = _cells.Select(cell => FoamUtils.BottomFaceOf(cell)).ToList();
+            var surfaceFaces = _cells.Select(cell => FoamUtils.BottomFace(cell)).ToList();
             _surfaceRenderer = new LayerRenderer(surfaceFaces, heightmap, options.LayerMaterials[0]);
 
-            var atmosphereFaces = _cells.Select(cell => FoamUtils.TopFaceOf(cell)).ToList();
+            var atmosphereFaces = _cells.Select(cell => FoamUtils.TopFace(cell)).ToList();
             _atmosphereRenderer = new LayerRenderer(atmosphereFaces, heightmap, options.LayerMaterials[1],
                 boundaryMaterialName: _options.BoundaryMaterial);
 
