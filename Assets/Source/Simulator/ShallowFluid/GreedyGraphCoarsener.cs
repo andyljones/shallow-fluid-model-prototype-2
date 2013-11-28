@@ -19,7 +19,7 @@ namespace Simulator.ShallowFluid
 
         /// <summary>
         /// The ith graph in this list associates the nodes of the ith graph in CoarsenedGraphs with the nearest
-        /// element of the next coarsest graph.
+        ///  elements of the next coarsest graph.
         /// </summary>
         public List<Graph<T>> CoarseNeighbourGraphs { get; private set; } 
 
@@ -48,7 +48,7 @@ namespace Simulator.ShallowFluid
             }
         }
 
-        // Associates each node in graph with the three nearest nodes in coarseGraph.
+        // Associates each node in graph with the nearest nodes in coarseGraph.
         private Graph<T> CoarseNeighboursOf(Graph<T> graph, Graph<T> coarseGraph)
         {
             var coarseNodes = new HashSet<T>(coarseGraph.Keys);
