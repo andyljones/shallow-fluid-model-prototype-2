@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
+using Tests.AtmosphereTests.MonolayerAtmosphereTests;
 using UnityEngine;
 
 namespace Tests.SimulatorTests.ShallowFluidTests
@@ -13,8 +14,8 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         public void Constructor_SetsCoarsenedGraphsToOneElementListContainingProvidedGraph()
         {
             var graph = new Graph<int> { { 0, default(List<int>) } };
-            var positions = new VectorField<int> { { 0, default(Vector3) } };
-            var solver = new MultigridSolver<int>(graph, positions);
+            var geometry = new FakeGeometry();
+            var solver = new MultigridSolver<int>(graph, geometry);
 
             var expectedCoarsenedGraphs = new List<Graph<int>> {graph}; 
             var coarsenedGraphs = solver.CoarsenedGraphs;
@@ -26,8 +27,8 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         public void Solve_GivenAPairOfScalarFieldsWithSameKeys_ReturnsFieldWithSameKeysAsU()
         {
             var graph = new Graph<int> {{0, default(List<int>)}};
-            var positions = new VectorField<int> {{0, default(Vector3)}};
-            var solver = new MultigridSolver<int>(graph, positions);
+            var geometry = new FakeGeometry();
+            var solver = new MultigridSolver<int>(graph, geometry);
 
             var U = new ScalarField<int> {{0, 0f}};
             var f = new ScalarField<int> {{0, 0f}};

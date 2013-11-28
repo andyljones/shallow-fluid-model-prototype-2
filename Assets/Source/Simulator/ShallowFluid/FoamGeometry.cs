@@ -7,7 +7,16 @@ namespace Simulator.ShallowFluid
     public class FoamGeometry : IGeometry<Cell>
     {
         /// <summary>
-        /// Field representing the areas of each node.
+        /// Field representing the position of each cell.
+        /// </summary>
+        public VectorField<Cell> Positions
+        {
+            get { return _positions ?? (_positions = CalculatePositions(_graph)); }
+        }
+        private VectorField<Cell> _positions; 
+
+        /// <summary>
+        /// Field representing the areas of each cell.
         /// </summary>
         public ScalarField<Cell> Areas
         {
@@ -16,7 +25,7 @@ namespace Simulator.ShallowFluid
         private ScalarField<Cell> _areas; 
 
         /// <summary>
-        /// Dictionary of fields; each float gives the width of the face between the two nodes used to index it.
+        /// Dictionary of fields; each float gives the width of the face between the two cells used to index it.
         /// </summary>
         public Dictionary<Cell, ScalarField<Cell>> Widths 
         {
@@ -25,7 +34,7 @@ namespace Simulator.ShallowFluid
         private Dictionary<Cell, ScalarField<Cell>> _widths;
 
         /// <summary>
-        /// Dictionary of internode distances; each float gives the distance between the two nodes used to index it.
+        /// Dictionary of internode distances; each float gives the distance between the two cells used to index it.
         /// </summary>
         public Dictionary<Cell, ScalarField<Cell>> InternodeDistances
         {
@@ -45,10 +54,18 @@ namespace Simulator.ShallowFluid
             _graph = graph;
         }
 
+        private VectorField<Cell> CalculatePositions(Graph<Cell> graph)
+        {
+            var cells = graph.Keys;
+            var positions = cells.ToDictionary(cell => cell, cell => cell.Center());
+
+            return new VectorField<Cell>(positions);
+        }
+
         private ScalarField<Cell> CalculateAreas(Graph<Cell> graph)
         {
-            var areas = graph.ToDictionary(cellAndNeighbours => cellAndNeighbours.Key, 
-                                           cellAndNeighbours => cellAndNeighbours.Key.HorizontalArea());
+            var cells = graph.Keys;
+            var areas = cells.ToDictionary(cell => cell, cell => cell.HorizontalArea());
 
             return new ScalarField<Cell>(areas);
         }
@@ -75,8 +92,6 @@ namespace Simulator.ShallowFluid
             return widths;
         }
 
-
-        //TODO: Test.
         private Dictionary<Cell, ScalarField<Cell>> CalculateDistances(Graph<Cell> graph)
         {
             var distances = new Dictionary<Cell, ScalarField<Cell>>();

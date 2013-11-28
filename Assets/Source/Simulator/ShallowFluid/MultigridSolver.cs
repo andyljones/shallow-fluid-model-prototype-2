@@ -12,21 +12,16 @@ namespace Simulator.ShallowFluid
     public class MultigridSolver<T>
     {
         public List<Graph<T>> CoarsenedGraphs { get; set; }
-        private readonly VectorField<T> _positions;
+        private readonly IGeometry<T> _geometry;
 
-        public MultigridSolver(Graph<T> graph, VectorField<T> positions)
+        public MultigridSolver(Graph<T> graph, IGeometry<T> geometry )
         {
-            Debug.Assert(graph.Keys.SequenceEqual(positions.Keys), "Graph and position arguments concern different sets of objects!");
-
             CoarsenedGraphs = new List<Graph<T>> { graph };
-            _positions = positions;
+            _geometry = geometry;
         }
 
         public ScalarField<T> Solve(ScalarField<T> U, ScalarField<T> f)
         {
-            Debug.Assert(U.Keys.SequenceEqual(f.Keys), "Fields U and f concern different sets of objects!");
-            Debug.Assert(U.Keys.SequenceEqual(_positions.Keys), "Fields U and f concern a different set of objects to the position field!");
-
             var solution = new ScalarField<T>(U.Keys);
 
             return solution;
