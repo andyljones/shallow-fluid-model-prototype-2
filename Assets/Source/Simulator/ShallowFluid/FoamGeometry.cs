@@ -29,7 +29,7 @@ namespace Simulator.ShallowFluid
         /// </summary>
         public Dictionary<Cell, ScalarField<Cell>> InternodeDistances
         {
-            get { return _distances ?? (_distances = CalculateWidths(_graph)); }
+            get { return _distances ?? (_distances = CalculateDistances(_graph)); }
         }
         private Dictionary<Cell, ScalarField<Cell>> _distances; 
 
