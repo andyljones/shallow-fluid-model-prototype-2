@@ -11,7 +11,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenSingleNodeGraph_ShouldGenerateOneCoarsenedGraph()
         {
-            var singleNode = new AdjacencyDictionary<int> { { 0, new List<int>() } };
+            var singleNode = new Graph<int> { { 0, new List<int>() } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(singleNode);
 
             var numberOfCoarsenedGraphs = graphCoarsener.CoarsenedGraphs;
@@ -22,7 +22,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenSingleNodeGraph_ShouldSetLeastCoarsenedGraphToIt()
         {
-            var singleNode = new AdjacencyDictionary<int> { { 0, new List<int>() } };
+            var singleNode = new Graph<int> { { 0, new List<int>() } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(singleNode);
 
             var leastCoarsenedGraph = graphCoarsener.CoarsenedGraphs.First();
@@ -33,7 +33,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateTwoCoarsenedGraphs()
         {
-            var adjacentPair = new AdjacencyDictionary<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
             var numberOfCoarsenedGraphs = graphCoarsener.CoarsenedGraphs;
@@ -44,7 +44,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateMostCoarseGraphWithOneElement()
         {
-            var adjacentPair = new AdjacencyDictionary<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
             var mostCoarsenedGraph = graphCoarsener.CoarsenedGraphs.Last();
@@ -55,7 +55,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateMostCoarseGraphWhoseFirstNodeHasNoNeighbours()
         {
-            var adjacentPair = new AdjacencyDictionary<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
             var mostCoarsenedGraph = graphCoarsener.CoarsenedGraphs.Last();
@@ -67,7 +67,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenFourNodesInALine_ShouldGenerateThreeCoarsenedGraphs()
         {
-            var fourNodesInALine = new AdjacencyDictionary<int> 
+            var fourNodesInALine = new Graph<int> 
             {
                 {0, new List<int> {1}},
                 {1, new List<int> {0, 2}},
@@ -85,7 +85,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenFourNodesInALine_ShouldGenerateSecondLeastCoarsenedGraphWithTwoNodes()
         {
-            var fourNodesInALine = new AdjacencyDictionary<int> 
+            var fourNodesInALine = new Graph<int> 
             {
                 {0, new List<int> {1}},
                 {1, new List<int> {0, 2}},
@@ -103,7 +103,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenFourNodesInALine_ShouldGenerateSecondLeastCoarsenedGraphWhereEachNodeHasOneNeighbour()
         {
-            var fourNodesInALine = new AdjacencyDictionary<int> 
+            var fourNodesInALine = new Graph<int> 
             {
                 {0, new List<int> {1}},
                 {1, new List<int> {0, 2}},
@@ -122,7 +122,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenCompleteGraphOnThreeNodes_ShouldGenerateTwoCoarsenedGraphs()
         {
-            var completeGraphOnThreeNodes = new AdjacencyDictionary<int> 
+            var completeGraphOnThreeNodes = new Graph<int> 
             {
                 {0, new List<int> {1, 2}},
                 {1, new List<int> {0, 2}},
@@ -139,7 +139,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenSingleNodeGraph_ShouldGenerateNoCoarseNeighbourGraphs()
         {
-            var singleNode = new AdjacencyDictionary<int> { { 0, new List<int>() } };
+            var singleNode = new Graph<int> { { 0, new List<int>() } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(singleNode);
 
             var numberOfCoarseNeighbourGraphs = graphCoarsener.CoarseNeighbourGraphs;
@@ -150,7 +150,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateOneCoarseNeighbourGraph()
         {
-            var adjacentPair = new AdjacencyDictionary<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
             var numberOfCoarseNeighbourGraphs = graphCoarsener.CoarseNeighbourGraphs;
@@ -161,7 +161,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateCoarseNeighbourGraphWithTwoNodes()
         {
-            var adjacentPair = new AdjacencyDictionary<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
             var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs.First();
@@ -172,7 +172,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenTwoAdjacentNodes_ShouldGenerateCoarseNeighbourGraphWhereEachNodeHasOneNeighbour()
         {
-            var adjacentPair = new AdjacencyDictionary<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
+            var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
             var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs.First();
@@ -184,7 +184,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_GivenCompleteGraphOnThreeNodes_ShouldGenerateCoarseNeighbourGraphWhereEachNodeHasOneNeighbour()
         {
-            var completeGraphOnThreeNodes = new AdjacencyDictionary<int> 
+            var completeGraphOnThreeNodes = new Graph<int> 
             {
                 {0, new List<int> {1, 2}},
                 {1, new List<int> {0, 2}},

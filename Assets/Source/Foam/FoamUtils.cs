@@ -71,6 +71,12 @@ namespace Foam
             return distanceBetweenCellCenters;
         }
 
+        //TODO: Test
+        public static float DistanceTo(this Cell cell, Cell neighbour)
+        {
+            return (cell.Center() - neighbour.Center()).magnitude;
+        }
+
         public static float Area(this Face face)
         {
             var center = Center(face);

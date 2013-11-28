@@ -15,24 +15,24 @@ namespace Simulator.ShallowFluid
         /// A list of the coarsened graphs generated from the graph given to the constructor. Given in 
         /// finest-to-coarsest order. 
         /// </summary>
-        public List<AdjacencyDictionary<T>> CoarsenedGraphs { get; private set; }
+        public List<Graph<T>> CoarsenedGraphs { get; private set; }
 
         /// <summary>
         /// The ith graph in this list associates the nodes of the ith graph in CoarsenedGraphs with the nearest
         /// element of the next coarsest graph.
         /// </summary>
-        public List<AdjacencyDictionary<T>> CoarseNeighbourGraphs { get; private set; } 
+        public List<Graph<T>> CoarseNeighbourGraphs { get; private set; } 
 
         /// <summary>
         /// Takes an adjacency dictionary describing a graph, and generates a list of coarsened  graphs from it. 
         /// These graphs can be found in the CoarsenedGraph field.
         /// </summary>
         /// <param name="graph">The graph to be coarsened</param>
-        public GreedyGraphCoarsener(AdjacencyDictionary<T> graph)
+        public GreedyGraphCoarsener(Graph<T> graph)
         {
             var currentMostCoarseGraph = graph;
-            CoarsenedGraphs = new List<AdjacencyDictionary<T>> { currentMostCoarseGraph };
-            CoarseNeighbourGraphs = new List<AdjacencyDictionary<T>>();
+            CoarsenedGraphs = new List<Graph<T>> { currentMostCoarseGraph };
+            CoarseNeighbourGraphs = new List<Graph<T>>();
 
             // The coarsest possible graph has a single node, so we keep coarsening until we get an adjacency 
             // dictionary with one entry.
@@ -49,10 +49,10 @@ namespace Simulator.ShallowFluid
         }
 
         // Associates each node in graph with the three nearest nodes in coarseGraph.
-        private AdjacencyDictionary<T> CoarseNeighboursOf(AdjacencyDictionary<T> graph, AdjacencyDictionary<T> coarseGraph)
+        private Graph<T> CoarseNeighboursOf(Graph<T> graph, Graph<T> coarseGraph)
         {
             var coarseNodes = new HashSet<T>(coarseGraph.Keys);
-            var coarseNeighbours = new AdjacencyDictionary<T>();
+            var coarseNeighbours = new Graph<T>();
 
             foreach (var node in graph.Keys)
             {
@@ -72,7 +72,7 @@ namespace Simulator.ShallowFluid
         }
 
         // Coarsens a graph by finding a maximal independent set of nodes and linking those that are at distance 2 from eachother. 
-        private AdjacencyDictionary<T> CoarsenGraph(AdjacencyDictionary<T> graph)
+        private Graph<T> CoarsenGraph(Graph<T> graph)
         {
             var maximalIndependentSet = FindMaximalIndependentSetIn(graph);
             var graphOfMaximalIndependentSet = SecondNeighbourSubgraphOf(maximalIndependentSet, graph);
@@ -81,9 +81,9 @@ namespace Simulator.ShallowFluid
         }
 
         // Constructs a graph from the given subset where two nodes are adjacent if they're at distance 2 from eachother in the original graph.
-        private AdjacencyDictionary<T> SecondNeighbourSubgraphOf(List<T> subsetOfNodes, AdjacencyDictionary<T> graph)
+        private Graph<T> SecondNeighbourSubgraphOf(List<T> subsetOfNodes, Graph<T> graph)
         {
-            var subgraph = new AdjacencyDictionary<T>();
+            var subgraph = new Graph<T>();
 
             foreach (var node in subsetOfNodes)
             {
@@ -97,7 +97,7 @@ namespace Simulator.ShallowFluid
         }
 
         // Returns a list of all nodes within a given distance of the specified node. 
-        private List<T> NthNeighbourhoodOf(T node, AdjacencyDictionary<T> graph, int distance)
+        private List<T> NthNeighbourhoodOf(T node, Graph<T> graph, int distance)
         {
             var neighbours = new List<T> {node};
 
@@ -112,7 +112,7 @@ namespace Simulator.ShallowFluid
         }
 
         // Greedily finds a maximal independent set of nodes in the graph.
-        private List<T> FindMaximalIndependentSetIn(AdjacencyDictionary<T> graph)
+        private List<T> FindMaximalIndependentSetIn(Graph<T> graph)
         {
             var independentSet = new List<T>();            
             // This is the set of nodes who aren't in the independent set and don't have neighbours in it.

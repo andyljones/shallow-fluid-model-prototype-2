@@ -11,14 +11,14 @@ namespace Simulator.ShallowFluid
     /// <typeparam name="T"></typeparam>
     public class MultigridSolver<T>
     {
-        public List<AdjacencyDictionary<T>> CoarsenedGraphs { get; set; }
+        public List<Graph<T>> CoarsenedGraphs { get; set; }
         private readonly VectorField<T> _positions;
 
-        public MultigridSolver(AdjacencyDictionary<T> graph, VectorField<T> positions)
+        public MultigridSolver(Graph<T> graph, VectorField<T> positions)
         {
             Debug.Assert(graph.Keys.SequenceEqual(positions.Keys), "Graph and position arguments concern different sets of objects!");
 
-            CoarsenedGraphs = new List<AdjacencyDictionary<T>> { graph };
+            CoarsenedGraphs = new List<Graph<T>> { graph };
             _positions = positions;
         }
 

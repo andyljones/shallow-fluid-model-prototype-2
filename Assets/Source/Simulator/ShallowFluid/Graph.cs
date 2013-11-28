@@ -7,7 +7,7 @@ namespace Simulator.ShallowFluid
     /// (interpreted as their neighbours).
     /// </summary>
     /// <typeparam name="TNode"></typeparam>
-    public class AdjacencyDictionary<TNode> : Dictionary<TNode, List<TNode>>
+    public class Graph<TNode> : Dictionary<TNode, List<TNode>>
     {
 
     }

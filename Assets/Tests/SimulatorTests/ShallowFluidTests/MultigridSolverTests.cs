@@ -12,11 +12,11 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Constructor_SetsCoarsenedGraphsToOneElementListContainingProvidedGraph()
         {
-            var graph = new AdjacencyDictionary<int> { { 0, default(List<int>) } };
+            var graph = new Graph<int> { { 0, default(List<int>) } };
             var positions = new VectorField<int> { { 0, default(Vector3) } };
             var solver = new MultigridSolver<int>(graph, positions);
 
-            var expectedCoarsenedGraphs = new List<AdjacencyDictionary<int>> {graph}; 
+            var expectedCoarsenedGraphs = new List<Graph<int>> {graph}; 
             var coarsenedGraphs = solver.CoarsenedGraphs;
 
             Assert.That(coarsenedGraphs, Is.EquivalentTo(expectedCoarsenedGraphs));
@@ -25,7 +25,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
         [Test]
         public void Solve_GivenAPairOfScalarFieldsWithSameKeys_ReturnsFieldWithSameKeysAsU()
         {
-            var graph = new AdjacencyDictionary<int> {{0, default(List<int>)}};
+            var graph = new Graph<int> {{0, default(List<int>)}};
             var positions = new VectorField<int> {{0, default(Vector3)}};
             var solver = new MultigridSolver<int>(graph, positions);
 
