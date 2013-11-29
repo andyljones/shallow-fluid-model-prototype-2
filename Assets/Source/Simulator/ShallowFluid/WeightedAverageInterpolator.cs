@@ -7,7 +7,7 @@ namespace Simulator.ShallowFluid
 {
     public class WeightedAverageInterpolator<T> : IInterpolator<T>
     {
-        private readonly Dictionary<T, ScalarField<T>> _weights;
+        private readonly ScalarFieldMap<T> _weights;
 
         /// <summary>
         /// Uses the provided relative positions to calculate the weightings for the interpolation.
@@ -20,9 +20,9 @@ namespace Simulator.ShallowFluid
 
         // Calculates the weights for the interpolation. Weights each neighbour according to 1/distance, then 
         // normalizes so they sum to 1.
-        private Dictionary<T, ScalarField<T>> CalculateWeights(Dictionary<T, VectorField<T>> relativePositions)
+        private ScalarFieldMap<T> CalculateWeights(Dictionary<T, VectorField<T>> relativePositions)
         {
-            var weights = new Dictionary<T, ScalarField<T>>();
+            var weights = new ScalarFieldMap<T>();
 
             foreach (var nodeAndNeighbourPositions in relativePositions)
             {

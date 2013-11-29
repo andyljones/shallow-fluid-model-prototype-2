@@ -27,20 +27,20 @@ namespace Simulator.ShallowFluid
         /// <summary>
         /// Dictionary of fields; each float gives the width of the face between the two cells used to index it.
         /// </summary>
-        public Dictionary<Cell, ScalarField<Cell>> Widths 
+        public ScalarFieldMap<Cell> Widths 
         {
             get { return _widths ?? (_widths = CalculateWidths(_graph)); }
         }
-        private Dictionary<Cell, ScalarField<Cell>> _widths;
+        private ScalarFieldMap<Cell> _widths;
 
         /// <summary>
         /// Dictionary of internode distances; each float gives the distance between the two cells used to index it.
         /// </summary>
-        public Dictionary<Cell, ScalarField<Cell>> InternodeDistances
+        public ScalarFieldMap<Cell> InternodeDistances
         {
             get { return _distances ?? (_distances = CalculateDistances(_graph)); }
         }
-        private Dictionary<Cell, ScalarField<Cell>> _distances; 
+        private ScalarFieldMap<Cell> _distances; 
 
 
         private readonly Graph<Cell> _graph;  
@@ -70,9 +70,9 @@ namespace Simulator.ShallowFluid
             return new ScalarField<Cell>(areas);
         }
 
-        private Dictionary<Cell, ScalarField<Cell>> CalculateWidths(Graph<Cell> graph)
+        private ScalarFieldMap<Cell> CalculateWidths(Graph<Cell> graph)
         {
-            var widths = new Dictionary<Cell, ScalarField<Cell>>();
+            var widths = new ScalarFieldMap<Cell>();
 
             foreach (var cellAndNeighbours in graph)
             {
@@ -92,9 +92,9 @@ namespace Simulator.ShallowFluid
             return widths;
         }
 
-        private Dictionary<Cell, ScalarField<Cell>> CalculateDistances(Graph<Cell> graph)
+        private ScalarFieldMap<Cell> CalculateDistances(Graph<Cell> graph)
         {
-            var distances = new Dictionary<Cell, ScalarField<Cell>>();
+            var distances = new ScalarFieldMap<Cell>();
 
             foreach (var cellAndNeighbours in graph)
             {

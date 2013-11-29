@@ -7,7 +7,7 @@ namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
     {
         public VectorField<int> Positions { get; set; } 
         public ScalarField<int> Areas { get; set; }
-        public Dictionary<int, ScalarField<int>> Widths { get; set; }
-        public Dictionary<int, ScalarField<int>> InternodeDistances { get; set; }
+        public ScalarFieldMap<int> Widths { get; set; }
+        public ScalarFieldMap<int> InternodeDistances { get; set; }
     }
 }

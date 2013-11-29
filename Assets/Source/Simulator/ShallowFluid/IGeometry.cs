@@ -6,7 +6,7 @@ namespace Simulator.ShallowFluid
     {
         VectorField<T> Positions { get; }
         ScalarField<T> Areas { get; }
-        Dictionary<T, ScalarField<T>> Widths { get; }
-        Dictionary<T, ScalarField<T>> InternodeDistances { get; }
+        ScalarFieldMap<T> Widths { get; }
+        ScalarFieldMap<T> InternodeDistances { get; }
     }
 }
