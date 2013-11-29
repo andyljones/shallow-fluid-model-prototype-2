@@ -9,12 +9,12 @@ namespace Simulator.ShallowFluid
     public class LinearInterpolator<T> : IInterpolator<T>
     {
         private Graph<T> _graph; 
-        private RelativePositions<T> _relativePositions; 
+        private RelativePositionCalculator<T> _relativePositionCalculator; 
 
-        public LinearInterpolator(Graph<T> graph, RelativePositions<T> positions)
+        public LinearInterpolator(Graph<T> graph, RelativePositionCalculator<T> positionCalculator)
         {
             _graph = graph;
-            _relativePositions = positions;
+            _relativePositionCalculator = positionCalculator;
         }
 
 
