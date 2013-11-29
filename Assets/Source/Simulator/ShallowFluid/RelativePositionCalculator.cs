@@ -8,8 +8,7 @@ namespace Simulator.ShallowFluid
     public class RelativePositionCalculator<T>
     {
         /// <summary>
-        /// The relative position of neighbouring nodes in terms of the Euclidean coordinate system in the node's 
-        /// tangent plane. 
+        /// The relative position of neighbouring nodes in terms of the tangent space at a graph node on a sphere. 
         /// </summary>
         public Dictionary<T, VectorField<T>> RelativePositions 
         { 

@@ -34,7 +34,7 @@ public class test : MonoBehaviour {
 	        Height = 8f,
             DayLength = 80000,
             Timestep = 50,
-	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"},
+	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"}, //TODO: Refactor this so that materials are provided in the editor
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",
             ArrowLengthMultiplier = 100f,
