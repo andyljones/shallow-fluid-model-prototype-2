@@ -142,7 +142,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests
             var fakeGraph = new Graph<Cell> { { fakeCellA, new List<Cell> {fakeCellB} }, {fakeCellB, new List<Cell> {fakeCellA}} };
             var geometry = new FoamGeometry(fakeGraph);
 
-            var expectedSeparation = 2f/Mathf.Sqrt(3);
+            var expectedSeparation = 2 * Mathf.Asin(1 / Mathf.Sqrt(3));
             var tolerance = 0.001f;
 
             var distanceOfBFromA = geometry.InternodeDistances[fakeCellA][fakeCellB];

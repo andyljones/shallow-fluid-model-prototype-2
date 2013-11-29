@@ -11,12 +11,13 @@ namespace Simulator.ShallowFluid
     /// <typeparam name="T"></typeparam>
     public class MultigridSolver<T>
     {
-        public List<Graph<T>> CoarsenedGraphs { get; set; }
+        private readonly List<Graph<T>> _coarsenedGraphs;
         private readonly IGeometry<T> _geometry;
+        private readonly IInterpolator<T> _interpolator; 
 
         public MultigridSolver(Graph<T> graph, IGeometry<T> geometry )
         {
-            CoarsenedGraphs = new List<Graph<T>> { graph };
+            _coarsenedGraphs = new List<Graph<T>> { graph };
             _geometry = geometry;
         }
 

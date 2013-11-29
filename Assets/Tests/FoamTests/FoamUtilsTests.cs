@@ -112,9 +112,9 @@ namespace Tests.FoamTests
         }
 
         [Test]
-        public void Distance_Between_Cell_Centers_Should_Be_23_Over_Sqrt3()
+        public void Distance_Between_Cell_Centers_Should_Be_Correct()
         {
-            var expectedDistance = 23f/Mathf.Sqrt(3);
+            var expectedDistance = 2 * Mathf.Asin(1/Mathf.Sqrt(3)) * 11.5f;
             var actualDistance = _fakeAtmo.Cells[0].Faces[4].DistanceBetweenNeighbouringCellCenters();
 
             var tolerance = 0.001f;

@@ -4,6 +4,7 @@ namespace Simulator.ShallowFluid
 {
     public class LinearInterpolator<T> : IInterpolator<T>
     {
+        //TODO: Write local coord generator, then write linear interpolator
         public LinearInterpolator(ScalarFieldMap<T> fields)
         {
             

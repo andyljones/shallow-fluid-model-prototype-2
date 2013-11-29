@@ -63,17 +63,21 @@ namespace Foam
 
         public static float DistanceBetweenNeighbouringCellCenters(this Face face)
         {
-            var centerOfCellA = Center(face.Cells[0]);
-            var centerOfCellB = Center(face.Cells[1]);
+            var cellA = face.Cells[0];
+            var cellB = face.Cells[1];
 
-            var distanceBetweenCellCenters = (centerOfCellB - centerOfCellA).magnitude;
-
-            return distanceBetweenCellCenters;
+            return cellA.DistanceTo(cellB);
         }
 
         public static float DistanceTo(this Cell cell, Cell neighbour)
         {
-            return (cell.Center() - neighbour.Center()).magnitude;
+            var centerOfCell = cell.Center();
+            var centerOfNeighbour = neighbour.Center();
+            var angleBetweenCellAndNeighbour = Vector3.Angle(centerOfCell, centerOfNeighbour) * Mathf.PI / 180;
+            var radius = (centerOfCell.magnitude + centerOfNeighbour.magnitude) / 2;
+            var distanceBetweenCellAndNeighbour = radius*angleBetweenCellAndNeighbour;
+
+            return distanceBetweenCellAndNeighbour;
         }
 
         public static float Area(this Face face)
