@@ -60,21 +60,28 @@ namespace Simulator.ShallowFluid.MultigridSolver
             }
         }
 
-        public float RelaxValueAtNode(T node, ScalarField<T> field, ScalarField<T> laplacianOfField)
+        public float RelaxValueAtNode(T node, ScalarField<T> oldField, ScalarField<T> laplacianOfField)
         {
-            var sum = 0f;
+            var newFieldAtNode = 0f;
 
             var neighbours = _graph[node];
 
-            foreach (var neighbour in neighbours)
+            if (neighbours.Count == 0)
             {
-                sum += _termCoefficients[node][neighbour]*field[neighbour];
+                newFieldAtNode = oldField[node];
             }
+            else
+            {
+                foreach (var neighbour in neighbours)
+                {
+                    newFieldAtNode += _termCoefficients[node][neighbour] * oldField[neighbour];
+                }
 
-            sum -= _areas[node]*laplacianOfField[node];
-            sum /= _normalizationCoefficients[node];
-
-            return sum;
+                newFieldAtNode -= _areas[node] * laplacianOfField[node];
+                newFieldAtNode /= _normalizationCoefficients[node];    
+            }
+            
+            return newFieldAtNode;
         }
     }
 }

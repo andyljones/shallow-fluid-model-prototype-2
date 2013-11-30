@@ -11,10 +11,13 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
     public class RelaxationCalculatorTests
     {
         [Test]
-        public void Relax_OnAnIsolatedNode_ShouldRelaxAnyFieldToZero()
+        public void Relax_OnAnIsolatedNode_ShouldPreserveTheFieldsValue()
         {
             var graph = new Graph<int> {{0, new List<int>()}};
             var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Areas).Returns(new ScalarField<int> { { 0, 4f } });
+            A.CallTo(() => geometry.InternodeDistances).Returns(new ScalarFieldMap<int> { { 0, new ScalarField<int>() } });
+            A.CallTo(() => geometry.Widths).Returns(new ScalarFieldMap<int> { { 0, new ScalarField<int>() } });
             var calculator = new RelaxationCalculator<int>(graph, geometry);
 
             var field = new ScalarField<int> {{0, 2f}};
@@ -22,7 +25,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
 
             calculator.Relax(ref field, laplacianOfField);
 
-            Assert.That(field.Values, Has.All.EqualTo(0));
+            Assert.That(field[0], Is.EqualTo(2f));
         }
 
         [Test]
