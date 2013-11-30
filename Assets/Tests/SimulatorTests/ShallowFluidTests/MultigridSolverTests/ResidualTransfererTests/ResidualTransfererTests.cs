@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FakeItEasy;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
 using Simulator.ShallowFluid.MultigridSolver.ResidualTransferer;
@@ -12,7 +13,9 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.ResidualTr
         public void Transfer_OnTwoSingletonGraphsOfTheSameNode_ShouldTransferTheValueOnTheFineToTheCoarse()
         {
             var coarseGraph = new Graph<int> { { 0, new List<int>() } };
-            var transferer = new ResidualTransferer<int> { CoarseGraph = coarseGraph };
+            var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Graph).Returns(coarseGraph);
+            var transferer = new ResidualTransferer<int> { Geometry = geometry };
 
             var fineField = new ScalarField<int> {{0, 1f}};
             var coarseField = new ScalarField<int> {{0, 2f}};

@@ -1,17 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Foam;
+using Simulator.ShallowFluid.MultigridSolver;
 
 namespace Simulator.ShallowFluid
 {
     public class FoamGeometry : IGeometry<Cell>
     {
+        public Graph<Cell> Graph { get; private set; } 
+
         /// <summary>
         /// Field representing the position of each cell.
         /// </summary>
         public VectorField<Cell> Positions
         {
-            get { return _positions ?? (_positions = CalculatePositions(_graph)); }
+            get { return _positions ?? (_positions = CalculatePositions(Graph)); }
         }
         private VectorField<Cell> _positions; 
 
@@ -20,7 +23,7 @@ namespace Simulator.ShallowFluid
         /// </summary>
         public ScalarField<Cell> Areas
         {
-            get { return _areas ?? (_areas = CalculateAreas(_graph)); }
+            get { return _areas ?? (_areas = CalculateAreas(Graph)); }
         }
         private ScalarField<Cell> _areas; 
 
@@ -29,7 +32,7 @@ namespace Simulator.ShallowFluid
         /// </summary>
         public ScalarFieldMap<Cell> Widths 
         {
-            get { return _widths ?? (_widths = CalculateWidths(_graph)); }
+            get { return _widths ?? (_widths = CalculateWidths(Graph)); }
         }
         private ScalarFieldMap<Cell> _widths;
 
@@ -38,12 +41,16 @@ namespace Simulator.ShallowFluid
         /// </summary>
         public ScalarFieldMap<Cell> InternodeDistances
         {
-            get { return _distances ?? (_distances = CalculateDistances(_graph)); }
+            get { return _distances ?? (_distances = CalculateDistances(Graph)); }
         }
-        private ScalarFieldMap<Cell> _distances; 
+        private ScalarFieldMap<Cell> _distances;
 
+        public VectorFieldMap<Cell> RelativePositions
+        {
+            get { return _relativePositions ?? (_relativePositions = CalculateRelativePositions(Graph)); }
+        }
 
-        private readonly Graph<Cell> _graph;  
+        private VectorFieldMap<Cell> _relativePositions;
 
         /// <summary>
         /// Takes a graph of cells in adjacency dictionary format
@@ -51,7 +58,7 @@ namespace Simulator.ShallowFluid
         /// <param name="graph"></param>
         public FoamGeometry(Graph<Cell> graph)
         {
-            _graph = graph;
+            Graph = graph;
         }
 
         private VectorField<Cell> CalculatePositions(Graph<Cell> graph)
@@ -92,6 +99,12 @@ namespace Simulator.ShallowFluid
             return widths;
         }
 
+        private VectorFieldMap<Cell> CalculateRelativePositions(Graph<Cell> graph)
+        {
+            var calculator = new RelativePositionCalculator<Cell>(graph, Positions);
+            return calculator.RelativePositions;
+        }
+
         private ScalarFieldMap<Cell> CalculateDistances(Graph<Cell> graph)
         {
             var distances = new ScalarFieldMap<Cell>();
@@ -104,7 +117,7 @@ namespace Simulator.ShallowFluid
 
                 foreach (var neighbour in neighbours)
                 {
-                    var distance = cell.DistanceTo(neighbour);
+                    var distance = RelativePositions[cell][neighbour].magnitude;
                     distanceToNeighbours.Add(neighbour, distance);
                 }
 

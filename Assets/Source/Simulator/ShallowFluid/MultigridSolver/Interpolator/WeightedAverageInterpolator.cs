@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
     public class WeightedAverageInterpolator<T> : IInterpolator<T>
     {
-        public VectorFieldMap<T> RelativePositions;
+        public IGeometry<T> Geometry { private get; set; }
         
         private ScalarFieldMap<T> _weights;
 
         private void InitializeWeights()
         {
-            _weights = CalculateWeights(RelativePositions);
+            _weights = CalculateWeights(Geometry.RelativePositions);
         }
 
         // Calculates the weights for the interpolation. Weights each neighbour according to 1/distance, then 

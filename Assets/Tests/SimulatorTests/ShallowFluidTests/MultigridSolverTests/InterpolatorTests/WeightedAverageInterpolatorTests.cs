@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FakeItEasy;
+using FakeItEasy.ExtensionSyntax;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
 using Simulator.ShallowFluid.MultigridSolver.Interpolator;
@@ -16,7 +17,9 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
             {
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}}}
             };
-            var interpolator = new WeightedAverageInterpolator<int> { RelativePositions = relativePositions };
+            var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.RelativePositions).Returns(relativePositions);
+            var interpolator = new WeightedAverageInterpolator<int> { Geometry = geometry};
 
             var targetField = new ScalarField<int> { { 0, 3f } };            
             var sourceField = new ScalarField<int> {{1, 7f}};
@@ -32,7 +35,9 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
             {
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}, {2, new Vector3(0, 1, 0)}}}
             };
-            var interpolator = new WeightedAverageInterpolator<int> { RelativePositions = relativePositions };
+            var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.RelativePositions).Returns(relativePositions);
+            var interpolator = new WeightedAverageInterpolator<int> { Geometry = geometry };
 
             var sourceField = new ScalarField<int> { { 1, 7f }, {2, 13f} };
             var targetField = new ScalarField<int> { { 0, 11f } };
@@ -48,7 +53,9 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
             {
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}, {2, new Vector3(0, 2, 0)}}}
             };
-            var interpolator = new WeightedAverageInterpolator<int> { RelativePositions = relativePositions };
+            var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.RelativePositions).Returns(relativePositions);
+            var interpolator = new WeightedAverageInterpolator<int> { Geometry = geometry };
 
             var sourceField = new ScalarField<int> { { 1, 7f }, { 2, 10f } };
             var targetField = new ScalarField<int> { { 0, 11f } };

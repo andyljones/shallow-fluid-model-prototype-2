@@ -14,10 +14,11 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Relaxation
         {
             var graph = new Graph<int> {{0, new List<int>()}};
             var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Graph).Returns(graph);
             A.CallTo(() => geometry.Areas).Returns(new ScalarField<int> { { 0, 4f } });
             A.CallTo(() => geometry.InternodeDistances).Returns(new ScalarFieldMap<int> { { 0, new ScalarField<int>() } });
             A.CallTo(() => geometry.Widths).Returns(new ScalarFieldMap<int> { { 0, new ScalarField<int>() } });
-            var calculator = new RelaxationCalculator<int> { Graph = graph, Geometry = geometry };
+            var calculator = new RelaxationCalculator<int> { Geometry = geometry };
 
             var field = new ScalarField<int> {{0, 2f}};
             var laplacianOfField = new ScalarField<int> {{0, 3f}};
@@ -32,10 +33,11 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Relaxation
         {
             var graph = new Graph<int> { { 0, new List<int> {1} } };
             var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Graph).Returns(graph);
             A.CallTo(() => geometry.Areas).Returns(new ScalarField<int> { { 0, 4f } });
             A.CallTo(() => geometry.InternodeDistances).Returns(new ScalarFieldMap<int> { {0, new ScalarField<int> { { 1, 5f } } } });
             A.CallTo(() => geometry.Widths).Returns(new ScalarFieldMap<int> { { 0, new ScalarField<int> { { 1, 6f } } } });
-            var calculator = new RelaxationCalculator<int> { Graph = graph, Geometry = geometry };
+            var calculator = new RelaxationCalculator<int> { Geometry = geometry };
 
             var field = new ScalarField<int> { { 1, 2f } };
             var laplacianOfField = new ScalarField<int> { { 0, 3f } };
