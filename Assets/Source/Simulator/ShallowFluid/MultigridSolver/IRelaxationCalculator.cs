@@ -2,6 +2,6 @@
 {
     public interface IRelaxationCalculator<T>
     {
-        void Relax(out ScalarField<T> U, ScalarField<T> f);
+        void Relax(ref ScalarField<T> field, ScalarField<T> laplacianOfField);
     }
 }
