@@ -2,14 +2,6 @@
 
 namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
-    public class WeightedAverageInterpolatorFactory<T> : IInterpolatorFactory<T>
-    {
-        public IInterpolator<T> GetInterpolator(IGeometry<T> geometry)
-        {
-            return new WeightedAverageInterpolator<T>(geometry);
-        }
-    }
-
     public class WeightedAverageInterpolator<T> : IInterpolator<T>
     {
         private readonly ScalarFieldMap<T> _weights;

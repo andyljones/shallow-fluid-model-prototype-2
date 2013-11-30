@@ -1,13 +1,5 @@
 ﻿namespace Simulator.ShallowFluid.MultigridSolver.ResidualTransferer
 {
-    public class SolutionTransfererFactory<T> : ISolutionTransfererFactory<T>
-    {
-        public ISolutionTransferer<T> GetSolutionTransferer(IGeometry<T> geometry)
-        {
-            return new SolutionTransferer<T>(geometry);
-        }
-    }
-
     public class SolutionTransferer<T> : ISolutionTransferer<T>
     {
         private readonly Graph<T> _coarseGraph; 

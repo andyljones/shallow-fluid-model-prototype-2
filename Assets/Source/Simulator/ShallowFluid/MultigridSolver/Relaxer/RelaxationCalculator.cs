@@ -3,13 +3,6 @@ using UnityEditor;
 
 namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 {
-    public class WeightedAverageRelaxerFactory<T> : IRelaxerFactory<T>
-    {
-        public IRelaxationCalculator<T> GetRelaxationCalculator(IGeometry<T> geometry)
-        {
-            return new RelaxationCalculator<T>(geometry);
-        }
-    }
     public class RelaxationCalculator<T> : IRelaxationCalculator<T>
     {
         private readonly IGeometry<T> _geometry;
