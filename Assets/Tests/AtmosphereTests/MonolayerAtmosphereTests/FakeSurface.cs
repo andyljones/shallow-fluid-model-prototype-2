@@ -3,7 +3,7 @@ using Foam;
 using Surfaces;
 using UnityEngine;
 
-namespace Tests.Fakes
+namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
 {
     public class FakeSurface : ISurface
     {

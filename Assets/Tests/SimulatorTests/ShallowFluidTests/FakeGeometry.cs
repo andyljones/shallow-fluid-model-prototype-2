@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Simulator.ShallowFluid;
+﻿using Simulator.ShallowFluid;
 
-namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
+namespace Tests.SimulatorTests.ShallowFluidTests
 {
     public class FakeGeometry : IGeometry<int>
     {

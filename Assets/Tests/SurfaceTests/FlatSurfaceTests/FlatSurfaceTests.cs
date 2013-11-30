@@ -5,7 +5,6 @@ using NUnit.Framework;
 using strange.extensions.injector.impl;
 using Surfaces;
 using Surfaces.FlatSurface;
-using Tests.Fakes;
 using UnityEngine;
 
 namespace Tests.SurfaceTests.FlatSurfaceTests

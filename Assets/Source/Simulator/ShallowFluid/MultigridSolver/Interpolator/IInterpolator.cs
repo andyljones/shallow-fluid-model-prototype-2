@@ -1,4 +1,4 @@
-﻿namespace Simulator.ShallowFluid
+﻿namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
     public interface IInterpolator<T>
     {

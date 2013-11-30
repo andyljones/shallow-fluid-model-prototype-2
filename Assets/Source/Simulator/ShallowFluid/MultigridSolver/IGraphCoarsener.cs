@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Simulator.ShallowFluid
+namespace Simulator.ShallowFluid.MultigridSolver
 {
     public interface IGraphCoarsener<T>
     {

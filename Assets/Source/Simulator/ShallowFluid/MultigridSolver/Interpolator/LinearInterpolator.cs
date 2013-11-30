@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Simulator.ShallowFluid
+﻿namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
     public class LinearInterpolator<T> : IInterpolator<T>
     {

@@ -4,7 +4,7 @@ using Atmosphere;
 using Foam;
 using UnityEngine;
 
-namespace Tests.Fakes
+namespace Tests.FoamTests
 {
     public class FakeAtmosphere : IAtmosphere
     {

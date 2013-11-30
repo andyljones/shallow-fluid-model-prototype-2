@@ -6,7 +6,6 @@ using FakeItEasy;
 using NUnit.Framework;
 using strange.extensions.injector.impl;
 using Surfaces;
-using Tests.Fakes;
 
 namespace Tests.AtmosphereTests.MonolayerAtmosphereTests
 {

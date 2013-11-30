@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 
-namespace Simulator.ShallowFluid
+namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
     public class WeightedAverageInterpolator<T> : IInterpolator<T>
     {

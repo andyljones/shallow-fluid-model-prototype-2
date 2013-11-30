@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Collections.Generic;
+using Simulator.ShallowFluid.MultigridSolver.Interpolator;
 
-namespace Simulator.ShallowFluid
+namespace Simulator.ShallowFluid.MultigridSolver
 {
     /// <summary>
     /// Contains methods for solving the elliptic equation Lapacian(U) = f over a two-dimensional field using a multigrid method. 

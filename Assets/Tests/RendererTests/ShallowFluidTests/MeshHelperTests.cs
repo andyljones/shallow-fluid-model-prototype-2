@@ -4,7 +4,6 @@ using Foam;
 using NUnit.Framework;
 using Renderer;
 using Renderer.ShallowFluid;
-using Tests.Fakes;
 
 namespace Tests.RendererTests.ShallowFluidTests
 {

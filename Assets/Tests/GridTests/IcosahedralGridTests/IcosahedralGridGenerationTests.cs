@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 
 //TODO: Refactor, this is horrible.
-namespace Tests.GridTests.IcosahedralGrid
+namespace Tests.GridTests.IcosahedralGridTests
 {
     [TestFixture]
     public class IcosahedralGridGeneratorTests

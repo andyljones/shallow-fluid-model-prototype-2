@@ -2,8 +2,9 @@
 using System.Linq;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
+using Simulator.ShallowFluid.MultigridSolver;
 
-namespace Tests.SimulatorTests.ShallowFluidTests
+namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
 {
     [TestFixture]
     public class GreedyGraphCoarsenerTests

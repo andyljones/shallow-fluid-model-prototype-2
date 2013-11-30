@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Simulator.ShallowFluid
+namespace Simulator.ShallowFluid.MultigridSolver
 {
     public class RelativePositionCalculator<T>
     {

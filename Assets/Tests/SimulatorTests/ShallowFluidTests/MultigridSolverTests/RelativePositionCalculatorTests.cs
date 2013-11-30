@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
+using Simulator.ShallowFluid.MultigridSolver;
 using UnityEngine;
 
-namespace Tests.SimulatorTests.ShallowFluidTests
+namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
 {
     [TestFixture]
     public class RelativePositionCalculatorTests

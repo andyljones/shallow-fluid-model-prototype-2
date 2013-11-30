@@ -5,7 +5,7 @@ using Grids.IcosahedralGridGenerator;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Tests.GridTests.IcosahedralGrid
+namespace Tests.GridTests.IcosahedralGridTests
 {
     [TestFixture]
     public class IcosahedronTests

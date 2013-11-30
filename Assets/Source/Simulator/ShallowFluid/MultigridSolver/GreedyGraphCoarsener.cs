@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Foam;
 
-namespace Simulator.ShallowFluid
+namespace Simulator.ShallowFluid.MultigridSolver
 {
     /// <summary>
     /// Generates a list of ever-more-coarsened graphs from an initial graph using a greedy algorithm.

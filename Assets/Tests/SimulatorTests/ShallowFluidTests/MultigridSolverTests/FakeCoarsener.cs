@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Simulator.ShallowFluid;
+using Simulator.ShallowFluid.MultigridSolver;
 
-namespace Tests.SimulatorTests.ShallowFluidTests
+namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
 {
     public class FakeCoarsener : IGraphCoarsener<int>
     {

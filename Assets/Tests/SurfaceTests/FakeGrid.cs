@@ -3,7 +3,7 @@ using Foam;
 using Grids;
 using UnityEngine;
 
-namespace Tests.Fakes
+namespace Tests.SurfaceTests
 {
     public class FakeGrid : IGrid
     {

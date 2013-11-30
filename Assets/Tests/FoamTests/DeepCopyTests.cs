@@ -2,10 +2,8 @@
 using System.Linq;
 using Foam;
 using NUnit.Framework;
-using Tests.Fakes;
-using Tests.GridTests;
 
-namespace Tests
+namespace Tests.FoamTests
 {
     // TODO: Update tests to reflect new FoamCopier
     [TestFixture]
@@ -17,7 +15,7 @@ namespace Tests
         [SetUp]
         public void Create_And_Copy_A_List_Of_Faces()
         {
-            _oldFaces = new FakeGrid().Faces;
+            _oldFaces = new SurfaceTests.FakeGrid().Faces;
 
             _newFaces = new FoamCopier(_oldFaces).FaceDictionary.Values.ToList();
         }

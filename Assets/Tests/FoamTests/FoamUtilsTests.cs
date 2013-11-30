@@ -1,6 +1,5 @@
 ﻿using Foam;
 using NUnit.Framework;
-using Tests.Fakes;
 using UnityEngine;
 
 namespace Tests.FoamTests
