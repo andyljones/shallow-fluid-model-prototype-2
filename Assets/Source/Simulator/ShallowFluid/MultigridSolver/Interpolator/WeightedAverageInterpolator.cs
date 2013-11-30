@@ -2,27 +2,33 @@
 
 namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
+    public class WeightedAverageInterpolatorFactory<T> : IInterpolatorFactory<T>
+    {
+        public IInterpolator<T> GetInterpolator(IGeometry<T> geometry)
+        {
+            return new WeightedAverageInterpolator<T>(geometry);
+        }
+    }
+
     public class WeightedAverageInterpolator<T> : IInterpolator<T>
     {
-        public IGeometry<T> Geometry { private get; set; }
-        
-        private ScalarFieldMap<T> _weights;
+        private readonly ScalarFieldMap<T> _weights;
 
-        private void InitializeWeights()
+        public WeightedAverageInterpolator(IGeometry<T> geometry)
         {
-            _weights = CalculateWeights(Geometry.RelativePositions);
+            _weights = CalculateWeights(geometry.Graph, geometry.RelativePositions);
         }
 
         // Calculates the weights for the interpolation. Weights each neighbour according to 1/distance, then 
         // normalizes so they sum to 1.
-        private ScalarFieldMap<T> CalculateWeights(VectorFieldMap<T> relativePositions)
+        private ScalarFieldMap<T> CalculateWeights(Graph<T> graph, VectorFieldMap<T> relativePositions)
         {
             var weights = new ScalarFieldMap<T>();
 
-            foreach (var nodeAndNeighbourPositions in relativePositions)
+            foreach (var nodeAndNeighbours in graph)
             {
-                var node = nodeAndNeighbourPositions.Key;
-                var neighbourPositions = nodeAndNeighbourPositions.Value;
+                var node = nodeAndNeighbours.Key;
+                var neighbourPositions = relativePositions[node];
 
                 var weightsOfNeighbours =
                     neighbourPositions.ToDictionary(neighbourAndPosition => neighbourAndPosition.Key,
@@ -42,11 +48,6 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 
         public void Interpolate(ScalarField<T> sourceField, ref ScalarField<T> targetField)
         {
-            if (_weights == null)
-            {
-                InitializeWeights();
-            }
-
             foreach (var nodeAndWeightings in _weights)
             {
                 var node = nodeAndWeightings.Key;

@@ -1,4 +1,5 @@
-﻿using FakeItEasy;
+﻿using System.Collections.Generic;
+using FakeItEasy;
 using FakeItEasy.ExtensionSyntax;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
@@ -13,13 +14,15 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
         [Test]
         public void Interpolate_OnANodeWithOneNeighbour_ShouldCopyTheNeighboursValue()
         {
+            var graph = new Graph<int> {{0, new List<int> {1}}};
             var relativePositions = new VectorFieldMap<int>
             {
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}}}
             };
             var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Graph).Returns(graph);
             A.CallTo(() => geometry.RelativePositions).Returns(relativePositions);
-            var interpolator = new WeightedAverageInterpolator<int> { Geometry = geometry};
+            var interpolator = new WeightedAverageInterpolator<int>(geometry);
 
             var targetField = new ScalarField<int> { { 0, 3f } };            
             var sourceField = new ScalarField<int> {{1, 7f}};
@@ -31,13 +34,15 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
         [Test]
         public void Interpolate_OnANodeWithTwoNeighboursAtEqualDistances_ShouldAverageTheNeighboursValues()
         {
+            var graph = new Graph<int> { { 0, new List<int> { 1, 2 } } };
             var relativePositions = new VectorFieldMap<int>
             {
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}, {2, new Vector3(0, 1, 0)}}}
             };
             var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Graph).Returns(graph);
             A.CallTo(() => geometry.RelativePositions).Returns(relativePositions);
-            var interpolator = new WeightedAverageInterpolator<int> { Geometry = geometry };
+            var interpolator = new WeightedAverageInterpolator<int>(geometry);
 
             var sourceField = new ScalarField<int> { { 1, 7f }, {2, 13f} };
             var targetField = new ScalarField<int> { { 0, 11f } };
@@ -49,13 +54,15 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
         [Test]
         public void Interpolate_OnANodeWithTwoNeighboursAtDifferentDistances_ShouldAverageTheNeighboursValues()
         {
+            var graph = new Graph<int> { { 0, new List<int> { 1, 2 } } };
             var relativePositions = new VectorFieldMap<int>
             {
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}, {2, new Vector3(0, 2, 0)}}}
             };
             var geometry = A.Fake<IGeometry<int>>();
+            A.CallTo(() => geometry.Graph).Returns(graph);
             A.CallTo(() => geometry.RelativePositions).Returns(relativePositions);
-            var interpolator = new WeightedAverageInterpolator<int> { Geometry = geometry };
+            var interpolator = new WeightedAverageInterpolator<int>(geometry);
 
             var sourceField = new ScalarField<int> { { 1, 7f }, { 2, 10f } };
             var targetField = new ScalarField<int> { { 0, 11f } };

@@ -3,26 +3,35 @@ using UnityEditor;
 
 namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 {
+    public class WeightedAverageRelaxerFactory<T> : IRelaxerFactory<T>
+    {
+        public IRelaxationCalculator<T> GetRelaxationCalculator(IGeometry<T> geometry)
+        {
+            return new RelaxationCalculator<T>(geometry);
+        }
+    }
     public class RelaxationCalculator<T> : IRelaxationCalculator<T>
     {
-        public IGeometry<T> Geometry { private get; set; }
-        private ScalarFieldMap<T> _termCoefficients;
-        private ScalarField<T> _normalizationCoefficients;
+        private readonly IGeometry<T> _geometry;
 
-        private void InitializeCoefficients()
+        private readonly ScalarFieldMap<T> _termCoefficients;
+        private readonly ScalarField<T> _normalizationCoefficients;
+
+        public RelaxationCalculator(IGeometry<T> geometry)
         {
-            _termCoefficients = TermCoefficients(Geometry);
-            _normalizationCoefficients = NormalizationCoefficients(_termCoefficients);
+            _geometry = geometry;
+            _termCoefficients = TermCoefficients(geometry.Graph, geometry);
+            _normalizationCoefficients = NormalizationCoefficients(geometry.Graph, _termCoefficients);
         }
 
-        private ScalarFieldMap<T> TermCoefficients(IGeometry<T> geometry)
+        private ScalarFieldMap<T> TermCoefficients(Graph<T> graph, IGeometry<T> geometry)
         {
-            var nodes = Geometry.Graph.Keys;
+            var nodes = graph.Keys;
             var termCoefficients = new ScalarFieldMap<T>();
 
             foreach (var node in nodes)
             {
-                var neighbours = Geometry.Graph[node];
+                var neighbours = graph[node];
                 var widths = geometry.Widths[node];
                 var distances = geometry.InternodeDistances[node];
                 var termCoefficientsOfNode = neighbours.ToDictionary(neighbour => neighbour,
@@ -33,9 +42,9 @@ namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
             return termCoefficients;
         }
 
-        private ScalarField<T> NormalizationCoefficients(ScalarFieldMap<T> termCoefficients)
+        private ScalarField<T> NormalizationCoefficients(Graph<T> graph, ScalarFieldMap<T> termCoefficients)
         {
-            var nodes = Geometry.Graph.Keys;
+            var nodes = graph.Keys;
             var normalizationCoefficients = new ScalarField<T>();
 
             foreach (var node in nodes)
@@ -49,12 +58,7 @@ namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 
         public void Relax(ref ScalarField<T> field, ScalarField<T> laplacianOfField)
         {
-            if ((_termCoefficients == null) || (_normalizationCoefficients) == null)
-            {
-                InitializeCoefficients();
-            }
-
-            var nodes = Geometry.Graph.Keys;
+            var nodes = _geometry.Graph.Keys;
 
             foreach (var node in nodes)
             {
@@ -66,7 +70,7 @@ namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
         {
             var newFieldAtNode = 0f;
 
-            var neighbours = Geometry.Graph[node];
+            var neighbours = _geometry.Graph[node];
 
             if (neighbours.Count == 0)
             {
@@ -79,7 +83,7 @@ namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
                     newFieldAtNode += _termCoefficients[node][neighbour] * oldField[neighbour];
                 }
 
-                newFieldAtNode -= Geometry.Areas[node] * laplacianOfField[node];
+                newFieldAtNode -= _geometry.Areas[node] * laplacianOfField[node];
                 newFieldAtNode /= _normalizationCoefficients[node];    
             }
             

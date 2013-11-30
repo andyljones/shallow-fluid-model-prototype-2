@@ -9,16 +9,13 @@ namespace Simulator.ShallowFluid.MultigridSolver
     /// <typeparam name="T"></typeparam>
     public class GreedyGraphCoarsener<T>
     {
-        public Graph<T> FinestGraph
-        {
-            set
-            {
-                ConstructCoarseGraphs(value);
-            }
-        }
-
         public List<Graph<T>> CoarsenedGraphs { get; private set; }
-        public List<Graph<T>> CoarseNeighbourGraphs { get; private set; } 
+        public List<Graph<T>> CoarseNeighbourGraphs { get; private set; }
+
+        public GreedyGraphCoarsener(Graph<T> finestGraph)
+        {
+            ConstructCoarseGraphs(finestGraph);
+        }
 
         private void ConstructCoarseGraphs(Graph<T> graph)
         {

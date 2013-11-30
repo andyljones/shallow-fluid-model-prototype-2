@@ -7,7 +7,7 @@ namespace Simulator.ShallowFluid
 {
     public class FoamGeometry : IGeometry<Cell>
     {
-        public Graph<Cell> Graph { get; private set; } 
+        public Graph<Cell> Graph { get; private set; }
 
         /// <summary>
         /// Field representing the position of each cell.
@@ -49,7 +49,6 @@ namespace Simulator.ShallowFluid
         {
             get { return _relativePositions ?? (_relativePositions = CalculateRelativePositions(Graph)); }
         }
-
         private VectorFieldMap<Cell> _relativePositions;
 
         /// <summary>
