@@ -2,16 +2,11 @@
 {
     public class ResidualTransferer<T> : IResidualTransferer<T>
     {
-        private readonly Graph<T> _coarseGraph;
-
-        public ResidualTransferer(Graph<T> coarseGraph)
-        {
-            _coarseGraph = coarseGraph;
-        }
+        public Graph<T> CoarseGraph;
 
         public void Transfer(ScalarField<T> fineField, ref ScalarField<T> coarseField)
         {
-            var coarseNodes = _coarseGraph.Keys;
+            var coarseNodes = CoarseGraph.Keys;
 
             foreach (var node in coarseNodes)
             {

@@ -5,16 +5,18 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 {
     public class WeightedAverageInterpolator<T> : IInterpolator<T>
     {
-        private readonly ScalarFieldMap<T> _weights;
+        public VectorFieldMap<T> RelativePositions;
+        
+        private ScalarFieldMap<T> _weights;
 
-        public WeightedAverageInterpolator(Dictionary<T, VectorField<T>> relativePositionsOfTargetNodesToSourceNodes)
+        private void InitializeWeights()
         {
-            _weights = CalculateWeights(relativePositionsOfTargetNodesToSourceNodes);
+            _weights = CalculateWeights(RelativePositions);
         }
 
         // Calculates the weights for the interpolation. Weights each neighbour according to 1/distance, then 
         // normalizes so they sum to 1.
-        private ScalarFieldMap<T> CalculateWeights(Dictionary<T, VectorField<T>> relativePositions)
+        private ScalarFieldMap<T> CalculateWeights(VectorFieldMap<T> relativePositions)
         {
             var weights = new ScalarFieldMap<T>();
 
@@ -41,6 +43,11 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 
         public void Interpolate(ScalarField<T> sourceField, ref ScalarField<T> targetField)
         {
+            if (_weights == null)
+            {
+                InitializeWeights();
+            }
+
             foreach (var nodeAndWeightings in _weights)
             {
                 var node = nodeAndWeightings.Key;

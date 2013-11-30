@@ -12,7 +12,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.ResidualTr
         public void Transfer_OnTwoSingletonGraphsOfTheSameNode_ShouldTransferTheValueOnTheFineToTheCoarse()
         {
             var coarseGraph = new Graph<int> { { 0, new List<int>() } };
-            var transferer = new ResidualTransferer<int>(coarseGraph);
+            var transferer = new ResidualTransferer<int> { CoarseGraph = coarseGraph };
 
             var fineField = new ScalarField<int> {{0, 1f}};
             var coarseField = new ScalarField<int> {{0, 2f}};

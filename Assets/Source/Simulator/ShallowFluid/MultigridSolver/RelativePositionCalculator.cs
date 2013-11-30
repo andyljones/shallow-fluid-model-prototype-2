@@ -8,14 +8,14 @@ namespace Simulator.ShallowFluid.MultigridSolver
         /// <summary>
         /// The relative position of neighbouring nodes in terms of the tangent space at a graph node on a sphere. 
         /// </summary>
-        public Dictionary<T, VectorField<T>> RelativePositions 
+        public VectorFieldMap<T> RelativePositions 
         { 
             get
             {
                 return _relativePositions ?? (_relativePositions = CalculateRelativePositions(_graph, _positions));
             } 
         }
-        private Dictionary<T, VectorField<T>> _relativePositions; 
+        private VectorFieldMap<T> _relativePositions; 
     
         private readonly Graph<T> _graph;
         private readonly VectorField<T> _positions; 
@@ -27,9 +27,9 @@ namespace Simulator.ShallowFluid.MultigridSolver
         }
 
         // This backs the lazy getter for the relative position field.
-        private Dictionary<T, VectorField<T>> CalculateRelativePositions(Graph<T> graph, VectorField<T> positions)
+        private VectorFieldMap<T> CalculateRelativePositions(Graph<T> graph, VectorField<T> positions)
         {
-            var allRelativePositions = new Dictionary<T, VectorField<T>>();
+            var allRelativePositions = new VectorFieldMap<T>();
 
             foreach (var nodeAndNeighbours in graph)
             {
