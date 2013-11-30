@@ -9,24 +9,18 @@ namespace Simulator.ShallowFluid.MultigridSolver
     /// <typeparam name="T"></typeparam>
     public class GreedyGraphCoarsener<T>
     {
-        /// <summary>
-        /// A list of the coarsened graphs generated from the graph given to the constructor. Given in 
-        /// finest-to-coarsest order. 
-        /// </summary>
-        public List<Graph<T>> CoarsenedGraphs { get; private set; }
+        public Graph<T> FinestGraph
+        {
+            set
+            {
+                ConstructCoarseGraphs(value);
+            }
+        }
 
-        /// <summary>
-        /// The ith graph in this list associates the nodes of the ith graph in CoarsenedGraphs with the nearest
-        ///  elements of the next coarsest graph.
-        /// </summary>
+        public List<Graph<T>> CoarsenedGraphs { get; private set; }
         public List<Graph<T>> CoarseNeighbourGraphs { get; private set; } 
 
-        /// <summary>
-        /// Takes an adjacency dictionary describing a graph, and generates a list of coarsened  graphs from it. 
-        /// These graphs can be found in the CoarsenedGraph field.
-        /// </summary>
-        /// <param name="graph">The graph to be coarsened</param>
-        public GreedyGraphCoarsener(Graph<T> graph)
+        private void ConstructCoarseGraphs(Graph<T> graph)
         {
             var currentMostCoarseGraph = graph;
             CoarsenedGraphs = new List<Graph<T>> { currentMostCoarseGraph };
@@ -42,7 +36,6 @@ namespace Simulator.ShallowFluid.MultigridSolver
                 CoarsenedGraphs.Add(moreCoarseGraph);
                 CoarseNeighbourGraphs.Add(coarseNeighbourGraph);
                 currentMostCoarseGraph = moreCoarseGraph;
-
             }
         }
 

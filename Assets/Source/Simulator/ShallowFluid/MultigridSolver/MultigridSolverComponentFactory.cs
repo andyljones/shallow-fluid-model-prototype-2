@@ -8,5 +8,9 @@ namespace Simulator.ShallowFluid.MultigridSolver
         where TInterpolator : IInterpolator<T>, new()
         where TTransferer : IInterpolator<T>, new()
     {
+        public MultigridSolverComponentFactory(IGeometry<T> finestGeometry, IGraphCoarsener<T> coarsener)
+        {
+            
+        }
     }
 }
