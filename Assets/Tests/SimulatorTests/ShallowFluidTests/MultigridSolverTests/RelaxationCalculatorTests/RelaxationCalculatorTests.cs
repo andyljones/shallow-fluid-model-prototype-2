@@ -2,10 +2,9 @@
 using FakeItEasy;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
-using Simulator.ShallowFluid.MultigridSolver;
-using UnityEngine;
+using Simulator.ShallowFluid.MultigridSolver.Relaxer;
 
-namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
+namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.RelaxationCalculatorTests
 {
     [TestFixture]
     public class RelaxationCalculatorTests

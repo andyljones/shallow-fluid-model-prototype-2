@@ -1,6 +1,6 @@
-﻿namespace Simulator.ShallowFluid.MultigridSolver
+﻿namespace Simulator.ShallowFluid.MultigridSolver.ResidualTransferer
 {
-    public class ResidualTransferer<T>
+    public class ResidualTransferer<T> : IResidualTransferer<T>
     {
         private readonly Graph<T> _coarseGraph;
 

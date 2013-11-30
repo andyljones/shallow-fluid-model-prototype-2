@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
-namespace Simulator.ShallowFluid.MultigridSolver
+namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 {
     public class RelaxationCalculator<T> : IRelaxationCalculator<T>
     {

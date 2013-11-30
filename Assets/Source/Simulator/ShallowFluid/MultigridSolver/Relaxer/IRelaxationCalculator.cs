@@ -1,4 +1,4 @@
-﻿namespace Simulator.ShallowFluid.MultigridSolver
+﻿namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 {
     public interface IRelaxationCalculator<T>
     {

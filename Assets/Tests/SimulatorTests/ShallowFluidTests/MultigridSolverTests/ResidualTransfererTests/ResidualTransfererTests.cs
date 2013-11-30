@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Simulator.ShallowFluid;
-using Simulator.ShallowFluid.MultigridSolver;
+using Simulator.ShallowFluid.MultigridSolver.ResidualTransferer;
 
-namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
+namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.ResidualTransfererTests
 {
     [TestFixture]
     public class ResidualTransfererTests
