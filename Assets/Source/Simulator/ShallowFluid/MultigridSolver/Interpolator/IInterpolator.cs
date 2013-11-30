@@ -2,6 +2,6 @@
 {
     public interface IInterpolator<T>
     {
-        ScalarField<T> Interpolate(ScalarField<T> field);
+        void Interpolate(ScalarField<T> sourceField, ref ScalarField<T> targetField);
     }
 }

@@ -17,13 +17,12 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
                 {0, new VectorField<int> {{1, new Vector3(1, 0, 0)}}}
             };
             var interpolator = new WeightedAverageInterpolator<int>(relativePositions);
-            
-            var field = new ScalarField<int> {{1, 7f}};
-            var result = interpolator.Interpolate(field);
 
-            var interpolatedValue = result[0];
+            var targetField = new ScalarField<int> { { 0, 3f } };            
+            var sourceField = new ScalarField<int> {{1, 7f}};
+            interpolator.Interpolate(sourceField, ref targetField);
 
-            Assert.That(interpolatedValue, Is.EqualTo(7));
+            Assert.That(targetField[0], Is.EqualTo(7));
         }
 
         [Test]
@@ -35,12 +34,11 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
             };
             var interpolator = new WeightedAverageInterpolator<int>(relativePositions);
 
-            var field = new ScalarField<int> { { 1, 7f }, {2, 13f} };
-            var result = interpolator.Interpolate(field);
+            var sourceField = new ScalarField<int> { { 1, 7f }, {2, 13f} };
+            var targetField = new ScalarField<int> { { 0, 11f } };
+            interpolator.Interpolate(sourceField, ref targetField);
 
-            var interpolatedValue = result[0];
-
-            Assert.That(interpolatedValue, Is.EqualTo(10));
+            Assert.That(targetField[0], Is.EqualTo(10));
         }
 
         [Test]
@@ -52,12 +50,11 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests.Interpolat
             };
             var interpolator = new WeightedAverageInterpolator<int>(relativePositions);
 
-            var field = new ScalarField<int> { { 1, 7f }, { 2, 10f } };
-            var result = interpolator.Interpolate(field);
+            var sourceField = new ScalarField<int> { { 1, 7f }, { 2, 10f } };
+            var targetField = new ScalarField<int> { { 0, 11f } };
+            interpolator.Interpolate(sourceField, ref targetField);
 
-            var interpolatedValue = result[0];
-
-            Assert.That(interpolatedValue, Is.EqualTo(8f));
+            Assert.That(targetField[0], Is.EqualTo(8));
         }
     }
 }

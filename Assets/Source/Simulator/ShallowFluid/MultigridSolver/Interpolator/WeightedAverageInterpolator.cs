@@ -7,13 +7,9 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
     {
         private readonly ScalarFieldMap<T> _weights;
 
-        /// <summary>
-        /// Uses the provided relative positions to calculate the weightings for the interpolation.
-        /// </summary>
-        /// <param name="relativePositions"></param>
-        public WeightedAverageInterpolator(Dictionary<T, VectorField<T>> relativePositions)
+        public WeightedAverageInterpolator(Dictionary<T, VectorField<T>> relativePositionsOfTargetNodesToSourceNodes)
         {
-            _weights = CalculateWeights(relativePositions);
+            _weights = CalculateWeights(relativePositionsOfTargetNodesToSourceNodes);
         }
 
         // Calculates the weights for the interpolation. Weights each neighbour according to 1/distance, then 
@@ -43,23 +39,14 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
             return weights;
         }
 
-        /// <summary>
-        /// Interpolates the field using a weighted average that's inversely proportional to distance to the neighbour.
-        /// </summary>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        public ScalarField<T> Interpolate(ScalarField<T> field)
+        public void Interpolate(ScalarField<T> sourceField, ref ScalarField<T> targetField)
         {
-            var interpolatedField = new ScalarField<T>();
-
             foreach (var nodeAndWeightings in _weights)
             {
                 var node = nodeAndWeightings.Key;
-                var interpolatedValue = InterpolateValueAtNode(node, field);
-                interpolatedField.Add(node, interpolatedValue);
+                var interpolatedValue = InterpolateValueAtNode(node, sourceField);
+                targetField[node] = interpolatedValue;
             }
-
-            return interpolatedField;
         }
 
         private float InterpolateValueAtNode(T node, ScalarField<T> field)
