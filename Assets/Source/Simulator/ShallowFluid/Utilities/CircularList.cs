@@ -16,6 +16,10 @@ namespace Simulator.ShallowFluid.Utilities
             }
         }
 
+        public CircularList(IEnumerable<T> enumerable) : base(enumerable)
+        {
+        }
+
         private int MathMod(int x, int m)
         {
             return ((x % m) + m) % m;
