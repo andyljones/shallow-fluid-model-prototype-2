@@ -6,12 +6,12 @@ using Simulator.ShallowFluid.MultigridSolver.ResidualTransferer;
 
 namespace Simulator.ShallowFluid.MultigridSolver
 {
-    public class RestrictRefineStep<T> : IVCycleStep<T>
+    public class RestrictRefineLevel<T> : IVCycleLevel<T>
     {
         public int NumberOfRelaxationsDuringRestriction = 2;
         public int NumberOfRelaxationsDuringInterpolation = 1;
 
-        private IVCycleStep<T> _nextStep;
+        private IVCycleLevel<T> _nextLevel;
         private IGeometry<T> _fineGeometry;
         private IGeometry<T> _coarseGeometry;
         private Graph<T> _interpolationGraph;
@@ -20,9 +20,9 @@ namespace Simulator.ShallowFluid.MultigridSolver
         private readonly SolutionTransferer<T> _transferer;
         private readonly WeightedAverageInterpolator<T> _interpolator;
 
-        public RestrictRefineStep(IVCycleStep<T> nextStep, IGeometry<T> fineGeometry, Graph<T> interpolationGraph)
+        public RestrictRefineLevel(IVCycleLevel<T> nextLevel, IGeometry<T> fineGeometry, Graph<T> interpolationGraph)
         {
-            _nextStep = nextStep;
+            _nextLevel = nextLevel;
             _fineGeometry = fineGeometry;
             _interpolationGraph = interpolationGraph;
 
@@ -45,7 +45,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
             var residualOnCoarseGeometry = new ScalarField<T>(_interpolationGraph.Values.SelectMany(coarseNodes => coarseNodes));
             _transferer.Transfer(residualOnFineGeometry, ref residualOnCoarseGeometry);
 
-            _nextStep.Process(ref coarseField, residualOnCoarseGeometry);
+            _nextLevel.Process(ref coarseField, residualOnCoarseGeometry);
 
             var errorInFineField = new ScalarField<T>(_interpolationGraph.Keys);
             _interpolator.Interpolate(coarseField, ref errorInFineField);

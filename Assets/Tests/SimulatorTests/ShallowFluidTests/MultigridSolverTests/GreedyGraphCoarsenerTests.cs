@@ -165,7 +165,8 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
             var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
-            var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs.First();
+            var firstCoarseGraph = graphCoarsener.CoarsenedGraphs.First();
+            var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs[firstCoarseGraph];
 
             Assert.That(firstCoarseNeighbourGraph.Count, Is.EqualTo(2));
         }
@@ -176,7 +177,8 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
             var adjacentPair = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
             var graphCoarsener = new GreedyGraphCoarsener<int>(adjacentPair);
 
-            var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs.First();
+            var firstCoarseGraph = graphCoarsener.CoarsenedGraphs.First();
+            var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs[firstCoarseGraph];
             var neighboursPerNode = firstCoarseNeighbourGraph.Values.Select(neighbourList => neighbourList.Count);
 
             Assert.That(neighboursPerNode, Has.All.EqualTo(1));
@@ -193,7 +195,8 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
             };
             var graphCoarsener = new GreedyGraphCoarsener<int>(completeGraphOnThreeNodes);
 
-            var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs.First();
+            var firstCoarseGraph = graphCoarsener.CoarsenedGraphs.First();
+            var firstCoarseNeighbourGraph = graphCoarsener.CoarseNeighbourGraphs[firstCoarseGraph];
             var neighboursPerNode = firstCoarseNeighbourGraph.Values.Select(neighbourList => neighbourList.Count);
 
             Assert.That(neighboursPerNode, Has.All.EqualTo(1));

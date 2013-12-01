@@ -71,7 +71,6 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
 
             var interpolatedValue = 0f;
 
-            //TODO: See whether the LINQ expression here would be dead slow as you expect.
             foreach (var neighbourAndWeight in neighbourWeightings)
             {
                 var neighbour = neighbourAndWeight.Key;

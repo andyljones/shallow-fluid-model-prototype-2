@@ -7,10 +7,10 @@ namespace Simulator.ShallowFluid.MultigridSolver
     /// Generates a list of ever-more-coarsened graphs from an initial graph using a greedy algorithm.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GreedyGraphCoarsener<T>
+    public class GreedyGraphCoarsener<T> : IGraphCoarsener<T>
     {
         public List<Graph<T>> CoarsenedGraphs { get; private set; }
-        public List<Graph<T>> CoarseNeighbourGraphs { get; private set; }
+        public Dictionary<Graph<T>, Graph<T>> CoarseNeighbourGraphs { get; private set; }
 
         public GreedyGraphCoarsener(Graph<T> finestGraph)
         {
@@ -19,20 +19,20 @@ namespace Simulator.ShallowFluid.MultigridSolver
 
         private void ConstructCoarseGraphs(Graph<T> graph)
         {
-            var currentMostCoarseGraph = graph;
-            CoarsenedGraphs = new List<Graph<T>> { currentMostCoarseGraph };
-            CoarseNeighbourGraphs = new List<Graph<T>>();
+            var fineGraph = graph;
+            CoarsenedGraphs = new List<Graph<T>> { fineGraph };
+            CoarseNeighbourGraphs = new Dictionary<Graph<T>, Graph<T>>();
 
             // The coarsest possible graph has a single node, so we keep coarsening until we get an adjacency 
             // dictionary with one entry.
-            while (currentMostCoarseGraph.Count > 1)
+            while (fineGraph.Count > 1)
             {
-                var moreCoarseGraph = CoarsenGraph(currentMostCoarseGraph);
-                var coarseNeighbourGraph = CoarseNeighboursOf(currentMostCoarseGraph, moreCoarseGraph);
+                var coarseGraph = CoarsenGraph(fineGraph);
+                var coarseNeighbourGraph = CoarseNeighboursOf(fineGraph, coarseGraph);
 
-                CoarsenedGraphs.Add(moreCoarseGraph);
-                CoarseNeighbourGraphs.Add(coarseNeighbourGraph);
-                currentMostCoarseGraph = moreCoarseGraph;
+                CoarsenedGraphs.Add(coarseGraph);
+                CoarseNeighbourGraphs.Add(fineGraph, coarseNeighbourGraph);
+                fineGraph = coarseGraph;
             }
         }
 

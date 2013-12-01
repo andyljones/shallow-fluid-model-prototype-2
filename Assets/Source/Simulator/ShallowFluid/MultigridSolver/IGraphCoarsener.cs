@@ -4,7 +4,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
 {
     public interface IGraphCoarsener<T>
     {
-        IGeometry<T> Geometry { set; }
         List<Graph<T>> CoarsenedGraphs { get; }
+        Dictionary<Graph<T>, Graph<T>> CoarseNeighbourGraphs { get; } 
     }
 }
