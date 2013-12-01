@@ -9,6 +9,5 @@ namespace Simulator.ShallowFluid
     /// <typeparam name="TNode"></typeparam>
     public class Graph<TNode> : Dictionary<TNode, List<TNode>>
     {
-
     }
 }

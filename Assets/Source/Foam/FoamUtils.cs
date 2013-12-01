@@ -122,6 +122,11 @@ namespace Foam
             return centerOfFace;
         }
 
+        public static Vector3 Center(this Edge edge)
+        {
+            return (edge.Vertices.First().Position + edge.Vertices.Last().Position)/2;
+        }
+
         public static List<Face> FacesWithNeighbours(this Cell cell)
         {
             return cell.Faces.Where(face => face.Cells.Count > 1).ToList();
@@ -135,6 +140,16 @@ namespace Foam
             var verticalEdges = cell.Edges.Except(topFace.Edges).Except(bottomFace.Edges);
 
             return verticalEdges.ToList();
+        }
+
+        public static List<Edge> SortedClockwise(this List<Edge> edges)
+        {
+            var center = (edges.First().Center() + edges.Last().Center()) / 2;
+            var baseline = edges.First().Center();
+            var comparer = new CompareVectorsClockwise(center, baseline);
+            var sortedEdges = edges.OrderBy(edge => edge.Center(), comparer);
+
+            return sortedEdges.ToList();
         }
 
         public static List<Face> VerticalFaces(this Cell cell)
@@ -186,6 +201,11 @@ namespace Foam
             var bottomFaceHeight = bottomFace.Vertices.Average(vertex => vertex.Position.magnitude);
 
             return topFaceHeight - bottomFaceHeight;
+        }
+
+        public static List<Cell> Neighbours(this Cell cell)
+        {
+            return cell.Faces.Select(face => cell.NeighbourAcross(face)).ToList();
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace Simulator.ShallowFluid
+﻿using System.Linq;
+using Foam;
+
+namespace Simulator.ShallowFluid
 {
     public static class LinearOperators
     {
@@ -28,9 +31,9 @@
         }
 
         //TODO: Test.
-        public static ScalarField<T> LaplacianWithRespectTo<T>(this ScalarField<T> field, IGeometry<T> geometry)
+        public static ScalarField<T> Laplacian<T>(this ScalarField<T> field, IGeometry<T> geometry)
         {
-            var result = new ScalarField<T>();
+            var results = new ScalarField<T>(geometry.Graph.Keys);
 
             foreach (var nodeAndNeighbours in geometry.Graph)
             {
@@ -49,10 +52,25 @@
                     laplacian += widthOverDistance*differenceInField/geometry.Areas[node];
                 }
 
-                result[node] = laplacian;
+                results[node] = laplacian;
             }
 
-            return result;
+            return results;
         }
+
+        public static ScalarField<Cell> Jacobian(this ScalarField<Cell> fieldA, 
+                                                      ScalarField<Cell> fieldB,
+                                                      IGeometry<Cell> geometry)
+        {
+            var results = new ScalarField<Cell>(geometry.Graph.Keys);
+            
+            foreach (var node in geometry.Graph.Keys)
+            {
+                var sortedEdges = node.VerticalEdges().SortedClockwise();
+
+            }
+        }
+
+        private static 
     }
 }

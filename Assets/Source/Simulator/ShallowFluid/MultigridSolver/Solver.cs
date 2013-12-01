@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Foam;
-using Simulator.ShallowFluid.MultigridSolver.Interpolator;
 
 namespace Simulator.ShallowFluid.MultigridSolver
 {
-    public class MultigridSolver
+    public class Solver
     {
         public int SmallestGraphSizeToConsider = 20;
 
         private readonly IVCycleLevel<Cell> _headOfVCycleLevelChain;
 
-        public MultigridSolver(Graph<Cell> finestGraph)
+        //TODO: testttt
+        public Solver(Graph<Cell> finestGraph)
         {
             _headOfVCycleLevelChain = GenerateVCycleLevelChain(finestGraph);
         }
@@ -68,6 +67,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
                                            geometry => coarsener.CoarseNeighbourGraphs[geometry.Graph]);
         }
 
+        //TODO: Test test test test
         public void Solve(ref ScalarField<Cell> field, ScalarField<Cell> laplacianOfField)
         {
             _headOfVCycleLevelChain.Process(ref field, laplacianOfField);

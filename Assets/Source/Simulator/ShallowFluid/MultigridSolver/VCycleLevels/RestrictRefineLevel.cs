@@ -41,7 +41,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
 
             var coarseField = new ScalarField<T>(_interpolationGraph.Values.SelectMany(coarseNodes => coarseNodes));
 
-            var residualOnFineGeometry = laplacianOfFineField.Subtract(fineField.LaplacianWithRespectTo(_fineGeometry));
+            var residualOnFineGeometry = laplacianOfFineField.Subtract(fineField.Laplacian(_fineGeometry));
             var residualOnCoarseGeometry = new ScalarField<T>(_interpolationGraph.Values.SelectMany(coarseNodes => coarseNodes));
             _transferer.Transfer(residualOnFineGeometry, ref residualOnCoarseGeometry);
 
