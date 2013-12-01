@@ -7,7 +7,7 @@ namespace Simulator
     {
         List<Cell> Cells { get; }
 
-        void StepSimulation();
+        void UpdateModel();
 
         void UpdateCellConditions();
     }

@@ -36,7 +36,7 @@ namespace Renderer.ShallowFluid
 
         public void UpdateRender()
         {
-            _simulator.StepSimulation();
+            _simulator.UpdateModel();
             _simulator.UpdateCellConditions();
 
             _atmosphereRenderer.UpdateLayer();
