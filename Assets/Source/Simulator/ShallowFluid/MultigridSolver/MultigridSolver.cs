@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Simulator.ShallowFluid.MultigridSolver.Interpolator;
 
 namespace Simulator.ShallowFluid.MultigridSolver
@@ -9,23 +10,6 @@ namespace Simulator.ShallowFluid.MultigridSolver
     /// <typeparam name="T"></typeparam>
     public class MultigridSolver<T>
     {
-        private readonly List<Graph<T>> _coarsenedGraphs;
-        private readonly IGeometry<T> _geometry;
-        private readonly IInterpolator<T> _interpolator; 
-
-        public MultigridSolver(Graph<T> graph, IGeometry<T> geometry )
-        {
-            _coarsenedGraphs = new List<Graph<T>> { graph };
-            _geometry = geometry;
-        }
-
-        public ScalarField<T> Solve(ScalarField<T> U, ScalarField<T> f)
-        {
-            var solution = new ScalarField<T>(U.Keys);
-
-            return solution;
-        }
-
 
     }
 }

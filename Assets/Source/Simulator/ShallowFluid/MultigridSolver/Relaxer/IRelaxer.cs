@@ -1,6 +1,6 @@
 ﻿namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 {
-    public interface IRelaxationCalculator<T>
+    public interface IRelaxer<T>
     {
         void Relax(ref ScalarField<T> field, ScalarField<T> laplacianOfField);
     }

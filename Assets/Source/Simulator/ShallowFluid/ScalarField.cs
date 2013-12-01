@@ -31,5 +31,6 @@ namespace Simulator.ShallowFluid
         public ScalarField(IEnumerable<T> enumerable) : base(enumerable.ToDictionary(obj => obj, obj => default(float)))
         {
         }
+
     }
 }

@@ -1,19 +1,20 @@
-﻿namespace Simulator.ShallowFluid.MultigridSolver.ResidualTransferer
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Simulator.ShallowFluid.MultigridSolver.ResidualTransferer
 {
     public class SolutionTransferer<T> : ISolutionTransferer<T>
     {
-        private readonly Graph<T> _coarseGraph; 
+        private readonly IEnumerable<T> _coarseNodes; 
         
-        public SolutionTransferer(IGeometry<T> geometry)
+        public SolutionTransferer(Graph<T> interpolationGraph)
         {
-            _coarseGraph = geometry.Graph;
+            _coarseNodes = interpolationGraph.Values.SelectMany(coarseNodeList => coarseNodeList).Distinct();
         }
         
         public void Transfer(ScalarField<T> fineField, ref ScalarField<T> coarseField)
         {
-            var coarseNodes = _coarseGraph.Keys;
-
-            foreach (var node in coarseNodes)
+            foreach (var node in _coarseNodes)
             {
                 coarseField[node] = fineField[node];
             }

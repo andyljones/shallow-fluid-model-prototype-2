@@ -6,27 +6,28 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
     {
         private readonly ScalarFieldMap<T> _weights;
 
-        public WeightedAverageInterpolator(IGeometry<T> geometry)
+        public WeightedAverageInterpolator(Graph<T> interpolationGraph, IGeometry<T> fineGeometry)
         {
-            _weights = CalculateWeights(geometry.Graph, geometry.RelativePositions);
+            _weights = CalculateWeights(interpolationGraph, fineGeometry.RelativePositions);
         }
 
         // Calculates the weights for the interpolation. Weights each neighbour according to 1/distance, then 
         // normalizes so they sum to 1.
-        private ScalarFieldMap<T> CalculateWeights(Graph<T> graph, VectorFieldMap<T> relativePositions)
+        //TODO: this is gonna fuck up if the coarse nodes aren't immediate neighbours of the fine nodes
+        private ScalarFieldMap<T> CalculateWeights(Graph<T> interpolationGraph, VectorFieldMap<T> relativePositions)
         {
             var weights = new ScalarFieldMap<T>();
 
-            foreach (var nodeAndNeighbours in graph)
+            foreach (var nodeAndNeighbours in interpolationGraph)
             {
                 var node = nodeAndNeighbours.Key;
                 var neighbourPositions = relativePositions[node];
 
                 var weightsOfNeighbours =
                     neighbourPositions.ToDictionary(neighbourAndPosition => neighbourAndPosition.Key,
-                                                    neighbourAndPosition => 1/neighbourAndPosition.Value.magnitude); //TODO: Division through by zero here
+                                                    neighbourAndPosition => Weight(neighbourAndPosition.Value.magnitude));
 
-                var sumOfWeights = weightsOfNeighbours.Values.Sum();
+                var sumOfWeights = weightsOfNeighbours.Values.Sum(); //TODO: Possible overflow.
 
                 var normalizedWeightsOfNeighbours =
                     weightsOfNeighbours.ToDictionary(neighbourAndDistance => neighbourAndDistance.Key,
@@ -36,6 +37,22 @@ namespace Simulator.ShallowFluid.MultigridSolver.Interpolator
             }
 
             return weights;
+        }
+
+        private float Weight(float distance)
+        {
+            float weight;
+
+            if (distance == 0f)
+            {
+                weight = float.MaxValue;
+            }
+            else
+            {
+                weight = 1/distance;
+            }
+
+            return weight;
         }
 
         public void Interpolate(ScalarField<T> sourceField, ref ScalarField<T> targetField)

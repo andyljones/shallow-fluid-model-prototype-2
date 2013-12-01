@@ -3,14 +3,14 @@ using UnityEditor;
 
 namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
 {
-    public class RelaxationCalculator<T> : IRelaxationCalculator<T>
+    public class Relaxer<T> : IRelaxer<T>
     {
         private readonly IGeometry<T> _geometry;
 
         private readonly ScalarFieldMap<T> _termCoefficients;
         private readonly ScalarField<T> _normalizationCoefficients;
 
-        public RelaxationCalculator(IGeometry<T> geometry)
+        public Relaxer(IGeometry<T> geometry)
         {
             _geometry = geometry;
             _termCoefficients = TermCoefficients(geometry.Graph, geometry);
@@ -59,7 +59,7 @@ namespace Simulator.ShallowFluid.MultigridSolver.Relaxer
             }
         }
 
-        public float RelaxValueAtNode(T node, ScalarField<T> oldField, ScalarField<T> laplacianOfField)
+        private float RelaxValueAtNode(T node, ScalarField<T> oldField, ScalarField<T> laplacianOfField)
         {
             var newFieldAtNode = 0f;
 
