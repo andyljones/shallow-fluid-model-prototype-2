@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Foam;
 using Simulator.ShallowFluid.Utilities;
+using UnityEngine;
 
 namespace Simulator.ShallowFluid
 {
@@ -150,6 +151,33 @@ namespace Simulator.ShallowFluid
         public static float AverageAboutEdge(Edge edge, ScalarField<Cell> field)
         {
             return edge.Cells.Average(cell => field[cell]);
+        }
+
+        //TODO: Test.
+        public static VectorField<Cell> Gradient(this ScalarField<Cell> fieldA, IGeometry<Cell> geometry)
+        {
+            var gradients = new VectorField<Cell>(geometry.Graph.Keys);
+
+            foreach (var cellAndNeighbours in geometry.Graph)
+            {
+                var cell = cellAndNeighbours.Key;
+                var neighbours = cellAndNeighbours.Value;
+
+                var gradientAtNode = new Vector3();
+
+                foreach (var neighbour in neighbours)
+                {
+                    //TODO: Will only work when face is perpendicular to relative vector
+                    var normalToFace = geometry.RelativePositions[cell][neighbour].normalized;
+                    var valueAtFace = (fieldA[cell] + fieldA[neighbour])/2;
+
+                    gradientAtNode += valueAtFace*normalToFace;
+                }
+
+                gradients[cell] = gradientAtNode;
+            }
+
+            return gradients;
         }
     }
 }

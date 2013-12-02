@@ -106,7 +106,17 @@ namespace Simulator.ShallowFluid
 
         public void UpdateCellConditions()
         {
-            
+            var gradPsi = _psi.Gradient(_geometry);
+            var gradChi = _chi.Gradient(_geometry);
+
+            foreach (var cell in Cells)
+            {
+                cell.Height = _h[cell];
+                var kCrossGradPsiAtCell = Vector3.Cross(_geometry.Positions[cell].normalized, gradPsi[cell]);
+                var gradChiAtCell = gradChi[cell];
+
+                cell.Velocity = kCrossGradPsiAtCell + gradChiAtCell;
+            }
         }
 
         public delegate ScalarField<Cell> UpdateScheme(ref List<ScalarField<Cell>> derivatives);
