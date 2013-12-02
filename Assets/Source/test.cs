@@ -30,14 +30,14 @@ public class test : MonoBehaviour {
 	    var options = new Options
 	    {
 	        Radius = 6000f,
-	        Resolution = 750f,
+	        Resolution = 6000f,
 	        Height = 8f,
             DayLength = 80000,
             Timestep = 50,
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"}, //TODO: Refactor this so that materials are provided in the editor
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",
-            ArrowLengthMultiplier = 100f,
+            ArrowLengthMultiplier = 1f,
             DetailMultiplier = 50f
 	    };
 
@@ -50,11 +50,10 @@ public class test : MonoBehaviour {
 	    binder.Bind<IGrid>().To<GeodesicGrid>();
 	    binder.Bind<ISurface>().To<FlatSurface>();
 	    binder.Bind<IAtmosphere>().To<MonolayerAtmosphere>();
-	    binder.Bind<ISimulator>().To<ShallowFluidSimulator>();
-	    binder.Bind<IHeightmap>().To<MonolayerHeightmap>();
-	    binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
-
-	    _planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;
+        binder.Bind<ISimulator>().To<ShallowFluidSimulator>();
+        binder.Bind<IHeightmap>().To<MonolayerHeightmap>();
+        binder.Bind<IRenderer>().To<ShallowFluidRenderer>();
+        _planetRenderer = binder.GetInstance<IRenderer>() as IRenderer;
 
 	    stopwatch.Stop();
         Debug.Log("TIME: " + stopwatch.ElapsedMilliseconds);

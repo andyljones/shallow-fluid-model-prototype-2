@@ -205,7 +205,7 @@ namespace Foam
 
         public static List<Cell> Neighbours(this Cell cell)
         {
-            return cell.Faces.Select(face => cell.NeighbourAcross(face)).ToList();
+            return cell.FacesWithNeighbours().Select(face => cell.NeighbourAcross(face)).ToList();
         }
     }
 }
