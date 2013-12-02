@@ -65,25 +65,25 @@ namespace Simulator.ShallowFluid
 
         public void StepSimulation(UpdateScheme scheme)
         {
-            var psiK = (_psi.FluxDivergence(_psi, _geometry).Subtract(_psi.Laplacian(_geometry))).MultiplyBy(0.5f);
-            var chiK = (_chi.FluxDivergence(_chi, _geometry).Subtract(_chi.Laplacian(_geometry))).MultiplyBy(0.5f);
-            var k = psiK.Add(chiK).Subtract(_psi.Jacobian(_chi, _geometry));
-            var kPlusGh = k.Add(_h.MultiplyBy(_g)); 
+            var psiK = 0.5f*(_psi.FluxDivergence(_psi, _geometry) - _psi.Laplacian(_geometry));
+            var chiK = 0.5f*(_chi.FluxDivergence(_chi, _geometry) - _chi.Laplacian(_geometry));
+            var k = psiK + chiK - _psi.Jacobian(_chi, _geometry);
+            var kPlusGh = k + _g*_h; 
 
-            var dEta =   _eta.Jacobian(_psi, _geometry).Subtract(_eta.FluxDivergence(_chi, _geometry));
-            var dDelta = _eta.Jacobian(_chi, _geometry).Subtract(_eta.FluxDivergence(_psi, _geometry)).Subtract(kPlusGh.Laplacian(_geometry));
-            var dH =     _h.Jacobian(_psi, _geometry).Subtract(_h.FluxDivergence(_chi, _geometry));
+            var dEta =   _eta.Jacobian(_psi, _geometry) - _eta.FluxDivergence(_chi, _geometry);
+            var dDelta = _eta.Jacobian(_chi, _geometry) - _eta.FluxDivergence(_psi, _geometry) - kPlusGh.Laplacian(_geometry);
+            var dH =     _h.Jacobian(_psi, _geometry) - _h.FluxDivergence(_chi, _geometry);
 
             _dEtas.Add(dEta);
             _dDeltas.Add(dDelta);
             _dHs.Add(dH);
 
-            _solver.Solve(ref _psi, _eta.Subtract(_f));
+            _solver.Solve(ref _psi, _eta - _f);
             _solver.Solve(ref _chi, _delta);
 
-            _eta = _eta.Add(scheme(ref _dEtas).MultiplyBy(_t));
-            _delta = _delta.Add(scheme(ref _dDeltas).MultiplyBy(_t));
-            _h = _h.Add(scheme(ref _dHs).MultiplyBy(_t));
+            _eta = _eta + _t * scheme(ref _dEtas);
+            _delta = _delta + _t * scheme(ref _dDeltas);
+            _h = _h + _t * scheme(ref _dHs);
 
         }
 
@@ -128,13 +128,13 @@ namespace Simulator.ShallowFluid
 
         public static ScalarField<Cell> AdamsBashforthScheme(ref List<ScalarField<Cell>> derivatives)
         {
-            var firstTerm = derivatives[2].MultiplyBy(23f/12f);
-            var secondTerm = derivatives[1].MultiplyBy(-16f/12f);
-            var thirdTerm = derivatives[0].MultiplyBy(5f/12f);
+            var firstTerm = 23f/12f * derivatives[2];
+            var secondTerm = -16f/12f * derivatives[1];
+            var thirdTerm = 5f/12f * derivatives[0];
 
             derivatives.RemoveAt(0);
 
-            return firstTerm.Add(secondTerm).Add(thirdTerm);
+            return firstTerm + secondTerm + thirdTerm;
         }
     }
 }

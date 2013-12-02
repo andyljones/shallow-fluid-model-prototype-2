@@ -41,7 +41,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
 
             var coarseField = new ScalarField<T>(_interpolationGraph.Values.SelectMany(coarseNodes => coarseNodes));
 
-            var residualOnFineGeometry = laplacianOfFineField.Subtract(fineField.Laplacian(_fineGeometry));
+            var residualOnFineGeometry = laplacianOfFineField - fineField.Laplacian(_fineGeometry);
             var residualOnCoarseGeometry = new ScalarField<T>(_interpolationGraph.Values.SelectMany(coarseNodes => coarseNodes));
             _transferer.Transfer(residualOnFineGeometry, ref residualOnCoarseGeometry);
 
@@ -50,7 +50,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
             var errorInFineField = new ScalarField<T>(_interpolationGraph.Keys);
             _interpolator.Interpolate(coarseField, ref errorInFineField);
 
-            fineField = fineField.Add(errorInFineField);
+            fineField = fineField + errorInFineField;
 
             for (int i = 0; i < NumberOfRelaxationsDuringInterpolation; i++)
             {

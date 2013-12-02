@@ -32,5 +32,52 @@ namespace Simulator.ShallowFluid
         {
         }
 
+        public static ScalarField<T> operator +(ScalarField<T> lhs, ScalarField<T> rhs)
+        {
+            var result = new ScalarField<T>();
+
+            foreach (var node in lhs.Keys)
+            {
+                result.Add(node, lhs[node] + rhs[node]);
+            }
+
+            return result;
+        }
+
+        public static ScalarField<T> operator -(ScalarField<T> lhs, ScalarField<T> rhs)
+        {
+            var result = new ScalarField<T>();
+
+            foreach (var node in lhs.Keys)
+            {
+                result.Add(node, lhs[node] - rhs[node]);
+            }
+
+            return result;
+        }
+
+        public static ScalarField<T> operator *(float lhs, ScalarField<T> rhs)
+        {
+            var result = new ScalarField<T>();
+
+            foreach (var node in rhs.Keys)
+            {
+                result.Add(node, lhs * rhs[node]);
+            }
+
+            return result;
+        }
+
+        public static ScalarField<T> operator -(ScalarField<T> lhs, float rhs)
+        {
+            var result = new ScalarField<T>();
+
+            foreach (var node in lhs.Keys)
+            {
+                result.Add(node, lhs[node] - rhs);
+            }
+
+            return result;
+        }
     }
 }
