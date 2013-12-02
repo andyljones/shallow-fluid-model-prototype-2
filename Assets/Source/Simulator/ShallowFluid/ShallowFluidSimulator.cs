@@ -13,6 +13,7 @@ namespace Simulator.ShallowFluid
 
         private readonly FoamGeometry _geometry;
         private readonly Solver _solver;
+        private readonly LinearOperators _op;
         private bool _initialized = false;
 
         private ScalarField<Cell> _eta;
@@ -36,6 +37,7 @@ namespace Simulator.ShallowFluid
             var graph = AdjacencyGraphOf(Cells);
             _geometry = new FoamGeometry(graph);
             _solver = new Solver(graph);
+            _op = new LinearOperators(_geometry);
         }
 
         private Graph<Cell> AdjacencyGraphOf(List<Cell> cells)
@@ -65,14 +67,14 @@ namespace Simulator.ShallowFluid
 
         public void StepSimulation(UpdateScheme scheme)
         {
-            var psiK = 0.5f*(_psi.FluxDivergence(_psi, _geometry) - _psi.Laplacian(_geometry));
-            var chiK = 0.5f*(_chi.FluxDivergence(_chi, _geometry) - _chi.Laplacian(_geometry));
-            var k = psiK + chiK - _psi.Jacobian(_chi, _geometry);
-            var kPlusGh = k + _g*_h; 
+            var psiK = 0.5f * (_op.FluxDivergence(_psi, _psi) - _op.Laplacian(_psi));
+            var chiK = 0.5f * (_op.FluxDivergence(_chi, _chi) - _op.Laplacian(_chi));
+            var k = psiK + chiK - _op.Jacobian(_psi, _chi);
+            var kPlusGh = k + _g*_h;
 
-            var dEta =   _eta.Jacobian(_psi, _geometry) - _eta.FluxDivergence(_chi, _geometry);
-            var dDelta = _eta.Jacobian(_chi, _geometry) - _eta.FluxDivergence(_psi, _geometry) - kPlusGh.Laplacian(_geometry);
-            var dH =     _h.Jacobian(_psi, _geometry) - _h.FluxDivergence(_chi, _geometry);
+            var dEta = _op.Jacobian(_eta, _psi) - _op.FluxDivergence(_eta, _chi);
+            var dDelta = _op.Jacobian(_eta, _chi) - _op.FluxDivergence(_eta, _psi) - _op.Laplacian(kPlusGh);
+            var dH = _op.Jacobian(_h, _psi) - _op.FluxDivergence(_h, _chi);
 
             _dEtas.Add(dEta);
             _dDeltas.Add(dDelta);
@@ -106,8 +108,8 @@ namespace Simulator.ShallowFluid
 
         public void UpdateCellConditions()
         {
-            var gradPsi = _psi.Gradient(_geometry);
-            var gradChi = _chi.Gradient(_geometry);
+            var gradPsi = _op.Gradient(_psi);
+            var gradChi = _op.Gradient(_chi);
 
             foreach (var cell in Cells)
             {

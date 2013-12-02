@@ -1,18 +1,26 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Foam;
 using Simulator.ShallowFluid.Utilities;
 using UnityEngine;
 
 namespace Simulator.ShallowFluid
 {
-    public static class LinearOperators
+    public class LinearOperators
     {
-        //TODO: Test.
-        public static ScalarField<T> Laplacian<T>(this ScalarField<T> field, IGeometry<T> geometry)
-        {
-            var results = new ScalarField<T>(geometry.Graph.Keys);
+        private readonly IGeometry<Cell> _geometry;
 
-            foreach (var nodeAndNeighbours in geometry.Graph)
+        public LinearOperators(IGeometry<Cell> geometry)
+        {
+            _geometry = geometry;
+        }
+
+        //TODO: Test.
+        public ScalarField<Cell> Laplacian(ScalarField<Cell> field)
+        {
+            var results = new ScalarField<Cell>(_geometry.Graph.Keys);
+
+            foreach (var nodeAndNeighbours in _geometry.Graph)
             {
                 var node = nodeAndNeighbours.Key;
                 var neighbours = nodeAndNeighbours.Value;
@@ -21,28 +29,26 @@ namespace Simulator.ShallowFluid
 
                 foreach (var neighbour in neighbours)
                 {
-                    var widthOverDistance = geometry.Widths[node][neighbour]/
-                                            geometry.InternodeDistances[node][neighbour];
+                    var widthOverDistance = _geometry.Widths[node][neighbour]/
+                                            _geometry.InternodeDistances[node][neighbour];
 
                     var differenceInField = field[neighbour] - field[node];
 
                     laplacianAtNode += widthOverDistance*differenceInField;
                 }
 
-                results[node] = laplacianAtNode / geometry.Areas[node];
+                results[node] = laplacianAtNode / _geometry.Areas[node];
             }
 
             return results;
         }
 
         //TODO: Test.
-        public static ScalarField<T> FluxDivergence<T>(this ScalarField<T> fieldA, 
-                                                            ScalarField<T> fieldB, 
-                                                            IGeometry<T> geometry)
+        public ScalarField<Cell> FluxDivergence(ScalarField<Cell> fieldA, ScalarField<Cell> fieldB)
         {
-            var results = new ScalarField<T>(geometry.Graph.Keys);
+            var results = new ScalarField<Cell>(_geometry.Graph.Keys);
 
-            foreach (var nodeAndNeighbours in geometry.Graph)
+            foreach (var nodeAndNeighbours in _geometry.Graph)
             {
                 var node = nodeAndNeighbours.Key;
                 var neighbours = nodeAndNeighbours.Value;
@@ -51,8 +57,8 @@ namespace Simulator.ShallowFluid
 
                 foreach (var neighbour in neighbours)
                 {
-                    var widthOverDistance = geometry.Widths[node][neighbour] /
-                                            geometry.InternodeDistances[node][neighbour];
+                    var widthOverDistance = _geometry.Widths[node][neighbour] /
+                                            _geometry.InternodeDistances[node][neighbour];
 
                     var sumOfFieldA = fieldA[node] + fieldA[neighbour];
                     var differenceInFieldB = fieldB[neighbour] - fieldB[node];
@@ -60,20 +66,18 @@ namespace Simulator.ShallowFluid
                     fluxDivergenceAtNode += widthOverDistance * sumOfFieldA * differenceInFieldB;
                 }
 
-                results[node] = fluxDivergenceAtNode / (2*geometry.Areas[node]);
+                results[node] = fluxDivergenceAtNode / (2*_geometry.Areas[node]);
             }
 
             return results;
         }
 
         //TODO: Test.
-        public static ScalarField<Cell> Jacobian(this ScalarField<Cell> fieldA,
-                                                      ScalarField<Cell> fieldB,
-                                                      IGeometry<Cell> geometry)
+        public ScalarField<Cell> Jacobian(ScalarField<Cell> fieldA, ScalarField<Cell> fieldB)
         {
-            var results = new ScalarField<Cell>(geometry.Graph.Keys);
+            var results = new ScalarField<Cell>(_geometry.Graph.Keys);
 
-            foreach (var cell in geometry.Graph.Keys)
+            foreach (var cell in _geometry.Graph.Keys)
             {
                 var sortedEdges = new CircularList<Edge>(cell.VerticalEdges().SortedClockwise());
                 var averagesOfB = sortedEdges.ToDictionary(edge => edge, edge => AverageAboutEdge(edge, fieldA));
@@ -91,7 +95,7 @@ namespace Simulator.ShallowFluid
                                       (averagesOfB[secondEdge] - averagesOfB[firstEdge]);
                 }
 
-                results[cell] = jacobianAtCell/(2 * geometry.Areas[cell]);
+                results[cell] = jacobianAtCell/(2 * _geometry.Areas[cell]);
             }
 
             return results;
@@ -103,11 +107,11 @@ namespace Simulator.ShallowFluid
         }
 
         //TODO: Test.
-        public static VectorField<Cell> Gradient(this ScalarField<Cell> fieldA, IGeometry<Cell> geometry)
+        public VectorField<Cell> Gradient(ScalarField<Cell> fieldA)
         {
-            var gradients = new VectorField<Cell>(geometry.Graph.Keys);
+            var gradients = new VectorField<Cell>(_geometry.Graph.Keys);
 
-            foreach (var cellAndNeighbours in geometry.Graph)
+            foreach (var cellAndNeighbours in _geometry.Graph)
             {
                 var cell = cellAndNeighbours.Key;
                 var neighbours = cellAndNeighbours.Value;
@@ -117,7 +121,7 @@ namespace Simulator.ShallowFluid
                 foreach (var neighbour in neighbours)
                 {
                     //TODO: Will only work when face is perpendicular to relative vector
-                    var normalToFace = geometry.RelativePositions[cell][neighbour].normalized;
+                    var normalToFace = _geometry.RelativePositions[cell][neighbour].normalized;
                     var valueAtFace = (fieldA[cell] + fieldA[neighbour])/2;
 
                     gradientAtNode += valueAtFace*normalToFace;

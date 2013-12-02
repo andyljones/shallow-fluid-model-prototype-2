@@ -31,7 +31,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
                 currentGeometry = geometries.Last();
                 geometries.Remove(currentGeometry);
                 var currentInterpolationGraph = interpolationGraphs[currentGeometry];
-                currentLevel = new RestrictRefineLevel<Cell>(currentLevel, currentGeometry, currentInterpolationGraph);
+                currentLevel = new RestrictRefineLevel(currentLevel, currentGeometry, currentInterpolationGraph);
             }
 
             return currentLevel;
