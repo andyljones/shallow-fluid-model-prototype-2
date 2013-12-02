@@ -27,7 +27,7 @@ namespace Simulator.ShallowFluid
         private List<ScalarField<Cell>> _dDeltas;
         private List<ScalarField<Cell>> _dHs;
 
-        private float _g = 9.81f;
+        private float _g = 0.00981f;
         private float _f = 2*Mathf.PI/(24*3600);
         private float _t = 300f;
 
@@ -65,22 +65,22 @@ namespace Simulator.ShallowFluid
             }
         }
 
-        public void StepSimulation(UpdateScheme scheme)
+        private void StepSimulation(UpdateScheme scheme)
         {
-            var psiK = 0.5f * (_op.FluxDivergence(_psi, _psi) - _op.Laplacian(_psi));
-            var chiK = 0.5f * (_op.FluxDivergence(_chi, _chi) - _op.Laplacian(_chi));
+            var psiK = 0.5f * (_op.FluxDivergence(_psi, _psi) - _psi * _op.Laplacian(_psi));
+            var chiK = 0.5f * (_op.FluxDivergence(_chi, _chi) - _chi * _op.Laplacian(_chi));
             var k = psiK + chiK - _op.Jacobian(_psi, _chi);
             var kPlusGh = k + _g*_h;
 
             var dEta = _op.Jacobian(_eta, _psi) - _op.FluxDivergence(_eta, _chi);
-            var dDelta = _op.Jacobian(_eta, _chi) - _op.FluxDivergence(_eta, _psi) - _op.Laplacian(kPlusGh);
+            var dDelta = _op.Jacobian(_eta, _chi) + _op.FluxDivergence(_eta, _psi) - _op.Laplacian(kPlusGh);
             var dH = _op.Jacobian(_h, _psi) - _op.FluxDivergence(_h, _chi);
 
             _dEtas.Add(dEta);
             _dDeltas.Add(dDelta);
             _dHs.Add(dH);
 
-            _solver.Solve(ref _psi, _eta - _f);
+            _solver.Solve(ref _psi, _eta);
             _solver.Solve(ref _chi, _delta);
 
             _eta = _eta + _t * scheme(ref _dEtas);
@@ -94,6 +94,11 @@ namespace Simulator.ShallowFluid
             _eta = new ScalarField<Cell>(Cells);
             _delta = new ScalarField<Cell>(Cells);
             _h = new ScalarField<Cell>(Cells);
+
+            foreach (var cell in Cells)
+            {
+                _h[cell] = 8f+cell.Center().normalized.z;
+            }
 
             _psi = new ScalarField<Cell>(Cells);
             _chi = new ScalarField<Cell>(Cells);
@@ -111,6 +116,9 @@ namespace Simulator.ShallowFluid
             var gradPsi = _op.Gradient(_psi);
             var gradChi = _op.Gradient(_chi);
 
+            Debug.Log(_psi[Cells[10]]);
+            Debug.Log(_chi[Cells[10]]);
+
             foreach (var cell in Cells)
             {
                 cell.Height = _h[cell];
@@ -119,6 +127,7 @@ namespace Simulator.ShallowFluid
 
                 cell.Velocity = kCrossGradPsiAtCell + gradChiAtCell;
             }
+
         }
 
         public delegate ScalarField<Cell> UpdateScheme(ref List<ScalarField<Cell>> derivatives);

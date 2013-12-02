@@ -79,5 +79,17 @@ namespace Simulator.ShallowFluid
 
             return result;
         }
+
+        public static ScalarField<T> operator *(ScalarField<T> lhs, ScalarField<T> rhs)
+        {
+            var result = new ScalarField<T>();
+
+            foreach (var node in lhs.Keys)
+            {
+                result.Add(node, lhs[node] * rhs[node]);
+            }
+
+            return result;
+        }
     }
 }
