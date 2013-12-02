@@ -37,7 +37,7 @@ public class test : MonoBehaviour {
 	        LayerMaterials = new List<string> {"Materials/OceanWater", "Materials/Sky"}, //TODO: Refactor this so that materials are provided in the editor
 	        BoundaryMaterial = "Materials/Boundaries",
             ArrowMaterial = "Materials/WindArrows",
-            ArrowLengthMultiplier = 1f,
+            ArrowLengthMultiplier = 500f,
             DetailMultiplier = 50f
 	    };
 

@@ -40,8 +40,8 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
         [Test]
         public void RelativePosition_OfOneNodeFromAnother_ShouldBePerpendicularToOriginNodesPosition()
         {
-            var graph = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int> { 0 } } };
-            var positions = new VectorField<int> { { 0, new Vector3(1, 0, 0) }, { 1, new Vector3(0, 1, 0) } };
+            var graph = new Graph<int> { { 0, new List<int> { 1 } }, { 1, new List<int>() } };
+            var positions = new VectorField<int> { { 0, new Vector3(1, 7, 4) }, { 1, new Vector3(0, 1, 0) } };
             var calculator = new RelativePositionCalculator<int>(graph, positions);
 
             var originPosition = positions[0];
@@ -49,7 +49,7 @@ namespace Tests.SimulatorTests.ShallowFluidTests.MultigridSolverTests
 
             var tolerance = 0.001f;
 
-            Assert.That(Vector3.Dot(originPosition, relativePosition), Is.InRange(0 - tolerance, 0 + tolerance));
+            Assert.That(Vector3.Dot(originPosition.normalized, relativePosition.normalized), Is.InRange(0 - tolerance, 0 + tolerance));
         }
     }
 }

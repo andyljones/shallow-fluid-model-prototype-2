@@ -72,7 +72,7 @@ namespace Simulator.ShallowFluid.MultigridSolver
         // Returns the component of the vector u that's perpendicular to v
         private Vector3 PerpendicularComponent(Vector3 u, Vector3 v)
         {
-            return u - Vector3.Dot(u, v.normalized)*v;
+            return u - Vector3.Dot(u, v.normalized)*v.normalized;
         }
     }
 }

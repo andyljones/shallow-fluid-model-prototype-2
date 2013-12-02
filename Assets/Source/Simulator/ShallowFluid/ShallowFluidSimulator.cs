@@ -82,6 +82,8 @@ namespace Simulator.ShallowFluid
             _dDeltas.Add(dDelta);
             _dHs.Add(dH);
 
+            Debug.Log(_psi[Cells[7]] - _psi[Cells[4]]);
+
             _solver.Solve(ref _psi, _eta - _f);
             _solver.Solve(ref _chi, _delta);
 
@@ -100,17 +102,17 @@ namespace Simulator.ShallowFluid
                 _f[cell] = 2*_omega*cell.Center().normalized.z;
             }
 
-            _eta = new ScalarField<Cell>(Cells);
-            _delta = new ScalarField<Cell>(Cells);
+            _psi = new ScalarField<Cell>(Cells);
+            _chi = new ScalarField<Cell>(Cells);
+
+            _eta = _op.Laplacian(_psi) + _f;
+            _delta = _op.Laplacian(_chi);
             _h = new ScalarField<Cell>(Cells);
 
             foreach (var cell in Cells)
             {
-                _h[cell] = 8f+cell.Center().normalized.z;
+                _h[cell] = 8f + cell.Center().normalized.z / 100f;
             }
-
-            _psi = new ScalarField<Cell>(Cells);
-            _chi = new ScalarField<Cell>(Cells);
 
             _dEtas = new List<ScalarField<Cell>>();
             _dDeltas = new List<ScalarField<Cell>>();
@@ -124,9 +126,6 @@ namespace Simulator.ShallowFluid
         {
             var gradPsi = _op.Gradient(_psi);
             var gradChi = _op.Gradient(_chi);
-
-            Debug.Log(_psi[Cells[10]]);
-            Debug.Log(_chi[Cells[10]]);
 
             foreach (var cell in Cells)
             {
