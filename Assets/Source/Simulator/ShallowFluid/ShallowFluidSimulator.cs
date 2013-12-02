@@ -16,6 +16,8 @@ namespace Simulator.ShallowFluid
         private readonly LinearOperators _op;
         private bool _initialized = false;
 
+        private ScalarField<Cell> _f; 
+
         private ScalarField<Cell> _eta;
         private ScalarField<Cell> _delta;
         private ScalarField<Cell> _h;
@@ -28,7 +30,7 @@ namespace Simulator.ShallowFluid
         private List<ScalarField<Cell>> _dHs;
 
         private float _g = 0.00981f;
-        private float _f = 2*Mathf.PI/(24*3600);
+        private float _omega = 2*Mathf.PI/(24*3600);
         private float _t = 300f;
 
         public ShallowFluidSimulator(IAtmosphere atmosphere)
@@ -80,7 +82,7 @@ namespace Simulator.ShallowFluid
             _dDeltas.Add(dDelta);
             _dHs.Add(dH);
 
-            _solver.Solve(ref _psi, _eta);
+            _solver.Solve(ref _psi, _eta - _f);
             _solver.Solve(ref _chi, _delta);
 
             _eta = _eta + _t * scheme(ref _dEtas);
@@ -91,6 +93,13 @@ namespace Simulator.ShallowFluid
 
         private void InitializeFields()
         {
+            _f = new ScalarField<Cell>(Cells);
+
+            foreach (var cell in Cells)
+            {
+                _f[cell] = 2*_omega*cell.Center().normalized.z;
+            }
+
             _eta = new ScalarField<Cell>(Cells);
             _delta = new ScalarField<Cell>(Cells);
             _h = new ScalarField<Cell>(Cells);
